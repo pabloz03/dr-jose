@@ -6,6 +6,7 @@ import { es } from "@/i18n/es";
 const HomePage = lazy(() => import("@/features/home/HomePage").then((m) => ({ default: m.HomePage })));
 const LoginPage = lazy(() => import("@/features/auth/LoginPage").then((m) => ({ default: m.LoginPage })));
 const ProfilePage = lazy(() => import("@/features/family/ProfilePage").then((m) => ({ default: m.ProfilePage })));
+const BookingPage = lazy(() => import("@/features/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
 const UiKitPage = lazy(() => import("@/features/ui-kit/UiKitPage").then((m) => ({ default: m.UiKitPage })));
 
 function RouteFallback() {
@@ -45,6 +46,16 @@ export const router = createBrowserRouter([
       <Lazy>
         <RequireAuth>
           <ProfilePage />
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/citas/nueva",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <BookingPage />
         </RequireAuth>
       </Lazy>
     ),

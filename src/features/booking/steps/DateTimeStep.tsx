@@ -1,0 +1,96 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { today, type CalendarDate } from "@internationalized/date";
+import { es } from "@/i18n/es";
+import { stepVariants } from "@/lib/motion";
+import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
+import { Calendar } from "@/components/ui/Calendar";
+import { useAvailableSlots, useClinicSettings, type SlotRow } from "../queries";
+import { groupSlotsByDate } from "../groupSlotsByDate";
+
+export function DateTimeStep({
+  dir,
+  clinicId,
+  doctorId,
+  typeId,
+  onSelect,
+}: {
+  dir: 1 | -1;
+  clinicId: string;
+  doctorId: string;
+  typeId: string;
+  onSelect: (slot: SlotRow) => void;
+}) {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const [selectedDate, setSelectedDate] = useState<CalendarDate | null>(null);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
+  const settingsQuery = useClinicSettings(clinicId);
+  const maxBookingDays = settingsQuery.data?.max_booking_days ?? 90;
+  const minDate = today(CLINIC_TZ);
+  const maxDate = minDate.add({ days: maxBookingDays });
+
+  const slotsQuery = useAvailableSlots({
+    clinicId,
+    doctorId,
+    typeId,
+    from: minDate.toString(),
+    to: maxDate.toString(),
+  });
+
+  const slotsByDate = useMemo(() => groupSlotsByDate(slotsQuery.data ?? []), [slotsQuery.data]);
+
+  const selectedDaySlots = selectedDate ? (slotsByDate.get(selectedDate.toString()) ?? []) : [];
+
+  return (
+    <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
+      <h2 ref={headingRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">
+        {es.reserva.fechaTitulo}
+      </h2>
+      <p className="mt-1 text-sm text-muted">{es.reserva.fechaZona}</p>
+
+      {slotsQuery.isLoading ? (
+        <p className="mt-4 text-muted" role="status">
+          {es.common.cargando}
+        </p>
+      ) : (
+        <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:gap-8">
+          <Calendar
+            aria-label={es.reserva.fechaTitulo}
+            minValue={minDate}
+            maxValue={maxDate}
+            value={selectedDate}
+            onChange={setSelectedDate}
+            isDateUnavailable={(date) => !slotsByDate.has(date.toString())}
+          />
+
+          <div className="flex-1">
+            <h3 className="font-medium text-ink">{es.reserva.horariosTitulo}</h3>
+            {!selectedDate ? (
+              <p className="mt-2 text-muted">{es.reserva.fechaEligaDia}</p>
+            ) : selectedDaySlots.length === 0 ? (
+              <p className="mt-2 text-muted">{es.reserva.fechaSinCupo}</p>
+            ) : (
+              <ul className="mt-2 grid grid-cols-3 gap-2">
+                {selectedDaySlots.map((slot) => (
+                  <li key={slot.slot_start}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(slot)}
+                      className="min-h-tap w-full rounded-sm border border-line bg-surface px-2 py-2 text-sm text-ink hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    >
+                      {formatClinicDateTime(slot.slot_start, "h:mm a")}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
