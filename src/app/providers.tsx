@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
 import { I18nProvider } from "react-aria-components/I18nProvider";
+import { AppToastRegion } from "@/components/ui/Toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,7 +17,10 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <I18nProvider locale="es-GT">
       <MotionConfig reducedMotion="user">
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <AppToastRegion />
+        </QueryClientProvider>
       </MotionConfig>
     </I18nProvider>
   );
