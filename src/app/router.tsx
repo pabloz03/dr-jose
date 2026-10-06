@@ -7,6 +7,12 @@ const HomePage = lazy(() => import("@/features/home/HomePage").then((m) => ({ de
 const LoginPage = lazy(() => import("@/features/auth/LoginPage").then((m) => ({ default: m.LoginPage })));
 const ProfilePage = lazy(() => import("@/features/family/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 const BookingPage = lazy(() => import("@/features/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
+const AppointmentsPage = lazy(() =>
+  import("@/features/appointments/AppointmentsPage").then((m) => ({ default: m.AppointmentsPage })),
+);
+const AppointmentDetailPage = lazy(() =>
+  import("@/features/appointments/AppointmentDetailPage").then((m) => ({ default: m.AppointmentDetailPage })),
+);
 const UiKitPage = lazy(() => import("@/features/ui-kit/UiKitPage").then((m) => ({ default: m.UiKitPage })));
 
 function RouteFallback() {
@@ -56,6 +62,26 @@ export const router = createBrowserRouter([
       <Lazy>
         <RequireAuth>
           <BookingPage />
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/citas",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <AppointmentsPage />
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/citas/:id",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <AppointmentDetailPage />
         </RequireAuth>
       </Lazy>
     ),

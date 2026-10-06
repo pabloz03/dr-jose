@@ -16,6 +16,16 @@ test("sin sesión, /citas/nueva redirige a /ingresar", async ({ page }) => {
   await expect(page).toHaveURL(/\/ingresar$/);
 });
 
+test("sin sesión, /citas redirige a /ingresar", async ({ page }) => {
+  await page.goto("/citas");
+  await expect(page).toHaveURL(/\/ingresar$/);
+});
+
+test("sin sesión, /citas/:id redirige a /ingresar", async ({ page }) => {
+  await page.goto("/citas/00000000-0000-0000-0000-000000000000");
+  await expect(page).toHaveURL(/\/ingresar$/);
+});
+
 test("/ingresar sin violaciones críticas/serias de axe @a11y", async ({ page }) => {
   await page.goto("/ingresar");
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).analyze();

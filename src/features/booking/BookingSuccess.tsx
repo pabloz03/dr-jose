@@ -69,8 +69,7 @@ export function BookingSuccess({
             {es.reserva.comoLlegar}
           </Button>
         ) : null}
-        {/* /citas llega en E3; por ahora el comprobante regresa a inicio. */}
-        <Button variant="primary" onPress={() => navigate("/")}>
+        <Button variant="primary" onPress={() => navigate("/citas")}>
           {es.reserva.verMisCitas}
         </Button>
       </div>
