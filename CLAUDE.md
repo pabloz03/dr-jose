@@ -4,8 +4,8 @@
 - dev: `pnpm dev` · build: `pnpm build` · typecheck: `pnpm typecheck` (`tsc -b`; el tsconfig raíz es un solution file con `"files": []`, `tsc --noEmit` plano ahí no revisa nada)
 - lint: `pnpm lint` · unit: `pnpm test` · e2e: `pnpm e2e` · a11y: `pnpm e2e --grep @a11y`
 - perf/a11y automatizado: `pnpm lhci` (requiere Chrome; si no hay uno del sistema, exportar `CHROME_PATH` apuntando al binario de `playwright install chromium`)
-- db (sin Docker local, proyecto/branch Supabase Cloud): `supabase link --project-ref <ref>` · `supabase db push` para aplicar migraciones · `supabase db diff` antes de crear una nueva
-- tipos: `supabase gen types typescript --project-id <ref> > src/lib/database.types.ts`
+- db (sin Docker local, proyecto Supabase Cloud `yrupnkwlwwxuoshwltou`): `supabase link --project-ref yrupnkwlwwxuoshwltou` · `supabase db push` para aplicar migraciones · `supabase db diff` antes de crear una nueva · migraciones nuevas también se pueden aplicar vía MCP `apply_migration`
+- tipos: `supabase gen types typescript --project-id yrupnkwlwwxuoshwltou > src/lib/database.types.ts` (o MCP `generate_typescript_types`)
 - deploy: build estático (`pnpm build` → `dist/`) subido por FTP a hosting compartido Hostinger; sin funciones serverless en el frontend, toda lógica server-side vive en Supabase Edge Functions
 
 ## Reglas duras
