@@ -11,7 +11,7 @@
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "test -f package.json && pnpm -s tsc --noEmit || true" }
+          { "type": "command", "command": "test -f package.json && pnpm -s typecheck || true" }
         ]
       }
     ]

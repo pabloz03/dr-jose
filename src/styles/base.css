@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./glass.css";
+
+/* Puente tokens.css -> utilidades Tailwind. No declarar hex/rgb aquí: todo
+   color/radio/tipografía se deriva de las custom properties de tokens.css,
+   que ya resuelven claro/oscuro (regla dura #2 de CLAUDE.md). */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-border-ui: var(--border-ui);
+  --color-line: var(--line);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-focus: var(--focus);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+
+  --font-sans: var(--font-sans);
+
+  --spacing-tap: var(--tap);
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+}
