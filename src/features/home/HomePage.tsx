@@ -1,8 +1,12 @@
 import { Link as RouterLink } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Button } from "@/components/ui/Button";
 
 export function HomePage() {
+  const staffQuery = useMyStaff();
+  const isDoctor = staffQuery.data?.role === "doctor";
+
   return (
     <main className="min-h-dvh px-4 py-8">
       <h1 className="text-2xl font-semibold text-ink">Citas Ortodoncia</h1>
@@ -17,6 +21,11 @@ export function HomePage() {
         <RouterLink to="/perfil" className="text-accent underline">
           Mi perfil
         </RouterLink>
+        {isDoctor ? (
+          <RouterLink to="/admin/horarios" className="text-accent underline">
+            Administración
+          </RouterLink>
+        ) : null}
         <Button
           variant="secondary"
           onPress={async () => {
