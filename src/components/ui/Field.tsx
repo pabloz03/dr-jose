@@ -6,14 +6,19 @@ import {
   FieldError,
   type TextFieldProps as RACTextFieldProps,
 } from "react-aria-components/TextField";
-import { Input } from "./Input";
+import { Input, type InputProps } from "./Input";
 
 export interface FieldProps extends RACTextFieldProps {
   label: string;
   description?: string;
   /** Mensaje mostrado por FieldError cuando `isInvalid` es true. */
   errorMessage?: string;
-  placeholder?: string;
+  /**
+   * Props que van al <input> real (type, autoComplete, inputMode, maxLength,
+   * name/onChange/onBlur/ref de react-hook-form, etc.) — nunca a TextField,
+   * que no los reenvía (ver InputHTMLAttributes vs TextFieldProps en RAC).
+   */
+  inputProps?: InputProps;
   children?: ReactNode;
 }
 
@@ -21,11 +26,11 @@ export interface FieldProps extends RACTextFieldProps {
  * Field compuesto (Label + Input + descripción + error) para el caso común.
  * Para layouts custom, componer TextField/Label/Input de RAC directamente.
  */
-export function Field({ label, description, errorMessage, placeholder, children, ...props }: FieldProps) {
+export function Field({ label, description, errorMessage, inputProps, children, ...props }: FieldProps) {
   return (
     <RACTextField {...props} className="flex flex-col gap-1.5">
       <Label className="text-sm font-medium text-ink">{label}</Label>
-      {children ?? <Input placeholder={placeholder} />}
+      {children ?? <Input {...inputProps} />}
       {description ? <Text slot="description" className="text-sm text-muted">{description}</Text> : null}
       <FieldError className="text-sm text-danger">{errorMessage}</FieldError>
     </RACTextField>

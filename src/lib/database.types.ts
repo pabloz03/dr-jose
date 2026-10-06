@@ -438,6 +438,7 @@ export type Database = {
           locale: string
           notify_email: boolean
           phone: string | null
+          privacy_consent_at: string | null
           user_id: string
         }
         Insert: {
@@ -446,6 +447,7 @@ export type Database = {
           locale?: string
           notify_email?: boolean
           phone?: string | null
+          privacy_consent_at?: string | null
           user_id: string
         }
         Update: {
@@ -454,6 +456,7 @@ export type Database = {
           locale?: string
           notify_email?: boolean
           phone?: string | null
+          privacy_consent_at?: string | null
           user_id?: string
         }
         Relationships: []

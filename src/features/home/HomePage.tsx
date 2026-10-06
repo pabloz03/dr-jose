@@ -1,8 +1,25 @@
+import { Link as RouterLink } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/Button";
+
 export function HomePage() {
   return (
     <main className="min-h-dvh px-4 py-8">
       <h1 className="text-2xl font-semibold text-ink">Citas Ortodoncia</h1>
-      <p className="mt-2 text-muted">Scaffold E0-S1 en pie. Las pantallas reales llegan en E1–E3.</p>
+      <p className="mt-2 text-muted">Próxima cita y accesos rápidos llegan en E2/E3.</p>
+      <nav className="mt-6 flex flex-col items-start gap-3">
+        <RouterLink to="/perfil" className="text-accent underline">
+          Mi perfil
+        </RouterLink>
+        <Button
+          variant="secondary"
+          onPress={async () => {
+            await supabase.auth.signOut();
+          }}
+        >
+          Cerrar sesión
+        </Button>
+      </nav>
     </main>
   );
 }

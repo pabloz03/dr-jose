@@ -44,13 +44,17 @@ export function UiKitPage() {
 
       <Section title="Field / Input">
         <div className="w-full max-w-sm">
-          <Field label="Nombre completo" placeholder="Ej. María López" description="Como aparece en su documento." />
+          <Field
+            label="Nombre completo"
+            description="Como aparece en su documento."
+            inputProps={{ placeholder: "Ej. María López" }}
+          />
         </div>
         <div className="w-full max-w-sm">
-          <Field label="Correo" name="email" type="email" isRequired placeholder="correo@ejemplo.com" />
+          <Field label="Correo" isRequired inputProps={{ name: "email", type: "email", placeholder: "correo@ejemplo.com" }} />
         </div>
         <div className="w-full max-w-sm">
-          <Field label="Campo con error" isInvalid errorMessage="Este campo es obligatorio." placeholder="…" />
+          <Field label="Campo con error" isInvalid errorMessage="Este campo es obligatorio." inputProps={{ placeholder: "…" }} />
         </div>
       </Section>
 

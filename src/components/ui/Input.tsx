@@ -1,5 +1,7 @@
 import { Input as RACInput, type InputProps } from "react-aria-components/TextField";
 
+export type { InputProps };
+
 export function Input(props: InputProps) {
   return (
     <RACInput

@@ -1,0 +1,114 @@
+import { useEffect, useRef, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { es } from "@/i18n/es";
+import { Button } from "@/components/ui/Button";
+import { Field } from "@/components/ui/Field";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { LiveRegion } from "@/components/ui/LiveRegion";
+import { formatClinicDateTime } from "@/lib/tz";
+import { useProfile, useSaveProfile } from "./queries";
+import { profileFormSchema, type ProfileFormValues } from "./schemas";
+import { PatientList } from "./PatientList";
+import { ClaimGuestPatientsBanner } from "./ClaimGuestPatientsBanner";
+
+export function ProfilePage() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const [announce, setAnnounce] = useState("");
+  const profileQuery = useProfile();
+  const saveProfile = useSaveProfile();
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
+  const { control, register, handleSubmit, reset, formState } = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: { full_name: "", phone: "", consent: false },
+  });
+
+  useEffect(() => {
+    if (profileQuery.data) {
+      reset({
+        full_name: profileQuery.data.full_name ?? "",
+        phone: profileQuery.data.phone ?? "",
+        consent: !!profileQuery.data.privacy_consent_at,
+      });
+    }
+  }, [profileQuery.data, reset]);
+
+  async function onSubmit(values: ProfileFormValues) {
+    const existingConsentAt = profileQuery.data?.privacy_consent_at ?? null;
+    await saveProfile.mutateAsync({
+      full_name: values.full_name,
+      phone: values.phone || null,
+      privacy_consent_at: existingConsentAt ?? new Date().toISOString(),
+    });
+    setAnnounce(es.perfil.guardadoOk);
+  }
+
+  const consentAt = profileQuery.data?.privacy_consent_at;
+
+  return (
+    <main className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-8">
+      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+        {es.perfil.titulo}
+      </h1>
+
+      <ClaimGuestPatientsBanner />
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold text-ink">{es.perfil.datosTitulo}</h2>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <Field
+            label={es.perfil.nombreLabel}
+            isRequired
+            isInvalid={!!formState.errors.full_name}
+            errorMessage={formState.errors.full_name?.message}
+            inputProps={register("full_name")}
+          />
+          <Field
+            label={es.perfil.telefonoLabel}
+            description={es.perfil.telefonoAyuda}
+            inputProps={{ type: "tel", autoComplete: "tel", ...register("phone") }}
+          />
+
+          <div className="rounded-md border border-line bg-surface p-4">
+            <h3 className="font-medium text-ink">{es.perfil.consentimientoTitulo}</h3>
+            <p className="mt-1 text-sm text-muted">{es.perfil.consentimientoTexto}</p>
+            <div className="mt-3">
+              <Controller
+                control={control}
+                name="consent"
+                render={({ field }) => (
+                  <Checkbox
+                    isSelected={field.value}
+                    onChange={field.onChange}
+                    errorMessage={formState.errors.consent?.message}
+                  >
+                    {es.perfil.consentimientoCheckbox}
+                  </Checkbox>
+                )}
+              />
+              {consentAt ? (
+                <p className="mt-2 text-sm text-muted">{es.perfil.aceptadoEl(formatClinicDateTime(consentAt, "d/MM/yyyy HH:mm"))}</p>
+              ) : null}
+            </div>
+          </div>
+
+          <Button type="submit" variant="primary" isPending={formState.isSubmitting} className="self-start">
+            {es.common.guardar}
+          </Button>
+        </form>
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <h2 className="text-lg font-semibold text-ink">{es.familia.tituloSeccion}</h2>
+        <p className="text-sm text-muted">{es.familia.descripcion}</p>
+        <PatientList />
+      </section>
+
+      <LiveRegion message={announce} />
+    </main>
+  );
+}

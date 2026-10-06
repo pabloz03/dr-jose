@@ -1,0 +1,100 @@
+import { useState } from "react";
+import { es } from "@/i18n/es";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
+import { Badge } from "@/components/ui/Badge";
+import { usePatients, useRemovePatient } from "./queries";
+import { PatientFormDialog } from "./PatientFormDialog";
+import type { Tables } from "@/lib/database.types";
+
+type Patient = Tables<"patients">;
+
+export function PatientList() {
+  const patientsQuery = usePatients();
+  const removePatient = useRemovePatient();
+  const [editing, setEditing] = useState<Patient | null>(null);
+  const [removing, setRemoving] = useState<Patient | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+
+  if (patientsQuery.isLoading) {
+    return <p className="text-muted" role="status">{es.common.cargando}</p>;
+  }
+
+  if (patientsQuery.isError) {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="text-danger" role="alert">
+          No pudimos cargar sus pacientes.
+        </p>
+        <Button variant="secondary" onPress={() => patientsQuery.refetch()} className="self-start">
+          {es.common.reintentar}
+        </Button>
+      </div>
+    );
+  }
+
+  const patients = patientsQuery.data ?? [];
+
+  return (
+    <div className="flex flex-col gap-3">
+      {patients.length === 0 ? (
+        <p className="text-muted">{es.familia.vacio}</p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {patients.map((p) => (
+            <li key={p.id} className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-3">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-ink">{p.full_name}</span>
+                {p.is_self ? (
+                  <Badge tone="neutral" icon="●">
+                    {es.familia.esUsted}
+                  </Badge>
+                ) : null}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="quiet" onPress={() => setEditing(p)}>
+                  {es.common.editar}
+                </Button>
+                <Button variant="quiet" onPress={() => setRemoving(p)}>
+                  {es.common.eliminar}
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Button variant="secondary" onPress={() => setIsAdding(true)} className="self-start">
+        {es.familia.agregarPaciente}
+      </Button>
+
+      {isAdding ? <PatientFormDialog isOpen onOpenChange={setIsAdding} /> : null}
+      {editing ? <PatientFormDialog isOpen patient={editing} onOpenChange={(open) => !open && setEditing(null)} /> : null}
+
+      {removing ? (
+        <Dialog
+          title={es.common.eliminar}
+          isOpen
+          isDismissable
+          onOpenChange={(open) => !open && setRemoving(null)}
+        >
+          <p className="text-sm text-ink">{es.familia.confirmarEliminar(removing.full_name)}</p>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="quiet" onPress={() => setRemoving(null)}>
+              {es.common.cancelar}
+            </Button>
+            <Button
+              variant="danger"
+              onPress={async () => {
+                await removePatient.mutateAsync(removing.id);
+                setRemoving(null);
+              }}
+            >
+              {es.common.eliminar}
+            </Button>
+          </div>
+        </Dialog>
+      ) : null}
+    </div>
+  );
+}
