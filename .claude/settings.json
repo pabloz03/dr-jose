@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "test -f package.json && pnpm -s eslint --fix $CLAUDE_FILE_PATHS || true" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "test -f package.json && pnpm -s tsc --noEmit || true" }
+        ]
+      }
+    ]
+  }
+}

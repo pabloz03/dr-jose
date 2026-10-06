@@ -1,0 +1,25 @@
+node_modules/
+dist/
+dist-ssr/
+.env
+.env.local
+.env.*.local
+*.local
+
+# macOS
+.DS_Store
+._*
+
+# Supabase CLI local state
+supabase/.branches/
+supabase/.temp/
+
+# Testing / coverage
+coverage/
+playwright-report/
+test-results/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
