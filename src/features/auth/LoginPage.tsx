@@ -20,6 +20,15 @@ type Step = "email" | "code";
  * paso de 2 pantallas — el resto de la app (stepper de reserva, etc.)
  * sigue usando Motion normalmente, ahí el costo sí se justifica porque
  * nunca es lo primero que carga un visitante sin sesión.
+ *
+ * Mismo criterio para los `<h1>` de esta pantalla: usan `font-semibold`
+ * (Open Sans, ya cargada) en vez de `.font-display` (Montserrat) del
+ * rediseño premium. Medido en producción: agregar Montserrat acá subía
+ * el LCP real de 2.26s a ~2.58s (la fuente nueva se pide igual aunque
+ * sea `font-display: optional`, solo cambia si bloquea el swap, no si
+ * se descarga) — por encima del presupuesto de la AC de E8-S2. El resto
+ * de la app sí usa Montserrat en sus `<h1>` sin este problema porque no
+ * es la primera pantalla de una visita sin sesión.
  */
 function useFocusOnMount<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -64,7 +73,7 @@ function EmailStep({
 
   return (
     <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
         <Mail className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloIngreso}
       </h1>
@@ -130,7 +139,7 @@ function CodeStep({
 
   return (
     <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
         <KeyRound className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.codigoTitulo}
       </h1>

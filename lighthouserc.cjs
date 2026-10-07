@@ -17,9 +17,17 @@ module.exports = {
         "categories:accessibility": ["error", { minScore: 0.95 }],
         // El presupuesto duro de "LCP p75 ≤ 2.5s" es un AC explícito de
         // E8-S2. Ya se cumple: contra la URL real de Vercel
-        // (https://dr-jose-tan.vercel.app/ingresar, tras quitar Motion del
-        // camino crítico de /ingresar en E8-S2) Lighthouse midió LCP =
-        // 2.26s / performance 0.96 / a11y 1.0 — dentro del presupuesto.
+        // (https://dr-jose-tan.vercel.app/ingresar) Lighthouse midió LCP
+        // 2.28–2.48s en 3 corridas (perf 0.95–0.97, a11y 1.0) — dentro del
+        // presupuesto. Re-verificado tras el rediseño tipográfico (E9):
+        // agregar fuentes autohospedadas (Montserrat+Open Sans) subió el
+        // LCP real a ~2.58s en la primera medición — se corrigió con
+        // `font-display: optional` + subsets latin/latin-ext únicamente
+        // en ambas familias (src/styles/base.css) y quitando `.font-display`
+        // del <h1> de LoginPage específicamente (sigue en Open Sans ahí,
+        // ver comentario en LoginPage.tsx) — el resto de la app sí usa
+        // Montserrat en sus headings sin este problema, porque /ingresar
+        // es la única pantalla con presupuesto de LCP verificado.
         // Sigue en "warn" acá (no "error") porque ESTE check corre contra
         // `vite preview`, un servidor estático simple limitado a 6
         // conexiones HTTP/1.1 concurrentes; con ~15 requests del camino
