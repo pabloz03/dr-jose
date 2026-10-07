@@ -14,6 +14,8 @@ export const es = {
     agregar: "Agregar",
   },
   home: {
+    navPrincipal: "Navegación principal",
+    navInicio: "Inicio",
     subtitulo: "Gestione sus citas y las de su familia.",
     proximaCitaTitulo: "Su próxima cita",
     sinProximaCitaTitulo: "No tiene citas próximas",
@@ -61,6 +63,13 @@ export const es = {
     consentimientoRequerido: "Debe aceptar el aviso de privacidad para continuar.",
     guardadoOk: "Perfil guardado.",
     aceptadoEl: (fecha: string) => `Aceptado el ${fecha}.`,
+    aparienciaTitulo: "Apariencia",
+    aparienciaDescripcion: "Elija cómo se ve la aplicación en este dispositivo.",
+    apariencia: {
+      system: "Sistema",
+      light: "Claro",
+      dark: "Oscuro",
+    },
   },
   familia: {
     tituloSeccion: "Dependientes",

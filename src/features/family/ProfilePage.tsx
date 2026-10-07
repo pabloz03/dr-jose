@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { ShieldCheck, User, Users } from "lucide-react";
+import { Monitor, ShieldCheck, User, Users } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { formatClinicDateTime } from "@/lib/tz";
 import { useProfile, useSaveProfile } from "./queries";
 import { profileFormSchema, type ProfileFormValues } from "./schemas";
@@ -115,6 +116,15 @@ export function ProfilePage() {
         </h2>
         <p className="text-sm text-muted">{es.familia.descripcion}</p>
         <PatientList />
+      </section>
+
+      <section className="flex flex-col gap-3 border-t border-line pt-8">
+        <h2 className="font-display flex items-center gap-2 text-lg text-ink">
+          <Monitor className="h-5 w-5 text-accent" strokeWidth={2.25} aria-hidden="true" />
+          {es.perfil.aparienciaTitulo}
+        </h2>
+        <p className="text-sm text-muted">{es.perfil.aparienciaDescripcion}</p>
+        <ThemeToggle />
       </section>
 
       <LiveRegion message={announce} />

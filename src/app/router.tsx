@@ -47,6 +47,9 @@ const TokenActionPage = lazy(() =>
   import("@/features/action/TokenActionPage").then((m) => ({ default: m.TokenActionPage })),
 );
 const AyudaPage = lazy(() => import("@/features/help/AyudaPage").then((m) => ({ default: m.AyudaPage })));
+const PatientLayout = lazy(() =>
+  import("@/features/home/PatientLayout").then((m) => ({ default: m.PatientLayout })),
+);
 
 function RouteFallback() {
   return (
@@ -66,7 +69,9 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <RequireAuth>
-          <HomePage />
+          <PatientLayout>
+            <HomePage />
+          </PatientLayout>
         </RequireAuth>
       </Lazy>
     ),
@@ -84,7 +89,9 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <RequireAuth>
-          <ProfilePage />
+          <PatientLayout>
+            <ProfilePage />
+          </PatientLayout>
         </RequireAuth>
       </Lazy>
     ),
@@ -104,7 +111,9 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <RequireAuth>
-          <AppointmentsPage />
+          <PatientLayout>
+            <AppointmentsPage />
+          </PatientLayout>
         </RequireAuth>
       </Lazy>
     ),
@@ -114,7 +123,9 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <RequireAuth>
-          <AppointmentDetailPage />
+          <PatientLayout>
+            <AppointmentDetailPage />
+          </PatientLayout>
         </RequireAuth>
       </Lazy>
     ),
@@ -232,7 +243,9 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <RequireAuth>
-          <AyudaPage />
+          <PatientLayout>
+            <AyudaPage />
+          </PatientLayout>
         </RequireAuth>
       </Lazy>
     ),

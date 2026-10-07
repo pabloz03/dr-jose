@@ -94,7 +94,7 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
           <select
             id="weekday"
             {...register("weekday")}
-            className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[15px] text-ink"
+            className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink"
           >
             {es.admin.horarios.dias.map((label, i) => (
               <option key={i + 1} value={i + 1}>

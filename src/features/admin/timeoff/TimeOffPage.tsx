@@ -170,7 +170,7 @@ export function TimeOffPage() {
             <select
               id="clinic_id"
               {...register("clinic_id")}
-              className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[15px] text-ink"
+              className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink"
             >
               <option value="">{es.admin.bloqueos.todasLasClinicas}</option>
               {(clinicsQuery.data ?? []).map((c) => (
