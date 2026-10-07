@@ -38,15 +38,15 @@ export function BookingSuccess({
       <Card className="mt-4">
         <dl className="flex flex-col gap-1">
           <div className="flex justify-between">
-            <dt className="text-muted">Paciente</dt>
+            <dt className="text-muted">{es.reserva.resumen.paciente}</dt>
             <dd className="font-medium text-ink">{patient.full_name}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-muted">Tipo</dt>
+            <dt className="text-muted">{es.reserva.resumen.tipo}</dt>
             <dd className="font-medium text-ink">{type.name}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-muted">Fecha</dt>
+            <dt className="text-muted">{es.reserva.resumen.fecha}</dt>
             <dd className="font-medium text-ink">{formatClinicDateLong(appointment.starts_at)}</dd>
           </div>
         </dl>

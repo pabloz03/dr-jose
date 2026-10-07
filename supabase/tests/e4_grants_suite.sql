@@ -27,7 +27,8 @@ begin
     'auto_confirm_due_appointments()',
     'token_confirm_appointment(uuid)',
     'token_cancel_appointment(uuid,text)',
-    'token_reschedule_appointment(uuid,timestamptz)'
+    'token_reschedule_appointment(uuid,timestamptz)',
+    'guest_book_appointment(text,text,uuid,uuid,uuid,timestamptz)'
   ]
   loop
     perform pg_temp.assert_true('grants', v_fn || ' service_role puede ejecutar',

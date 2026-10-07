@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { KeyRound, Mail } from "lucide-react";
@@ -52,14 +52,21 @@ function EmailStep({
   onSubmitted,
   formError,
   setFormError,
+  defaultEmail,
 }: {
   onSubmitted: (email: string) => void;
   formError: string | null;
   setFormError: (error: string | null) => void;
+  defaultEmail?: string;
 }) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
   const fadeClass = useFadeIn();
   const form = useForm<EmailStepValues>({ resolver: zodResolver(emailStepSchema) });
+  const { reset } = form;
+
+  useEffect(() => {
+    if (defaultEmail) reset({ email: defaultEmail });
+  }, [defaultEmail, reset]);
 
   async function onSubmit(values: EmailStepValues) {
     setFormError(null);
@@ -96,6 +103,9 @@ function EmailStep({
           {form.formState.isSubmitting ? es.auth.enviandoCodigo : es.auth.enviarCodigo}
         </Button>
       </form>
+      <Link to="/reservar-invitado" className="mt-4 inline-block text-sm text-accent underline">
+        {es.reservaInvitado.enlaceIngresar}
+      </Link>
     </div>
   );
 }
@@ -177,7 +187,9 @@ function CodeStep({
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session } = useAuth();
+  const prefillEmail = (location.state as { prefillEmail?: string } | null)?.prefillEmail;
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [announce, setAnnounce] = useState("");
@@ -194,6 +206,7 @@ export function LoginPage() {
           key="email"
           formError={formError}
           setFormError={setFormError}
+          defaultEmail={prefillEmail}
           onSubmitted={(submittedEmail) => {
             setEmail(submittedEmail);
             setStep("code");

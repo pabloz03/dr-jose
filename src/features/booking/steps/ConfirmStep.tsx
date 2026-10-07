@@ -48,28 +48,28 @@ export function ConfirmStep({
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <User className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              Paciente
+              {es.reserva.resumen.paciente}
             </dt>
             <dd className="font-medium text-ink">{patient.full_name}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <Stethoscope className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              Tipo
+              {es.reserva.resumen.tipo}
             </dt>
             <dd className="font-medium text-ink">{type.name}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <Building2 className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              Clínica
+              {es.reserva.resumen.clinica}
             </dt>
             <dd className="font-medium text-ink">{clinic.name}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <Calendar className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              Fecha
+              {es.reserva.resumen.fecha}
             </dt>
             <dd className="font-medium text-ink">{formatClinicDateLong(slot.slot_start)}</dd>
           </div>

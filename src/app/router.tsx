@@ -47,6 +47,9 @@ const TokenActionPage = lazy(() =>
   import("@/features/action/TokenActionPage").then((m) => ({ default: m.TokenActionPage })),
 );
 const AyudaPage = lazy(() => import("@/features/help/AyudaPage").then((m) => ({ default: m.AyudaPage })));
+const GuestBookingPage = lazy(() =>
+  import("@/features/booking/guest/GuestBookingPage").then((m) => ({ default: m.GuestBookingPage })),
+);
 const PatientLayout = lazy(() =>
   import("@/features/home/PatientLayout").then((m) => ({ default: m.PatientLayout })),
 );
@@ -255,6 +258,14 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <TokenActionPage />
+      </Lazy>
+    ),
+  },
+  {
+    path: "/reservar-invitado",
+    element: (
+      <Lazy>
+        <GuestBookingPage />
       </Lazy>
     ),
   },
