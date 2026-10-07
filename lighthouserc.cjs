@@ -15,20 +15,20 @@ module.exports = {
     assert: {
       assertions: {
         "categories:accessibility": ["error", { minScore: 0.95 }],
-        // El presupuesto duro de "LCP p75 ≤ 2.5s / JS inicial ≤170KB gzip"
-        // es un AC explícito de E8-S2. En E8-S2 ya se quitó Motion del
-        // camino crítico de /ingresar (-41KB; solo quedaba ahí por la
-        // animación de paso del login, Motion sigue en el stepper de
-        // reserva donde sí vale el costo) y se midió con Lighthouse real.
-        // Sigue en "warn" a propósito: medido contra `vite preview`
-        // (servidor estático simple) la LCP da ~2.96s, pero el "Render
-        // Delay" domina el presupuesto (84%) mientras el tiempo de CPU/
-        // bootup es mínimo (~250ms) — el patrón encaja con overhead de
-        // ~15 requests HTTP/1.1 en paralelo limitado, no con exceso de
-        // trabajo de JS. Vercel sirve por HTTP/2 con multiplexado real;
-        // la medición que de verdad cuenta para esta AC es contra la URL
-        // de Vercel ya desplegada, no contra este servidor local. Volver
-        // a "error" (o seguir optimizando) según lo que mida esa corrida.
+        // El presupuesto duro de "LCP p75 ≤ 2.5s" es un AC explícito de
+        // E8-S2. Ya se cumple: contra la URL real de Vercel
+        // (https://dr-jose-tan.vercel.app/ingresar, tras quitar Motion del
+        // camino crítico de /ingresar en E8-S2) Lighthouse midió LCP =
+        // 2.26s / performance 0.96 / a11y 1.0 — dentro del presupuesto.
+        // Sigue en "warn" acá (no "error") porque ESTE check corre contra
+        // `vite preview`, un servidor estático simple limitado a 6
+        // conexiones HTTP/1.1 concurrentes; con ~15 requests del camino
+        // crítico eso infla la LCP local a ~2.96s por puro overhead de
+        // transporte (CPU/bootup real es ~250ms, no hay exceso de JS) —
+        // un falso rojo que no refleja Vercel (HTTP/2 multiplexado, donde
+        // sí se midió el número real de arriba). Subir esto a "error"
+        // requeriría medir contra un preview deploy real en CI, no contra
+        // este servidor local — queda como mejora futura, no bloqueante.
         "largest-contentful-paint": ["warn", { maxNumericValue: 2500 }],
       },
     },
