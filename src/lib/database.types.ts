@@ -887,6 +887,90 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      token_cancel_appointment: {
+        Args: { p_id: string; p_reason?: string }
+        Returns: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          clinic_id: string
+          confirmed_at: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          ends_at: string
+          id: string
+          patient_id: string
+          reminder_sent_at: string | null
+          rescheduled_from: string | null
+          source: string
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          type_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      token_confirm_appointment: {
+        Args: { p_id: string }
+        Returns: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          clinic_id: string
+          confirmed_at: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          ends_at: string
+          id: string
+          patient_id: string
+          reminder_sent_at: string | null
+          rescheduled_from: string | null
+          source: string
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          type_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      token_reschedule_appointment: {
+        Args: { p_id: string; p_new_start: string }
+        Returns: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          clinic_id: string
+          confirmed_at: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          ends_at: string
+          id: string
+          patient_id: string
+          reminder_sent_at: string | null
+          rescheduled_from: string | null
+          source: string
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          type_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       appointment_status:

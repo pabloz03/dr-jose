@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { notifyAppointment } from "@/lib/email";
 import type { Tables } from "@/lib/database.types";
 
 type Clinic = Tables<"clinics">;
@@ -117,9 +118,10 @@ export function useBookAppointment() {
       }
       return data as Tables<"appointments">;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["available-slots"] });
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      notifyAppointment("booked", data.id);
     },
   });
 }

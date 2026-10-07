@@ -43,6 +43,9 @@ const ManualBookingPage = lazy(() =>
 const TimeOffPage = lazy(() =>
   import("@/features/admin/timeoff/TimeOffPage").then((m) => ({ default: m.TimeOffPage })),
 );
+const TokenActionPage = lazy(() =>
+  import("@/features/action/TokenActionPage").then((m) => ({ default: m.TokenActionPage })),
+);
 
 function RouteFallback() {
   return (
@@ -220,6 +223,14 @@ export const router = createBrowserRouter([
             <TimeOffPage />
           </RequireDoctor>
         </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/a/:token",
+    element: (
+      <Lazy>
+        <TokenActionPage />
       </Lazy>
     ),
   },

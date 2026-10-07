@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
+import { notifyAppointment } from "@/lib/email";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { useCancelAppointment, useRescheduleAppointment } from "@/features/appointments/queries";
 import { Field } from "@/components/ui/Field";
@@ -67,6 +68,13 @@ export function TimeOffPage() {
       ends_at: range.ends_at,
       reason: watch("reason") || null,
     });
+    // Las citas que el doctor ya movió o canceló en el panel reciben su
+    // propio comprobante (rescheduled/cancelled) desde esos mismos hooks;
+    // acá solo avisamos las que quedaron sin resolver, para que el
+    // paciente sepa que debe reprogramar.
+    for (const a of affected.data ?? []) {
+      if (!resolvedIds.has(a.id)) notifyAppointment("time_off_notice", a.id);
+    }
     setAnnounce(es.admin.bloqueos.guardadoOk);
     setRange(null);
   }

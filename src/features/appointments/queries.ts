@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
+import { notifyAppointment } from "@/lib/email";
 import type { Tables } from "@/lib/database.types";
 
 export interface AppointmentWithDetails extends Tables<"appointments"> {
@@ -76,9 +77,10 @@ export function useCancelAppointment() {
       if (error) rethrowKnown(error);
       return data as Tables<"appointments">;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       queryClient.invalidateQueries({ queryKey: ["appointment"] });
+      notifyAppointment("cancelled", data.id);
     },
   });
 }
@@ -94,9 +96,10 @@ export function useRescheduleAppointment() {
       if (error) rethrowKnown(error);
       return data as Tables<"appointments">;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       queryClient.invalidateQueries({ queryKey: ["appointment"] });
+      notifyAppointment("rescheduled", data.id);
     },
   });
 }
