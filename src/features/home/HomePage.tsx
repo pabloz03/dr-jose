@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 
 export function HomePage() {
   const staffQuery = useMyStaff();
-  const isDoctor = staffQuery.data?.role === "doctor";
+  const isStaff = !!staffQuery.data;
 
   return (
     <main className="min-h-dvh px-4 py-8">
@@ -21,8 +21,8 @@ export function HomePage() {
         <RouterLink to="/perfil" className="text-accent underline">
           Mi perfil
         </RouterLink>
-        {isDoctor ? (
-          <RouterLink to="/admin/horarios" className="text-accent underline">
+        {isStaff ? (
+          <RouterLink to="/admin" className="text-accent underline">
             Administración
           </RouterLink>
         ) : null}

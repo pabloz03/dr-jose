@@ -26,7 +26,17 @@ test("sin sesión, /citas/:id redirige a /ingresar", async ({ page }) => {
   await expect(page).toHaveURL(/\/ingresar$/);
 });
 
-for (const path of ["/admin/clinicas", "/admin/ajustes", "/admin/horarios"]) {
+for (const path of [
+  "/admin",
+  "/admin/calendario",
+  "/admin/pacientes",
+  "/admin/citas/nueva",
+  "/admin/citas/00000000-0000-0000-0000-000000000000",
+  "/admin/clinicas",
+  "/admin/ajustes",
+  "/admin/horarios",
+  "/admin/bloqueos",
+]) {
   test(`sin sesión, ${path} redirige a /ingresar`, async ({ page }) => {
     await page.goto(path);
     await expect(page).toHaveURL(/\/ingresar$/);

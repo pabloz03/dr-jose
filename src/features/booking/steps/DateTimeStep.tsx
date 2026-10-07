@@ -14,12 +14,15 @@ export function DateTimeStep({
   doctorId,
   typeId,
   onSelect,
+  ignoreLeadTime,
 }: {
   dir: 1 | -1;
   clinicId: string;
   doctorId: string;
   typeId: string;
   onSelect: (slot: SlotRow) => void;
+  /** Staff saltándose min_lead_hours para citas manuales (E6-S4). */
+  ignoreLeadTime?: boolean;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [selectedDate, setSelectedDate] = useState<CalendarDate | null>(null);
@@ -39,6 +42,7 @@ export function DateTimeStep({
     typeId,
     from: minDate.toString(),
     to: maxDate.toString(),
+    ignoreLeadTime,
   });
 
   const slotsByDate = useMemo(() => groupSlotsByDate(slotsQuery.data ?? []), [slotsQuery.data]);

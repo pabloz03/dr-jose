@@ -76,10 +76,12 @@ export function useAvailableSlots(params: {
   typeId: string | undefined;
   from: string;
   to: string;
+  /** Staff saltándose min_lead_hours para citas manuales (E6-S4). */
+  ignoreLeadTime?: boolean;
 }) {
-  const { clinicId, doctorId, typeId, from, to } = params;
+  const { clinicId, doctorId, typeId, from, to, ignoreLeadTime } = params;
   return useQuery({
-    queryKey: ["available-slots", clinicId, doctorId, typeId, from, to],
+    queryKey: ["available-slots", clinicId, doctorId, typeId, from, to, ignoreLeadTime],
     enabled: !!clinicId && !!doctorId && !!typeId,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_available_slots", {
@@ -88,6 +90,7 @@ export function useAvailableSlots(params: {
         p_type: typeId!,
         p_from: from,
         p_to: to,
+        p_ignore_lead_time: ignoreLeadTime,
       });
       if (error) throw error;
       return data as SlotRow[];

@@ -30,3 +30,17 @@ export function formatClinicDateLong(utc: Date | string): string {
     new Date(iso),
   );
 }
+
+/**
+ * Límites UTC [00:00, 24:00) de un día calendario de la clínica, dado
+ * "yyyy-MM-dd". Para filtrar citas "de hoy"/"de esta semana" sin asumir
+ * que el día local coincide con el día UTC (nunca lo asume — ver nota
+ * arriba sobre toISOString().slice()).
+ */
+export function clinicDayBounds(isoDate: string): { from: string; to: string } {
+  const from = fromClinicTime(`${isoDate}T00:00:00`);
+  // Guatemala es UTC-6 fijo todo el año (sin DST): 24h siempre son 24h,
+  // sumar milisegundos es seguro acá — no lo sería en una zona con DST.
+  const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
+  return { from: from.toISOString(), to: to.toISOString() };
+}
