@@ -10,10 +10,17 @@ import { notifyByKind } from "../_shared/notify.ts";
 import { clinicISODate } from "../_shared/tz.ts";
 
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-const APP_URL = Deno.env.get("APP_URL") ?? "*";
+// Autorización real acá es por posesión del token, no por origen, pero
+// sin APP_URL es mejor fallar cerrado ("null" no coincide con ningún
+// Origin real) que abrir a "*" por accidente si falta el secreto.
+const APP_URL = Deno.env.get("APP_URL") ?? "null";
 const cors = {
   "Access-Control-Allow-Origin": APP_URL,
-  "Access-Control-Allow-Headers": "content-type",
+  // supabase-js agrega apikey/authorization/x-client-info a toda llamada
+  // de functions.invoke, aunque la función no requiera JWT — sin esto el
+  // preflight del navegador rechaza la petición antes de que llegue acá
+  // (encontrado con una prueba real contra Vercel, no solo localmente).
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST,OPTIONS",
 };
 

@@ -68,6 +68,24 @@ async function logAndSend(
 export async function notifyByKind(sb: any, kind: NotifyKind, appointmentId: string) {
   const appt = await fetchAppointment(sb, appointmentId);
   if (!appt) return { ok: false, reason: "appointment_not_found" };
+
+  // Freno simple contra reenvíos repetidos de la misma notificación (p.
+  // ej. el dueño legítimo reintentando la acción varias veces seguidas):
+  // si ya se registró un envío de este mismo tipo para esta misma cita
+  // en los últimos 2 minutos, no se vuelve a mandar. reminder_24h ya
+  // tiene su propio índice único permanente (notification_once); esto
+  // cubre los demás kinds con una ventana corta, no para siempre, porque
+  // SÍ es legítimo recibir "cancelled" de nuevo si la cita se reabre y
+  // se vuelve a cancelar más adelante.
+  const since = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const { count } = await sb
+    .from("notification_log")
+    .select("id", { count: "exact", head: true })
+    .eq("appointment_id", appointmentId)
+    .eq("kind", kind)
+    .gte("sent_at", since);
+  if ((count ?? 0) > 0) return { ok: false, reason: "throttled" };
+
   const to = await resolveRecipient(sb, appt.patient);
   const expires = appt.starts_at as string;
 
