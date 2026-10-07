@@ -137,6 +137,24 @@ export const es = {
     comoLlegar: "Cómo llegar",
     volver: "Volver a mis citas",
   },
+  ayuda: {
+    titulo: "Ayuda",
+    contactoTitulo: "Contacto de la clínica",
+    sinClinica: "Todavía no hay una clínica activa configurada.",
+    llamar: "Llamar",
+    escribirWhatsapp: "Escribir por WhatsApp",
+    comoLlegar: "Cómo llegar",
+    privacidadTitulo: "Aviso de privacidad",
+    privacidadVerPerfil: "Puede leer el aviso completo y la fecha en que lo aceptó en su perfil.",
+    irAlPerfil: "Ir a mi perfil",
+    accesibilidadTitulo: "Declaración de accesibilidad",
+    accesibilidadIntro:
+      "Esta aplicación se construyó con el objetivo de cumplir WCAG 2.2 nivel AA: contraste de color verificado, navegación completa por teclado, foco visible, textos de estado (no solo color), movimiento reducido cuando el sistema lo pide, y compatibilidad con modo de alto contraste forzado.",
+    accesibilidadVerificado: "Verificado de forma automática (axe) en cada pantalla y con pruebas de teclado.",
+    accesibilidadPendiente:
+      "Pendiente de verificación manual: lectores de pantalla en dispositivo real (VoiceOver en iOS, TalkBack en Android) y zoom de 200–400 %.",
+    accesibilidadContacto: "Si encuentra una barrera de accesibilidad, por favor avísenos por el contacto de arriba.",
+  },
   accion: {
     cargandoTitulo: "Revisando su enlace…",
     invalidoTitulo: "Este enlace ya no es válido",

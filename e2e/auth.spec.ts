@@ -26,6 +26,11 @@ test("sin sesión, /citas/:id redirige a /ingresar", async ({ page }) => {
   await expect(page).toHaveURL(/\/ingresar$/);
 });
 
+test("sin sesión, /ayuda redirige a /ingresar", async ({ page }) => {
+  await page.goto("/ayuda");
+  await expect(page).toHaveURL(/\/ingresar$/);
+});
+
 for (const path of [
   "/admin",
   "/admin/calendario",

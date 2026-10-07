@@ -46,6 +46,7 @@ const TimeOffPage = lazy(() =>
 const TokenActionPage = lazy(() =>
   import("@/features/action/TokenActionPage").then((m) => ({ default: m.TokenActionPage })),
 );
+const AyudaPage = lazy(() => import("@/features/help/AyudaPage").then((m) => ({ default: m.AyudaPage })));
 
 function RouteFallback() {
   return (
@@ -222,6 +223,16 @@ export const router = createBrowserRouter([
           <RequireDoctor>
             <TimeOffPage />
           </RequireDoctor>
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/ayuda",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <AyudaPage />
         </RequireAuth>
       </Lazy>
     ),

@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AnimatePresence, motion } from "motion/react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
-import { stepVariants } from "@/lib/motion";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
@@ -15,12 +13,12 @@ import { codeStepSchema, emailStepSchema, type CodeStepValues, type EmailStepVal
 type Step = "email" | "code";
 
 /**
- * Cada paso maneja su propio foco al montar (no vía useEffect([step]) en el
- * padre): bajo AnimatePresence mode="wait" el paso nuevo no se monta hasta
- * que el anterior termina su animación de salida, así que un efecto
- * disparado por el cambio de `step` corre antes de que el <h1> nuevo
- * exista en el DOM. Un efecto de montaje por paso sí coincide con el
- * momento real en que aparece.
+ * Cada paso maneja su propio foco al montar. Sin `motion/react` acá a
+ * propósito: esta es la pantalla de aterrizaje sin sesión (E8-S2, LCP ≤
+ * 2.5s) y esa librería pesaba ~40KB gzip solo para una transición de
+ * paso de 2 pantallas — el resto de la app (stepper de reserva, etc.)
+ * sigue usando Motion normalmente, ahí el costo sí se justifica porque
+ * nunca es lo primero que carga un visitante sin sesión.
  */
 function useFocusOnMount<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -28,6 +26,16 @@ function useFocusOnMount<T extends HTMLElement>() {
     ref.current?.focus();
   }, []);
   return ref;
+}
+
+/** Fade-in de solo-CSS al montar; `motion-safe:` ya respeta reduced motion sin JS extra. */
+function useFadeIn() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return `motion-safe:transition-opacity motion-safe:duration-200 ${visible ? "opacity-100" : "opacity-0"}`;
 }
 
 function EmailStep({
@@ -40,6 +48,7 @@ function EmailStep({
   setFormError: (error: string | null) => void;
 }) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
+  const fadeClass = useFadeIn();
   const form = useForm<EmailStepValues>({ resolver: zodResolver(emailStepSchema) });
 
   async function onSubmit(values: EmailStepValues) {
@@ -53,7 +62,7 @@ function EmailStep({
   }
 
   return (
-    <motion.div key="email" variants={stepVariants} custom={1} initial="enter" animate="center" exit="exit">
+    <div className={fadeClass}>
       <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
         {es.auth.tituloIngreso}
       </h1>
@@ -76,7 +85,7 @@ function EmailStep({
           {form.formState.isSubmitting ? es.auth.enviandoCodigo : es.auth.enviarCodigo}
         </Button>
       </form>
-    </motion.div>
+    </div>
   );
 }
 
@@ -96,6 +105,7 @@ function CodeStep({
   setAnnounce: (message: string) => void;
 }) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
+  const fadeClass = useFadeIn();
   const form = useForm<CodeStepValues>({ resolver: zodResolver(codeStepSchema) });
 
   async function onSubmit(values: CodeStepValues) {
@@ -117,7 +127,7 @@ function CodeStep({
   }
 
   return (
-    <motion.div key="code" variants={stepVariants} custom={1} initial="enter" animate="center" exit="exit">
+    <div className={fadeClass}>
       <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
         {es.auth.codigoTitulo}
       </h1>
@@ -149,7 +159,7 @@ function CodeStep({
           </Button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 }
 
@@ -167,34 +177,32 @@ export function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-      <AnimatePresence mode="wait" initial={false}>
-        {step === "email" ? (
-          <EmailStep
-            key="email"
-            formError={formError}
-            setFormError={setFormError}
-            onSubmitted={(submittedEmail) => {
-              setEmail(submittedEmail);
-              setStep("code");
-              setFormError(null);
-              setAnnounce(es.auth.codigoEnviado);
-            }}
-          />
-        ) : (
-          <CodeStep
-            key="code"
-            email={email}
-            formError={formError}
-            setFormError={setFormError}
-            setAnnounce={setAnnounce}
-            onChangeEmail={() => {
-              setFormError(null);
-              setStep("email");
-            }}
-            onVerified={() => navigate("/", { replace: true })}
-          />
-        )}
-      </AnimatePresence>
+      {step === "email" ? (
+        <EmailStep
+          key="email"
+          formError={formError}
+          setFormError={setFormError}
+          onSubmitted={(submittedEmail) => {
+            setEmail(submittedEmail);
+            setStep("code");
+            setFormError(null);
+            setAnnounce(es.auth.codigoEnviado);
+          }}
+        />
+      ) : (
+        <CodeStep
+          key="code"
+          email={email}
+          formError={formError}
+          setFormError={setFormError}
+          setAnnounce={setAnnounce}
+          onChangeEmail={() => {
+            setFormError(null);
+            setStep("email");
+          }}
+          onVerified={() => navigate("/", { replace: true })}
+        />
+      )}
       <LiveRegion message={announce} />
     </main>
   );

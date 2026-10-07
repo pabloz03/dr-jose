@@ -21,6 +21,9 @@ export function HomePage() {
         <RouterLink to="/perfil" className="text-accent underline">
           Mi perfil
         </RouterLink>
+        <RouterLink to="/ayuda" className="text-accent underline">
+          Ayuda
+        </RouterLink>
         {isStaff ? (
           <RouterLink to="/admin" className="text-accent underline">
             Administración
