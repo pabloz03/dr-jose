@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { CalendarCog, Clock } from "lucide-react";
 import { es } from "@/i18n/es";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { AdminLayout } from "../AdminLayout";
@@ -17,7 +18,12 @@ export function HorariosPage() {
 
   return (
     <AdminLayout>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+      >
+        <Clock aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
         {es.admin.horarios.titulo}
       </h1>
 
@@ -47,7 +53,10 @@ export function HorariosPage() {
           </section>
 
           <section className="mt-8 border-t border-line pt-6">
-            <h2 className="text-lg font-semibold text-ink">{es.admin.horarios.excepcionesTitulo}</h2>
+            <h2 className="font-display flex items-center gap-1.5 text-lg text-ink">
+              <CalendarCog aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
+              {es.admin.horarios.excepcionesTitulo}
+            </h2>
             <div className="mt-3">
               <ExceptionsManager clinicId={selectedClinic.id} doctorId={staffQuery.data.id} />
             </div>

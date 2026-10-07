@@ -1,4 +1,14 @@
 @import "tailwindcss";
+/* Autohospedadas (Vite las empaqueta como assets propios) — cumple el
+   CSP font-src 'self' ya desplegado, sin llamada a Google Fonts. Cada
+   @font-face ya trae unicode-range por subset, así que el navegador
+   solo baja latin/latin-ext para contenido en español — los demás
+   subconjuntos (cyrillic, vietnamese, greek…) nunca se transfieren
+   aunque estén declarados. */
+@import "@fontsource/montserrat/600.css";
+@import "@fontsource/montserrat/700.css";
+@import "@fontsource/open-sans/400.css";
+@import "@fontsource/open-sans/600.css";
 @import "./tokens.css";
 @import "./glass.css";
 
@@ -25,12 +35,24 @@
   --radius-lg: var(--r-lg);
 
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 
   --spacing-tap: var(--tap);
 }
 
 html {
   font-family: var(--font-sans);
+}
+
+/* h1/h2 de página usan Montserrat (marca/jerarquía); todo lo demás
+   hereda Open Sans de la cascada global de arriba. Clase explícita, no
+   selector de etiqueta: varios h1/h2 de diálogos/secciones internas no
+   deben heredar el peso "display". */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 body {
@@ -54,6 +76,18 @@ body {
 @keyframes sheet-slide-up {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
+}
+/* Skeleton de carga (reemplaza "Cargando…" de texto plano en listas —
+   heurística "visibilidad del estado del sistema"). Gradiente estático
+   sobre `--line`/`--surface` (nunca color puro, legible en claro y
+   oscuro) — a propósito SIN animación: la regla dura #11 de CLAUDE.md
+   prohíbe animaciones infinitas, y un shimmer de carga es infinito por
+   naturaleza (no se sabe cuánto va a durar la carga real). La forma ya
+   comunica "esto va a tener contenido" sin necesidad de moverse. */
+.skeleton {
+  border-radius: var(--r-sm);
+  background-image: linear-gradient(90deg, var(--line) 25%, var(--surface) 50%, var(--line) 75%);
+  background-size: 200% 100%;
 }
 
 /* Regla dura #11: sin transformaciones bajo reduced motion, solo opacidad corta. */

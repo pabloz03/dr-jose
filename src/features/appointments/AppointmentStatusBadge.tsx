@@ -1,3 +1,4 @@
+import { Check, Clock3, RotateCcw, X } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { es } from "@/i18n/es";
 import type { Database } from "@/lib/database.types";
@@ -13,18 +14,19 @@ const TONE: Record<Status, "neutral" | "success" | "warning" | "danger"> = {
   no_show: "danger",
 };
 
-const ICON: Record<Status, string> = {
-  scheduled: "●",
-  confirmed: "✓",
-  cancelled: "✕",
-  rescheduled: "↻",
-  completed: "✓",
-  no_show: "✕",
+const ICON: Record<Status, typeof Check> = {
+  scheduled: Clock3,
+  confirmed: Check,
+  cancelled: X,
+  rescheduled: RotateCcw,
+  completed: Check,
+  no_show: X,
 };
 
 export function AppointmentStatusBadge({ status }: { status: Status }) {
+  const Icon = ICON[status];
   return (
-    <Badge tone={TONE[status]} icon={ICON[status]}>
+    <Badge tone={TONE[status]} icon={<Icon className="h-3.5 w-3.5" strokeWidth={2.5} />}>
       {es.citas.estado[status]}
     </Badge>
   );

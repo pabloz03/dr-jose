@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { ShieldCheck, User, Users } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { LiveRegion } from "@/components/ui/LiveRegion";
@@ -51,14 +53,15 @@ export function ProfilePage() {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <User className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.perfil.titulo}
       </h1>
 
       <ClaimGuestPatientsBanner />
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-ink">{es.perfil.datosTitulo}</h2>
+        <h2 className="font-display text-lg text-ink">{es.perfil.datosTitulo}</h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Field
             label={es.perfil.nombreLabel}
@@ -73,8 +76,11 @@ export function ProfilePage() {
             inputProps={{ type: "tel", autoComplete: "tel", ...register("phone") }}
           />
 
-          <div className="rounded-md border border-line bg-surface p-4">
-            <h3 className="font-medium text-ink">{es.perfil.consentimientoTitulo}</h3>
+          <Card>
+            <h3 className="flex items-center gap-1.5 font-medium text-ink">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+              {es.perfil.consentimientoTitulo}
+            </h3>
             <p className="mt-1 text-sm text-muted">{es.perfil.consentimientoTexto}</p>
             <div className="mt-3">
               <Controller
@@ -94,7 +100,7 @@ export function ProfilePage() {
                 <p className="mt-2 text-sm text-muted">{es.perfil.aceptadoEl(formatClinicDateTime(consentAt, "d/MM/yyyy HH:mm"))}</p>
               ) : null}
             </div>
-          </div>
+          </Card>
 
           <Button type="submit" variant="primary" isPending={formState.isSubmitting} className="self-start">
             {es.common.guardar}
@@ -103,7 +109,10 @@ export function ProfilePage() {
       </section>
 
       <section className="flex flex-col gap-4 border-t border-line pt-8">
-        <h2 className="text-lg font-semibold text-ink">{es.familia.tituloSeccion}</h2>
+        <h2 className="font-display flex items-center gap-2 text-lg text-ink">
+          <Users className="h-5 w-5 text-accent" strokeWidth={2.25} aria-hidden="true" />
+          {es.familia.tituloSeccion}
+        </h2>
         <p className="text-sm text-muted">{es.familia.descripcion}</p>
         <PatientList />
       </section>

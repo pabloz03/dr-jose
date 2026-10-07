@@ -1,8 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
+import { CalendarClock, Clock3, Plus, Sparkles, User } from "lucide-react";
 import { es } from "@/i18n/es";
 import { CLINIC_TZ, clinicDayBounds, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
+import { Card } from "@/components/ui/Card";
+import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
 import { AdminLayout } from "../AdminLayout";
@@ -31,14 +35,20 @@ export function TodayPage() {
   return (
     <AdminLayout>
       <div className="flex items-center justify-between gap-3">
-        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        >
+          <CalendarClock aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
           {es.admin.hoy.titulo}
         </h1>
         <button
           type="button"
           onClick={() => navigate("/admin/citas/nueva")}
-          className="min-h-tap rounded-md bg-accent px-4 text-sm font-semibold text-on-accent hover:bg-accent-hover"
+          className="inline-flex min-h-tap items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-semibold text-on-accent hover:bg-accent-hover"
         >
+          <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.citaDetalle.crearManual}
         </button>
       </div>
@@ -50,30 +60,43 @@ export function TodayPage() {
       ) : appointments.length === 0 ? (
         <p className="mt-4 text-muted">{es.admin.hoy.vacio}</p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <motion.ul
+          initial="hidden"
+          animate="visible"
+          variants={staggerList}
+          className="mt-4 flex flex-col gap-2"
+        >
           {appointments.map((a) => (
-            <li key={a.id}>
-              <button
-                type="button"
-                onClick={() => navigate(`/admin/citas/${a.id}`)}
-                className={`flex min-h-tap w-full items-center justify-between gap-3 rounded-md border p-3 text-left hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${a.id === nextId ? "border-accent bg-surface" : "border-line bg-surface"}`}
+            <motion.li key={a.id} variants={cardEnter}>
+              <Card
+                onPress={() => navigate(`/admin/citas/${a.id}`)}
+                className={a.id === nextId ? "outline outline-2 outline-accent outline-offset-2" : undefined}
               >
-                <span>
-                  {a.id === nextId ? (
-                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-accent">
-                      {es.admin.hoy.siguientePaciente}
+                <div className="flex items-center justify-between gap-3">
+                  <span>
+                    {a.id === nextId ? (
+                      <span className="mb-1 flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-accent">
+                        <Sparkles aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
+                        {es.admin.hoy.siguientePaciente}
+                      </span>
+                    ) : null}
+                    <span className="flex items-center gap-1.5 font-medium text-ink">
+                      <Clock3 aria-hidden="true" className="h-4 w-4 text-muted" strokeWidth={2.25} />
+                      {formatClinicDateTime(a.starts_at, "h:mm a")}
+                      <span aria-hidden="true" className="text-muted">
+                        —
+                      </span>
+                      <User aria-hidden="true" className="h-4 w-4 text-muted" strokeWidth={2.25} />
+                      {a.patient.full_name}
                     </span>
-                  ) : null}
-                  <span className="block font-medium text-ink">
-                    {formatClinicDateTime(a.starts_at, "h:mm a")} — {a.patient.full_name}
+                    <span className="block text-sm text-muted">{a.type.name}</span>
                   </span>
-                  <span className="block text-sm text-muted">{a.type.name}</span>
-                </span>
-                <AppointmentStatusBadge status={a.status} />
-              </button>
-            </li>
+                  <AppointmentStatusBadge status={a.status} />
+                </div>
+              </Card>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       )}
     </AdminLayout>
   );

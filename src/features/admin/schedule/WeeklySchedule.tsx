@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import { Plus, X } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
@@ -73,7 +74,7 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
                           aria-label={`Quitar franja ${h.start_time.slice(0, 5)} a ${h.end_time.slice(0, 5)} el ${dayLabel}`}
                           className="text-muted hover:text-danger"
                         >
-                          ✕
+                          <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
                         </button>
                       </li>
                     ))}
@@ -115,6 +116,7 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
           inputProps={{ type: "time", ...register("end_time") }}
         />
         <Button type="submit" variant="primary" isPending={addHour.isPending}>
+          <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.horarios.franjaAgregar}
         </Button>
       </form>

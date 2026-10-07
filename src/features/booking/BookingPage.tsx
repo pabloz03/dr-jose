@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "motion/react";
+import { ArrowLeft } from "lucide-react";
 import { es } from "@/i18n/es";
 import { usePatients } from "@/features/family/queries";
 import { LiveRegion } from "@/components/ui/LiveRegion";
@@ -88,7 +89,7 @@ export function BookingPage() {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
-      <h1 className="text-2xl font-semibold text-ink">{es.reserva.titulo}</h1>
+      <h1 className="font-display text-2xl text-ink">{es.reserva.titulo}</h1>
       <StepProgress current={step} />
 
       <AnimatePresence mode="wait" initial={false} custom={dir}>
@@ -145,8 +146,9 @@ export function BookingPage() {
       <button
         type="button"
         onClick={() => (step === 0 ? navigate("/") : goTo((step - 1) as StepIndex))}
-        className="self-start text-sm text-accent underline"
+        className="inline-flex min-h-tap items-center gap-1.5 self-start text-sm text-accent underline"
       >
+        <ArrowLeft className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
         {es.reserva.atras}
       </button>
 

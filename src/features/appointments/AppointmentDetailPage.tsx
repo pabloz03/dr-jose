@@ -1,9 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Building2,
+  Calendar,
+  CalendarPlus,
+  Check,
+  MapPin,
+  MessageCircle,
+  Phone,
+  RotateCcw,
+  Stethoscope,
+  User,
+  X,
+} from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateLong } from "@/lib/tz";
 import { buildIcs, downloadIcs } from "@/lib/ics";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import {
   useAppointment,
@@ -116,38 +132,56 @@ export function AppointmentDetailPage() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
       <div className="flex items-start justify-between gap-3">
-        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
           {es.citas.detalleTitulo}
         </h1>
         <AppointmentStatusBadge status={appointment.status} />
       </div>
 
-      <dl className="flex flex-col gap-1 rounded-md border border-line bg-surface p-4">
-        <div className="flex justify-between">
-          <dt className="text-muted">Paciente</dt>
-          <dd className="font-medium text-ink">{appointment.patient.full_name}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted">Tipo</dt>
-          <dd className="font-medium text-ink">{appointment.type.name}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted">Fecha</dt>
-          <dd className="font-medium text-ink">{formatClinicDateLong(appointment.starts_at)}</dd>
-        </div>
-        <div className="flex justify-between">
-          <dt className="text-muted">Clínica</dt>
-          <dd className="font-medium text-ink">{appointment.clinic.name}</dd>
-        </div>
-      </dl>
+      <Card>
+        <dl className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <dt className="flex items-center gap-1.5 text-muted">
+              <User className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+              Paciente
+            </dt>
+            <dd className="font-medium text-ink">{appointment.patient.full_name}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="flex items-center gap-1.5 text-muted">
+              <Stethoscope className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+              Tipo
+            </dt>
+            <dd className="font-medium text-ink">{appointment.type.name}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="flex items-center gap-1.5 text-muted">
+              <Calendar className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+              Fecha
+            </dt>
+            <dd className="font-medium text-ink">{formatClinicDateLong(appointment.starts_at)}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="flex items-center gap-1.5 text-muted">
+              <Building2 className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+              Clínica
+            </dt>
+            <dd className="font-medium text-ink">{appointment.clinic.name}</dd>
+          </div>
+        </dl>
+      </Card>
 
       {tooLate ? (
         <div className="rounded-md border border-warning bg-surface p-4">
-          <p className="font-medium text-ink">{es.citas.errorTooLateTitulo}</p>
+          <p className="flex items-center gap-2 font-medium text-ink">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-warning" strokeWidth={2.25} aria-hidden="true" />
+            {es.citas.errorTooLateTitulo}
+          </p>
           <p className="mt-1 text-sm text-muted">{es.citas.errorTooLateDescripcion}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {appointment.clinic.phone ? (
               <Button variant="secondary" onPress={() => window.open(phoneHref(appointment.clinic.phone!), "_self")}>
+                <Phone className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
                 {es.citas.llamar}
               </Button>
             ) : null}
@@ -156,6 +190,7 @@ export function AppointmentDetailPage() {
                 variant="secondary"
                 onPress={() => window.open(whatsappHref(appointment.clinic.whatsapp!), "_blank", "noopener")}
               >
+                <MessageCircle className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
                 {es.citas.escribirWhatsapp}
               </Button>
             ) : null}
@@ -166,15 +201,18 @@ export function AppointmentDetailPage() {
       <div className="flex flex-wrap gap-2">
         {appointment.status === "scheduled" ? (
           <Button variant="primary" onPress={onConfirm} isPending={confirmAppointment.isPending}>
+            <Check className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
             {confirmAppointment.isPending ? es.citas.confirmando : es.citas.confirmarCita}
           </Button>
         ) : null}
         {canAct ? (
           <>
             <Button variant="secondary" onPress={() => setIsRescheduling(true)}>
+              <RotateCcw className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
               {es.citas.reprogramarCita}
             </Button>
             <Button variant="danger" onPress={() => setIsCancelling(true)}>
+              <X className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
               {es.citas.cancelarCita}
             </Button>
           </>
@@ -194,16 +232,23 @@ export function AppointmentDetailPage() {
             )
           }
         >
+          <CalendarPlus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
           {es.citas.agregarCalendario}
         </Button>
         {appointment.clinic.maps_url ? (
           <Button variant="secondary" onPress={() => window.open(appointment.clinic.maps_url!, "_blank", "noopener")}>
+            <MapPin className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
             {es.citas.comoLlegar}
           </Button>
         ) : null}
       </div>
 
-      <button type="button" onClick={() => navigate("/citas")} className="self-start text-sm text-accent underline">
+      <button
+        type="button"
+        onClick={() => navigate("/citas")}
+        className="inline-flex min-h-tap items-center gap-1.5 self-start text-sm text-accent underline"
+      >
+        <ArrowLeft className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
         {es.citas.volver}
       </button>
 

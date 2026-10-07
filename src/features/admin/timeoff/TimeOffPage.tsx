@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "motion/react";
+import { CalendarOff, CheckCircle2, Clock3, Plus, Repeat, Trash2, TriangleAlert, User, XCircle } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { notifyAppointment } from "@/lib/email";
@@ -9,7 +11,9 @@ import { useCancelAppointment, useRescheduleAppointment } from "@/features/appoi
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "../clinics/queries";
 import { useAffectedAppointments, useCreateTimeOff, useRemoveTimeOff, useTimeOffList } from "./queries";
@@ -88,7 +92,12 @@ export function TimeOffPage() {
 
   return (
     <AdminLayout>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+      >
+        <CalendarOff aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
         {es.admin.bloqueos.titulo}
       </h1>
 
@@ -100,31 +109,40 @@ export function TimeOffPage() {
         ) : timeOffList.length === 0 ? (
           <p className="text-muted">{es.admin.bloqueos.vacio}</p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <motion.ul initial="hidden" animate="visible" variants={staggerList} className="flex flex-col gap-2">
             {timeOffList.map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-3">
-                <span className="text-sm text-ink">
-                  {formatClinicDateTime(t.starts_at, "d MMM h:mm a")} — {formatClinicDateTime(t.ends_at, "d MMM h:mm a")}
-                  {t.reason ? ` · ${t.reason}` : ""}
-                </span>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await removeTimeOff.mutateAsync(t.id);
-                    setAnnounce(es.admin.bloqueos.eliminarOk);
-                  }}
-                  className="text-sm text-muted hover:text-danger"
-                >
-                  {es.common.eliminar}
-                </button>
-              </li>
+              <motion.li key={t.id} variants={cardEnter}>
+                <Card>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-1.5 text-sm text-ink">
+                      <Clock3 aria-hidden="true" className="h-4 w-4 shrink-0 text-muted" strokeWidth={2.25} />
+                      {formatClinicDateTime(t.starts_at, "d MMM h:mm a")} — {formatClinicDateTime(t.ends_at, "d MMM h:mm a")}
+                      {t.reason ? ` · ${t.reason}` : ""}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await removeTimeOff.mutateAsync(t.id);
+                        setAnnounce(es.admin.bloqueos.eliminarOk);
+                      }}
+                      className="inline-flex items-center gap-1 text-sm text-muted hover:text-danger"
+                    >
+                      <Trash2 aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      {es.common.eliminar}
+                    </button>
+                  </div>
+                </Card>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </section>
 
       <section className="mt-8 border-t border-line pt-6">
-        <h2 className="text-lg font-semibold text-ink">{es.admin.bloqueos.agregar}</h2>
+        <h2 className="font-display flex items-center gap-1.5 text-lg text-ink">
+          <Plus aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
+          {es.admin.bloqueos.agregar}
+        </h2>
         <form className="mt-4 flex flex-col gap-4" onSubmit={handleSubmit(onPreview)} noValidate>
           <div className="flex gap-3">
             <Field label={es.admin.bloqueos.desdeLabel} isRequired inputProps={{ type: "date", ...register("from_date") }} />
@@ -170,8 +188,11 @@ export function TimeOffPage() {
         </form>
 
         {range ? (
-          <div className="mt-6 rounded-md border border-line bg-surface p-4">
-            <h3 className="font-medium text-ink">{es.admin.bloqueos.impactoTitulo}</h3>
+          <Card className="mt-6">
+            <h3 className="font-display flex items-center gap-1.5 text-ink">
+              <TriangleAlert aria-hidden="true" className="h-4 w-4 text-warning" strokeWidth={2.25} />
+              {es.admin.bloqueos.impactoTitulo}
+            </h3>
             {affected.isPending ? (
               <p className="mt-2 text-muted" role="status">
                 {es.common.cargando}
@@ -181,33 +202,52 @@ export function TimeOffPage() {
             ) : (
               <>
                 <p className="mt-1 text-sm text-muted">{es.admin.bloqueos.impactoDescripcion}</p>
-                <ul className="mt-3 flex flex-col gap-2">
+                <motion.ul
+                  initial="hidden"
+                  animate="visible"
+                  variants={staggerList}
+                  className="mt-3 flex flex-col gap-2"
+                >
                   {(affected.data ?? []).map((a) => (
-                    <li key={a.id} className="flex items-center justify-between gap-3 rounded-sm border border-line p-2">
-                      <span className="text-sm text-ink">
-                        {formatClinicDateTime(a.starts_at, "d MMM h:mm a")} — {a.patient.full_name}
-                      </span>
-                      {resolvedIds.has(a.id) ? (
-                        <span className="text-sm text-success">✓</span>
-                      ) : (
-                        <span className="flex gap-2">
-                          <Button variant="quiet" onPress={() => setReschedulingAppt(a)}>
-                            {es.admin.bloqueos.accionMover}
-                          </Button>
-                          <Button variant="quiet" onPress={() => onCancelAffected(a)}>
-                            {es.admin.bloqueos.accionCancelar}
-                          </Button>
+                    <motion.li key={a.id} variants={cardEnter}>
+                      <Card className="flex items-center justify-between gap-3">
+                        <span className="flex items-center gap-1.5 text-sm text-ink">
+                          <Clock3 aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-muted" strokeWidth={2.25} />
+                          {formatClinicDateTime(a.starts_at, "d MMM h:mm a")}
+                          <span aria-hidden="true" className="text-muted">
+                            —
+                          </span>
+                          <User aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-muted" strokeWidth={2.25} />
+                          {a.patient.full_name}
                         </span>
-                      )}
-                    </li>
+                        {resolvedIds.has(a.id) ? (
+                          <span className="flex items-center gap-1 text-sm text-success">
+                            <CheckCircle2 aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+                            {es.admin.bloqueos.accionResuelta}
+                          </span>
+                        ) : (
+                          <span className="flex gap-2">
+                            <Button variant="quiet" onPress={() => setReschedulingAppt(a)}>
+                              <Repeat aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+                              {es.admin.bloqueos.accionMover}
+                            </Button>
+                            <Button variant="quiet" onPress={() => onCancelAffected(a)}>
+                              <XCircle aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+                              {es.admin.bloqueos.accionCancelar}
+                            </Button>
+                          </span>
+                        )}
+                      </Card>
+                    </motion.li>
                   ))}
-                </ul>
+                </motion.ul>
               </>
             )}
             <Button variant="primary" className="mt-4" onPress={onConfirmBlock} isPending={createTimeOff.isPending}>
+              <CalendarOff aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.admin.bloqueos.confirmarBloqueo}
             </Button>
-          </div>
+          </Card>
         ) : null}
       </section>
 

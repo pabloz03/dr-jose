@@ -1,5 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarOff, Plus, Trash2 } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { Field } from "@/components/ui/Field";
@@ -46,7 +47,8 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
         <ul className="flex flex-col gap-2">
           {exceptions.map((e) => (
             <li key={e.id} className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-3">
-              <span className="text-sm text-ink">
+              <span className="flex items-center gap-1.5 text-sm text-ink">
+                <CalendarOff aria-hidden="true" className="h-4 w-4 shrink-0 text-muted" strokeWidth={2.25} />
                 {formatClinicDateTime(`${e.on_date}T12:00:00`, "d 'de' MMMM")} —{" "}
                 {e.is_closed ? "Cerrado" : `${e.start_time?.slice(0, 5)}–${e.end_time?.slice(0, 5)}`}
                 {e.note ? ` (${e.note})` : ""}
@@ -54,8 +56,9 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
               <button
                 type="button"
                 onClick={() => removeException.mutate(e.id)}
-                className="text-sm text-muted hover:text-danger"
+                className="inline-flex items-center gap-1 text-sm text-muted hover:text-danger"
               >
+                <Trash2 aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
                 {es.common.eliminar}
               </button>
             </li>
@@ -85,6 +88,7 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
           <p className="text-sm text-danger">{formState.errors.end_time.message}</p>
         ) : null}
         <Button type="submit" variant="primary" isPending={addException.isPending} className="self-start">
+          <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.horarios.excepcionAgregar}
         </Button>
       </form>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { KeyRound, Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
 import { es } from "@/i18n/es";
@@ -63,7 +64,8 @@ function EmailStep({
 
   return (
     <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <Mail className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloIngreso}
       </h1>
       <form className="mt-6 flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
@@ -128,7 +130,8 @@ function CodeStep({
 
   return (
     <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <KeyRound className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.codigoTitulo}
       </h1>
       <p className="mt-1 text-muted">{es.auth.codigoDescripcion(email)}</p>

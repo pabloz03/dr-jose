@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
+import { User } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { usePatients } from "@/features/family/queries";
 
 export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patientId: string) => void }) {
@@ -19,7 +21,7 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
         {es.reserva.pacienteTitulo}
       </h2>
 
@@ -38,14 +40,13 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
         <ul className="mt-4 flex flex-col gap-2">
           {patients.map((p) => (
             <li key={p.id}>
-              <button
-                type="button"
-                onClick={() => onSelect(p.id)}
-                className="min-h-tap w-full rounded-md border border-line bg-surface px-4 py-3 text-left text-ink data-[hovered]:bg-line hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-              >
-                <span className="font-medium">{p.full_name}</span>
-                {p.is_self ? <span className="ml-2 text-sm text-muted">({es.familia.esUsted})</span> : null}
-              </button>
+              <Card onPress={() => onSelect(p.id)} className="flex items-center gap-3">
+                <User className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+                <span>
+                  <span className="font-medium text-ink">{p.full_name}</span>
+                  {p.is_self ? <span className="ml-2 text-sm text-muted">({es.familia.esUsted})</span> : null}
+                </span>
+              </Card>
             </li>
           ))}
         </ul>

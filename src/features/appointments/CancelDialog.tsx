@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AlertTriangle, X } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
@@ -19,7 +20,10 @@ export function CancelDialog({
 
   return (
     <Dialog title={es.citas.cancelarTitulo} isOpen={isOpen} isDismissable onOpenChange={onOpenChange}>
-      <p className="text-sm text-muted">{es.citas.cancelarAyuda}</p>
+      <p className="flex items-start gap-2 text-sm text-muted">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" strokeWidth={2.25} aria-hidden="true" />
+        {es.citas.cancelarAyuda}
+      </p>
       <div className="mt-4">
         <Field
           label={es.citas.motivoLabel}
@@ -31,6 +35,7 @@ export function CancelDialog({
           {es.citas.cancelarNoVolver}
         </Button>
         <Button variant="danger" onPress={() => onConfirm(reason)} isPending={isPending}>
+          <X className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
           {es.citas.cancelarConfirmar}
         </Button>
       </div>

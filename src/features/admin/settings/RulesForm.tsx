@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
@@ -79,6 +80,7 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
         inputProps={{ type: "time", ...register("reminder_local_time") }}
       />
       <Button type="submit" variant="primary" isPending={updateSettings.isPending} className="self-start">
+        <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
         {es.common.guardar}
       </Button>
     </form>

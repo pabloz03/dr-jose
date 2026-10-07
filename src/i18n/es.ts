@@ -13,6 +13,19 @@ export const es = {
     editar: "Editar",
     agregar: "Agregar",
   },
+  home: {
+    subtitulo: "Gestione sus citas y las de su familia.",
+    proximaCitaTitulo: "Su próxima cita",
+    sinProximaCitaTitulo: "No tiene citas próximas",
+    sinProximaCitaDescripcion: "Reserve una cita para empezar o continuar su tratamiento.",
+    navReservarDescripcion: "Elija fecha y hora para un paciente.",
+    navMisCitasDescripcion: "Vea, cambie o cancele sus citas.",
+    navPerfilDescripcion: "Sus datos y pacientes a cargo.",
+    navAyudaDescripcion: "Contacto de la clínica y accesibilidad.",
+    administracion: "Administración",
+    administracionDescripcion: "Panel para doctor y asistentes.",
+    cerrarSesion: "Cerrar sesión",
+  },
   auth: {
     tituloIngreso: "Ingresar",
     emailLabel: "Correo electrónico",
@@ -245,6 +258,7 @@ export const es = {
       impactoDescripcion: "Estas citas quedan dentro del bloqueo. Elija qué hacer con cada una.",
       accionMover: "Reprogramar",
       accionCancelar: "Cancelar",
+      accionResuelta: "Resuelta",
       confirmarBloqueo: "Confirmar bloqueo",
     },
     clinicas: {

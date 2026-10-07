@@ -14,9 +14,9 @@ const base =
   "data-[focus-visible]:outline-focus data-[pressed]:scale-[0.98] data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-accent text-on-accent data-[hovered]:bg-accent-hover",
+  primary: "bg-accent text-on-accent shadow-[var(--shadow-1)] data-[hovered]:bg-accent-hover",
   secondary: "bg-transparent text-accent border border-border-ui data-[hovered]:bg-surface",
-  danger: "bg-danger text-on-accent data-[hovered]:opacity-90",
+  danger: "bg-danger text-on-accent shadow-[var(--shadow-1)] data-[hovered]:opacity-90",
   quiet: "bg-transparent text-ink data-[hovered]:bg-surface",
 };
 

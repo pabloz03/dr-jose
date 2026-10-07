@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { Pencil, Plus, Trash2, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { Badge } from "@/components/ui/Badge";
 import { usePatients, useRemovePatient } from "./queries";
@@ -42,29 +44,35 @@ export function PatientList() {
       ) : (
         <ul className="flex flex-col gap-2">
           {patients.map((p) => (
-            <li key={p.id} className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-3">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-ink">{p.full_name}</span>
-                {p.is_self ? (
-                  <Badge tone="neutral" icon="●">
-                    {es.familia.esUsted}
-                  </Badge>
-                ) : null}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="quiet" onPress={() => setEditing(p)}>
-                  {es.common.editar}
-                </Button>
-                <Button variant="quiet" onPress={() => setRemoving(p)}>
-                  {es.common.eliminar}
-                </Button>
-              </div>
+            <li key={p.id}>
+              <Card className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <UserRound className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+                  <span className="font-medium text-ink">{p.full_name}</span>
+                  {p.is_self ? (
+                    <Badge tone="neutral" icon={<UserRound className="h-3.5 w-3.5" strokeWidth={2.5} />}>
+                      {es.familia.esUsted}
+                    </Badge>
+                  ) : null}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="quiet" onPress={() => setEditing(p)}>
+                    <Pencil className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+                    {es.common.editar}
+                  </Button>
+                  <Button variant="quiet" onPress={() => setRemoving(p)}>
+                    <Trash2 className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+                    {es.common.eliminar}
+                  </Button>
+                </div>
+              </Card>
             </li>
           ))}
         </ul>
       )}
 
       <Button variant="secondary" onPress={() => setIsAdding(true)} className="self-start">
+        <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
         {es.familia.agregarPaciente}
       </Button>
 
@@ -90,6 +98,7 @@ export function PatientList() {
                 setRemoving(null);
               }}
             >
+              <Trash2 className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
               {es.common.eliminar}
             </Button>
           </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { ListChecks, Settings, SlidersHorizontal } from "lucide-react";
 import { es } from "@/i18n/es";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
@@ -15,7 +16,12 @@ export function AjustesPage() {
 
   return (
     <AdminLayout>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+      >
+        <Settings aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
         {es.admin.ajustes.titulo}
       </h1>
 
@@ -41,14 +47,20 @@ export function AjustesPage() {
       {selectedClinic ? (
         <>
           <section className="mt-6">
-            <h2 className="text-lg font-semibold text-ink">{es.admin.ajustes.reglasTitulo}</h2>
+            <h2 className="font-display flex items-center gap-1.5 text-lg text-ink">
+              <SlidersHorizontal aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
+              {es.admin.ajustes.reglasTitulo}
+            </h2>
             <div className="mt-3">
               <RulesForm clinicId={selectedClinic.id} />
             </div>
           </section>
 
           <section className="mt-8 border-t border-line pt-6">
-            <h2 className="text-lg font-semibold text-ink">{es.admin.ajustes.tiposTitulo}</h2>
+            <h2 className="font-display flex items-center gap-1.5 text-lg text-ink">
+              <ListChecks aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
+              {es.admin.ajustes.tiposTitulo}
+            </h2>
             <div className="mt-3">
               <AppointmentTypeList />
             </div>

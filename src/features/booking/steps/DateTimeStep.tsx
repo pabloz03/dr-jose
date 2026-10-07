@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { today, type CalendarDate } from "@internationalized/date";
+import { Clock } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
@@ -51,7 +52,7 @@ export function DateTimeStep({
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
         {es.reserva.fechaTitulo}
       </h2>
       <p className="mt-1 text-sm text-muted">{es.reserva.fechaZona}</p>
@@ -72,7 +73,10 @@ export function DateTimeStep({
           />
 
           <div className="flex-1">
-            <h3 className="font-medium text-ink">{es.reserva.horariosTitulo}</h3>
+            <h3 className="flex items-center gap-1.5 font-medium text-ink">
+              <Clock className="h-4 w-4 text-muted" strokeWidth={2.25} aria-hidden="true" />
+              {es.reserva.horariosTitulo}
+            </h3>
             {!selectedDate ? (
               <p className="mt-2 text-muted">{es.reserva.fechaEligaDia}</p>
             ) : selectedDaySlots.length === 0 ? (
@@ -84,7 +88,7 @@ export function DateTimeStep({
                     <button
                       type="button"
                       onClick={() => onSelect(slot)}
-                      className="min-h-tap w-full rounded-sm border border-line bg-surface px-2 py-2 text-sm text-ink hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                      className="min-h-tap w-full rounded-sm border border-line bg-surface px-2 py-2 text-sm text-ink shadow-[var(--shadow-1)] transition-shadow duration-150 hover:bg-line hover:shadow-[var(--shadow-2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                     >
                       {formatClinicDateTime(slot.slot_start, "h:mm a")}
                     </button>

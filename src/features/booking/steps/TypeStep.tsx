@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import { Stethoscope } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
+import { Card } from "@/components/ui/Card";
 import { useAppointmentTypes } from "../queries";
 
 export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: string) => void }) {
@@ -14,7 +16,7 @@ export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: st
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
         {es.reserva.tipoTitulo}
       </h2>
 
@@ -26,14 +28,13 @@ export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: st
         <ul className="mt-4 flex flex-col gap-2">
           {(typesQuery.data ?? []).map((t) => (
             <li key={t.id}>
-              <button
-                type="button"
-                onClick={() => onSelect(t.id)}
-                className="flex min-h-tap w-full items-center justify-between rounded-md border border-line bg-surface px-4 py-3 text-left text-ink hover:bg-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-              >
-                <span className="font-medium">{t.name}</span>
+              <Card onPress={() => onSelect(t.id)} className="flex items-center justify-between">
+                <span className="flex items-center gap-3">
+                  <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+                  <span className="font-medium text-ink">{t.name}</span>
+                </span>
                 <span className="text-sm text-muted">{es.reserva.tipoDuracion(t.duration_min)}</span>
-              </button>
+              </Card>
             </li>
           ))}
         </ul>

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CalendarPlus, CheckCircle2, Stethoscope, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
@@ -65,7 +67,12 @@ export function ManualBookingPage() {
   if (created) {
     return (
       <AdminLayout>
-        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        >
+          <CheckCircle2 aria-hidden="true" className="h-6 w-6 text-success" strokeWidth={2.25} />
           {es.admin.citaManual.creadaOk}
         </h1>
         <p className="mt-2 text-ink">
@@ -80,7 +87,12 @@ export function ManualBookingPage() {
 
   return (
     <AdminLayout>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+      >
+        <CalendarPlus aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
         {es.admin.citaManual.titulo}
       </h1>
 
@@ -98,13 +110,10 @@ export function ManualBookingPage() {
             <ul className="flex flex-col gap-2">
               {searchQuery.data.map((p) => (
                 <li key={p.id}>
-                  <button
-                    type="button"
-                    onClick={() => setPatient(p)}
-                    className="min-h-tap w-full rounded-md border border-line bg-surface px-4 py-3 text-left text-ink hover:bg-line"
-                  >
+                  <Card onPress={() => setPatient(p)} className="flex items-center gap-2">
+                    <UserRound aria-hidden="true" className="h-4 w-4 text-muted" strokeWidth={2.25} />
                     {p.full_name}
-                  </button>
+                  </Card>
                 </li>
               ))}
             </ul>
@@ -143,17 +152,16 @@ export function ManualBookingPage() {
           <p className="text-ink">
             {es.admin.citaManual.buscarPacienteLabel}: <strong>{patient.full_name}</strong>
           </p>
-          <h2 className="mt-4 font-medium text-ink">{es.admin.citaManual.tipoLabel}</h2>
+          <h2 className="font-display mt-4 flex items-center gap-1.5 text-ink">
+            <Stethoscope aria-hidden="true" className="h-4 w-4 text-accent" strokeWidth={2.25} />
+            {es.admin.citaManual.tipoLabel}
+          </h2>
           <ul className="mt-2 flex flex-col gap-2">
             {(typesQuery.data ?? []).map((t) => (
               <li key={t.id}>
-                <button
-                  type="button"
-                  onClick={() => setTypeId(t.id)}
-                  className="min-h-tap w-full rounded-md border border-line bg-surface px-4 py-3 text-left text-ink hover:bg-line"
-                >
+                <Card onPress={() => setTypeId(t.id)}>
                   {t.name} <span className="text-sm text-muted">({t.duration_min} min)</span>
-                </button>
+                </Card>
               </li>
             ))}
           </ul>
@@ -177,16 +185,18 @@ export function ManualBookingPage() {
         )
       ) : (
         <div className="mt-4 flex flex-col gap-4">
-          <dl className="flex flex-col gap-1 rounded-md border border-line bg-surface p-4">
-            <div className="flex justify-between">
-              <dt className="text-muted">Paciente</dt>
-              <dd className="font-medium text-ink">{patient.full_name}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted">Fecha</dt>
-              <dd className="font-medium text-ink">{formatClinicDateLong(slot.slot_start)}</dd>
-            </div>
-          </dl>
+          <Card>
+            <dl className="flex flex-col gap-1">
+              <div className="flex justify-between">
+                <dt className="text-muted">Paciente</dt>
+                <dd className="font-medium text-ink">{patient.full_name}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted">Fecha</dt>
+                <dd className="font-medium text-ink">{formatClinicDateLong(slot.slot_start)}</dd>
+              </div>
+            </dl>
+          </Card>
           <Button variant="primary" onPress={onConfirm} isPending={bookStaff.isPending} className="self-start">
             {bookStaff.isPending ? es.admin.citaManual.creando : es.admin.citaManual.crear}
           </Button>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { UserRoundCheck } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -40,7 +41,10 @@ export function ClaimGuestPatientsBanner() {
 
   return (
     <GlassSurface className="flex flex-col gap-3 p-4">
-      <h2 className="font-semibold text-ink">{es.familia.reclamarTitulo}</h2>
+      <h2 className="font-display flex items-center gap-2 text-ink">
+        <UserRoundCheck className="h-5 w-5 text-accent" strokeWidth={2.25} aria-hidden="true" />
+        {es.familia.reclamarTitulo}
+      </h2>
       <p className="text-sm text-muted">{es.familia.reclamarDescripcion}</p>
       <ul className="flex flex-col gap-2">
         {candidates.map((p) => (

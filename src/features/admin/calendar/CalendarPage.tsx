@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { today, type CalendarDate } from "@internationalized/date";
+import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight, Grid3x3 } from "lucide-react";
 import { es } from "@/i18n/es";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
@@ -40,24 +41,39 @@ export function CalendarPage() {
     return map;
   }, [appointmentsQuery.data]);
 
+  const viewIcon: Record<View, typeof CalendarDays> = {
+    dia: CalendarDays,
+    semana: CalendarRange,
+    mes: Grid3x3,
+  };
+
   return (
     <AdminLayout>
-      <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+      >
+        <CalendarRange aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
         {es.admin.calendario.titulo}
       </h1>
 
       <div role="group" aria-label={es.admin.calendario.titulo} className="mt-4 flex gap-2">
-        {(["dia", "semana", "mes"] as const).map((v) => (
-          <button
-            key={v}
-            type="button"
-            aria-pressed={view === v}
-            onClick={() => setView(v)}
-            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${view === v ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-          >
-            {v === "dia" ? es.admin.calendario.vistaDia : v === "semana" ? es.admin.calendario.vistaSemana : es.admin.calendario.vistaMes}
-          </button>
-        ))}
+        {(["dia", "semana", "mes"] as const).map((v) => {
+          const Icon = viewIcon[v];
+          return (
+            <button
+              key={v}
+              type="button"
+              aria-pressed={view === v}
+              onClick={() => setView(v)}
+              className={`inline-flex min-h-tap items-center gap-1.5 rounded-sm border px-3 py-1.5 text-sm ${view === v ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+            >
+              <Icon aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+              {v === "dia" ? es.admin.calendario.vistaDia : v === "semana" ? es.admin.calendario.vistaSemana : es.admin.calendario.vistaMes}
+            </button>
+          );
+        })}
       </div>
 
       {appointmentsQuery.isLoading ? (
@@ -98,8 +114,9 @@ export function CalendarPage() {
             <button
               type="button"
               onClick={() => setSelected(selected.subtract({ days: 1 }))}
-              className="min-h-tap rounded-sm border border-line px-3 text-sm text-ink"
+              className="inline-flex min-h-tap items-center gap-1 rounded-sm border border-line px-3 text-sm text-ink"
             >
+              <ChevronLeft aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.admin.calendario.anterior}
             </button>
             <span className="font-medium text-ink">
@@ -108,9 +125,10 @@ export function CalendarPage() {
             <button
               type="button"
               onClick={() => setSelected(selected.add({ days: 1 }))}
-              className="min-h-tap rounded-sm border border-line px-3 text-sm text-ink"
+              className="inline-flex min-h-tap items-center gap-1 rounded-sm border border-line px-3 text-sm text-ink"
             >
               {es.admin.calendario.siguiente}
+              <ChevronRight aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
             </button>
           </div>
           <DayAppointments list={appointmentsByDate.get(selected.toString()) ?? []} />

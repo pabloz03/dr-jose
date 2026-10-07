@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { Pencil, Plus, Stethoscope } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "./queries";
 import { ClinicFormDialog } from "./ClinicFormDialog";
@@ -22,10 +26,16 @@ export function ClinicsPage() {
   return (
     <AdminLayout>
       <div className="flex items-center justify-between gap-3">
-        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold text-ink outline-none">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        >
+          <Stethoscope aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
           {es.admin.clinicas.titulo}
         </h1>
         <Button variant="primary" onPress={() => setIsAdding(true)}>
+          <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.clinicas.agregar}
         </Button>
       </div>
@@ -37,26 +47,28 @@ export function ClinicsPage() {
       ) : clinics.length === 0 ? (
         <p className="mt-4 text-muted">{es.admin.clinicas.vacio}</p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-4 flex flex-col gap-2">
           {clinics.map((clinic) => (
-            <li
-              key={clinic.id}
-              className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface p-3"
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-ink">{clinic.name}</span>
-                {!clinic.is_active ? (
-                  <Badge tone="neutral" icon="●">
-                    Inactiva
-                  </Badge>
-                ) : null}
-              </div>
-              <Button variant="quiet" onPress={() => setEditing(clinic)}>
-                {es.common.editar}
-              </Button>
-            </li>
+            <motion.li key={clinic.id} variants={cardEnter}>
+              <Card>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-ink">{clinic.name}</span>
+                    {!clinic.is_active ? (
+                      <Badge tone="neutral" icon="●">
+                        Inactiva
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <Button variant="quiet" onPress={() => setEditing(clinic)}>
+                    <Pencil aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+                    {es.common.editar}
+                  </Button>
+                </div>
+              </Card>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       )}
 
       {isAdding ? <ClinicFormDialog isOpen onOpenChange={setIsAdding} /> : null}

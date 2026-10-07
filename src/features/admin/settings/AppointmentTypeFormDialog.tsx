@@ -1,6 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
@@ -82,6 +83,7 @@ export function AppointmentTypeFormDialog({
             {es.common.cancelar}
           </Button>
           <Button type="submit" variant="primary" isPending={formState.isSubmitting}>
+            <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
             {es.common.guardar}
           </Button>
         </div>
