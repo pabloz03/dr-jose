@@ -6,6 +6,7 @@ import { formatClinicDateLong } from "@/lib/tz";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AdminLayout } from "../AdminLayout";
 import { useMarkAttendance } from "./queries";
 import {
@@ -111,19 +112,22 @@ export function AdminAppointmentDetailPage() {
   return (
     <AdminLayout>
       <div className="flex items-start justify-between gap-3">
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
-        >
-          <ClipboardList aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
-          {es.admin.citaDetalle.titulo}
-        </h1>
+        <div>
+          <Eyebrow>{es.admin.citaDetalle.eyebrow}</Eyebrow>
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
+          >
+            <ClipboardList aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
+            {es.admin.citaDetalle.titulo}
+          </h1>
+        </div>
         <AppointmentStatusBadge status={appointment.status} />
       </div>
 
-      <Card className="mt-4">
-        <dl className="flex flex-col gap-1.5">
+      <Card className="mt-6">
+        <dl className="flex flex-col gap-2">
           <div className="flex justify-between">
             <dt className="flex items-center gap-1.5 text-muted">
               <User aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
@@ -148,7 +152,7 @@ export function AdminAppointmentDetailPage() {
         </dl>
       </Card>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-6 flex flex-wrap gap-2">
         {appointment.status === "scheduled" ? (
           <Button variant="primary" onPress={onConfirm} isPending={confirmAppointment.isPending}>
             <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
@@ -184,7 +188,7 @@ export function AdminAppointmentDetailPage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mt-4 inline-flex items-center gap-1 self-start text-sm text-accent underline"
+        className="mt-6 inline-flex items-center gap-1 self-start text-sm text-accent underline"
       >
         <ArrowLeft aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
         {es.citas.volver}

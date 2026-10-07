@@ -22,6 +22,18 @@
   --font-display: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-body: "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-sans: var(--font-body);
+  /* Bloque "hero": un punto de color sólido y memorable (tarjeta de
+     próxima cita, etc.) que se queda igual sin importar claro/oscuro
+     — a propósito, no hereda --ink/--bg/--accent porque esos SÍ
+     cambian con el tema y romperían el contraste fijo que este bloque
+     necesita. Mismos valores ya usados hoy como --ink/--bg y como
+     --accent/--accent-hover en modo oscuro — no son colores nuevos. */
+  --hero-bg: #0E1B20; --hero-ink: #F5F7F8;
+  --hero-accent: #4FD1C5; --hero-accent-ink: #04201E;
+  /* Mismos valores que --danger/--success/--warning en modo oscuro
+     arriba — reusados acá, no inventados, para que Badge onDark lea
+     bien sobre --hero-bg sin importar el tema general de la página. */
+  --hero-danger: #FF8A80; --hero-success: #5FD6A0; --hero-warning: #F5B454;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {

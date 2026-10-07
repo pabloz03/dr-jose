@@ -20,6 +20,7 @@ import { formatClinicDateLong } from "@/lib/tz";
 import { buildIcs, downloadIcs } from "@/lib/ics";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import {
   useAppointment,
@@ -130,16 +131,19 @@ export function AppointmentDetailPage() {
   const canAct = isFuture && (appointment.status === "scheduled" || appointment.status === "confirmed");
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
       <div className="flex items-start justify-between gap-3">
-        <h1 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
-          {es.citas.detalleTitulo}
-        </h1>
+        <div>
+          <Eyebrow>{es.citas.titulo}</Eyebrow>
+          <h1 ref={headingRef} tabIndex={-1} className="font-display mt-1 text-3xl text-ink outline-none">
+            {es.citas.detalleTitulo}
+          </h1>
+        </div>
         <AppointmentStatusBadge status={appointment.status} />
       </div>
 
       <Card>
-        <dl className="flex flex-col gap-2">
+        <dl className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <User className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />

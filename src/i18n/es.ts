@@ -20,10 +20,6 @@ export const es = {
     proximaCitaTitulo: "Su próxima cita",
     sinProximaCitaTitulo: "No tiene citas próximas",
     sinProximaCitaDescripcion: "Reserve una cita para empezar o continuar su tratamiento.",
-    navReservarDescripcion: "Elija fecha y hora para un paciente.",
-    navMisCitasDescripcion: "Vea, cambie o cancele sus citas.",
-    navPerfilDescripcion: "Sus datos y pacientes a cargo.",
-    navAyudaDescripcion: "Contacto de la clínica y accesibilidad.",
     administracion: "Administración",
     administracionDescripcion: "Panel para doctor y asistentes.",
     cerrarSesion: "Cerrar sesión",
@@ -254,6 +250,7 @@ export const es = {
       citasEnDia: (n: number) => (n === 1 ? "1 cita" : `${n} citas`),
     },
     citaDetalle: {
+      eyebrow: "Agenda",
       titulo: "Detalle de la cita",
       marcarCompletada: "Marcar como completada",
       marcarNoShow: "Marcar como no asistió",
@@ -262,6 +259,7 @@ export const es = {
       crearManual: "Crear cita manual",
     },
     citaManual: {
+      eyebrow: "Agenda",
       titulo: "Crear cita manual",
       buscarPacienteLabel: "Buscar paciente",
       buscarPacientePlaceholder: "Escriba un nombre…",

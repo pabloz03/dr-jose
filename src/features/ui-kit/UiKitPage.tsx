@@ -7,6 +7,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Sheet } from "@/components/ui/Sheet";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { toastQueue } from "@/components/ui/Toast";
@@ -33,6 +34,7 @@ export function UiKitPage() {
 
       <Section title="Tipografía">
         <div className="flex flex-col gap-2">
+          <Eyebrow>Eyebrow — etiqueta editorial</Eyebrow>
           <p className="font-display text-3xl text-ink">Montserrat — h1 de página</p>
           <p className="font-display text-lg text-ink">Montserrat — h2 de sección</p>
           <p className="text-base text-ink">Open Sans — cuerpo de texto, el resto de la app hereda esto por defecto.</p>
@@ -51,6 +53,19 @@ export function UiKitPage() {
         <Button variant="primary" isPending>
           Procesando
         </Button>
+      </Section>
+
+      <Section title="Bloque hero (invariante de tema — solo Home/paciente)">
+        <div className="w-full rounded-[var(--r-lg)] bg-[var(--hero-bg)] p-5 text-[var(--hero-ink)]">
+          <Eyebrow onDark>Su próxima cita</Eyebrow>
+          <p className="font-display mt-1 text-xl">Control — María López</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Badge tone="success" onDark icon={<Check className="h-3.5 w-3.5" strokeWidth={2.5} />}>
+              Confirmada
+            </Badge>
+            <Button variant="hero">Ver detalle</Button>
+          </div>
+        </div>
       </Section>
 
       <Section title="Field / Input">

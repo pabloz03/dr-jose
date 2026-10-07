@@ -5,6 +5,7 @@ import { es } from "@/i18n/es";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Calendar } from "@/components/ui/Calendar";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AdminAppointmentRow } from "../appointments/AdminAppointmentRow";
@@ -49,16 +50,17 @@ export function CalendarPage() {
 
   return (
     <AdminLayout>
+      <Eyebrow>{es.admin.nav.calendario}</Eyebrow>
       <h1
         ref={headingRef}
         tabIndex={-1}
-        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
       >
-        <CalendarRange aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
+        <CalendarRange aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.calendario.titulo}
       </h1>
 
-      <div role="group" aria-label={es.admin.calendario.titulo} className="mt-4 flex gap-2">
+      <div role="group" aria-label={es.admin.calendario.titulo} className="mt-6 flex gap-2">
         {(["dia", "semana", "mes"] as const).map((v) => {
           const Icon = viewIcon[v];
           return (
@@ -77,11 +79,11 @@ export function CalendarPage() {
       </div>
 
       {appointmentsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : view === "mes" ? (
-        <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:gap-8">
+        <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar
             aria-label={es.admin.calendario.vistaMes}
             value={selected}
@@ -89,14 +91,14 @@ export function CalendarPage() {
             hasIndicator={(d) => appointmentsByDate.has(d.toString())}
           />
           <div className="flex-1">
-            <h2 className="font-medium text-ink">
+            <h2 className="font-display text-lg text-ink">
               {formatClinicDateTime(`${selected.toString()}T12:00:00`, "d 'de' MMMM")}
             </h2>
             <DayAppointments list={appointmentsByDate.get(selected.toString()) ?? []} />
           </div>
         </div>
       ) : view === "semana" ? (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-7">
+        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-7">
           {weekDays(selected).map((d) => (
             <div key={d.toString()}>
               <h2 className="text-sm font-semibold text-ink">
@@ -109,7 +111,7 @@ export function CalendarPage() {
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex flex-col gap-3">
+        <div className="mt-6 flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <button
               type="button"

@@ -5,6 +5,7 @@ import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "./queries";
@@ -25,15 +26,18 @@ export function ClinicsPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between gap-3">
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
-        >
-          <Stethoscope aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
-          {es.admin.clinicas.titulo}
-        </h1>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <Eyebrow>{es.admin.nav.clinicas}</Eyebrow>
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
+          >
+            <Stethoscope aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
+            {es.admin.clinicas.titulo}
+          </h1>
+        </div>
         <Button variant="primary" onPress={() => setIsAdding(true)}>
           <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.clinicas.agregar}
@@ -41,13 +45,13 @@ export function ClinicsPage() {
       </div>
 
       {clinicsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : clinics.length === 0 ? (
-        <p className="mt-4 text-muted">{es.admin.clinicas.vacio}</p>
+        <p className="mt-6 text-muted">{es.admin.clinicas.vacio}</p>
       ) : (
-        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-4 flex flex-col gap-2">
+        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
           {clinics.map((clinic) => (
             <motion.li key={clinic.id} variants={cardEnter}>
               <Card>

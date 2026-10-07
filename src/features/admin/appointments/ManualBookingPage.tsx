@@ -7,6 +7,7 @@ import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { useDoctor, useAppointmentTypes, type SlotRow } from "@/features/booking/queries";
@@ -67,18 +68,19 @@ export function ManualBookingPage() {
   if (created) {
     return (
       <AdminLayout>
+        <Eyebrow>{es.admin.citaManual.eyebrow}</Eyebrow>
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+          className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
         >
-          <CheckCircle2 aria-hidden="true" className="h-6 w-6 text-success" strokeWidth={2.25} />
+          <CheckCircle2 aria-hidden="true" className="h-7 w-7 text-success" strokeWidth={2.25} />
           {es.admin.citaManual.creadaOk}
         </h1>
-        <p className="mt-2 text-ink">
+        <p className="mt-3 text-ink">
           {patient?.full_name} — {formatClinicDateLong(created.starts_at)}
         </p>
-        <Button variant="primary" className="mt-4" onPress={() => navigate("/admin")}>
+        <Button variant="primary" className="mt-6" onPress={() => navigate("/admin")}>
           {es.admin.nav.hoy}
         </Button>
       </AdminLayout>
@@ -87,17 +89,18 @@ export function ManualBookingPage() {
 
   return (
     <AdminLayout>
+      <Eyebrow>{es.admin.citaManual.eyebrow}</Eyebrow>
       <h1
         ref={headingRef}
         tabIndex={-1}
-        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
       >
-        <CalendarPlus aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
+        <CalendarPlus aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.citaManual.titulo}
       </h1>
 
       {!patient ? (
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-4">
           <Field
             label={es.admin.citaManual.buscarPacienteLabel}
             inputProps={{
@@ -148,15 +151,15 @@ export function ManualBookingPage() {
           ) : null}
         </div>
       ) : !typeId ? (
-        <div className="mt-4">
+        <div className="mt-6">
           <p className="text-ink">
             {es.admin.citaManual.buscarPacienteLabel}: <strong>{patient.full_name}</strong>
           </p>
-          <h2 className="font-display mt-4 flex items-center gap-1.5 text-ink">
+          <h2 className="font-display mt-5 flex items-center gap-1.5 text-lg text-ink">
             <Stethoscope aria-hidden="true" className="h-4 w-4 text-accent" strokeWidth={2.25} />
             {es.admin.citaManual.tipoLabel}
           </h2>
-          <ul className="mt-2 flex flex-col gap-2">
+          <ul className="mt-3 flex flex-col gap-2">
             {(typesQuery.data ?? []).map((t) => (
               <li key={t.id}>
                 <Card onPress={() => setTypeId(t.id)}>
@@ -168,7 +171,7 @@ export function ManualBookingPage() {
         </div>
       ) : !slot ? (
         selectedClinic && doctorQuery.data ? (
-          <div className="mt-4">
+          <div className="mt-6">
             <DateTimeStep
               dir={1}
               clinicId={selectedClinic.id}
@@ -179,12 +182,12 @@ export function ManualBookingPage() {
             />
           </div>
         ) : (
-          <p className="mt-4 text-muted" role="status">
+          <p className="mt-6 text-muted" role="status">
             {es.common.cargando}
           </p>
         )
       ) : (
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-4">
           <Card>
             <dl className="flex flex-col gap-1">
               <div className="flex justify-between">

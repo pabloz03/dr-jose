@@ -54,14 +54,14 @@ export function ProfilePage() {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
         <User className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.perfil.titulo}
       </h1>
 
       <ClaimGuestPatientsBanner />
 
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-5">
         <h2 className="font-display text-lg text-ink">{es.perfil.datosTitulo}</h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Field
@@ -109,7 +109,7 @@ export function ProfilePage() {
         </form>
       </section>
 
-      <section className="flex flex-col gap-4 border-t border-line pt-8">
+      <section className="flex flex-col gap-5 border-t border-line pt-10">
         <h2 className="font-display flex items-center gap-2 text-lg text-ink">
           <Users className="h-5 w-5 text-accent" strokeWidth={2.25} aria-hidden="true" />
           {es.familia.tituloSeccion}
@@ -118,7 +118,7 @@ export function ProfilePage() {
         <PatientList />
       </section>
 
-      <section className="flex flex-col gap-3 border-t border-line pt-8">
+      <section className="flex flex-col gap-4 border-t border-line pt-10">
         <h2 className="font-display flex items-center gap-2 text-lg text-ink">
           <Monitor className="h-5 w-5 text-accent" strokeWidth={2.25} aria-hidden="true" />
           {es.perfil.aparienciaTitulo}

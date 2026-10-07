@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "../clinics/queries";
@@ -92,16 +93,17 @@ export function TimeOffPage() {
 
   return (
     <AdminLayout>
+      <Eyebrow>{es.admin.nav.bloqueos}</Eyebrow>
       <h1
         ref={headingRef}
         tabIndex={-1}
-        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
       >
-        <CalendarOff aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
+        <CalendarOff aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.bloqueos.titulo}
       </h1>
 
-      <section className="mt-4">
+      <section className="mt-6">
         {timeOffQuery.isLoading ? (
           <p className="text-muted" role="status">
             {es.common.cargando}
@@ -138,12 +140,12 @@ export function TimeOffPage() {
         )}
       </section>
 
-      <section className="mt-8 border-t border-line pt-6">
-        <h2 className="font-display flex items-center gap-1.5 text-lg text-ink">
+      <section className="mt-10 border-t border-line pt-8">
+        <h2 className="font-display flex items-center gap-2 text-xl text-ink">
           <Plus aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
           {es.admin.bloqueos.agregar}
         </h2>
-        <form className="mt-4 flex flex-col gap-4" onSubmit={handleSubmit(onPreview)} noValidate>
+        <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit(onPreview)} noValidate>
           <div className="flex gap-3">
             <Field label={es.admin.bloqueos.desdeLabel} isRequired inputProps={{ type: "date", ...register("from_date") }} />
             <Field label={es.admin.bloqueos.hastaLabel} isRequired inputProps={{ type: "date", ...register("to_date") }} />
@@ -188,8 +190,8 @@ export function TimeOffPage() {
         </form>
 
         {range ? (
-          <Card className="mt-6">
-            <h3 className="font-display flex items-center gap-1.5 text-ink">
+          <Card className="mt-8">
+            <h3 className="font-display flex items-center gap-1.5 text-lg text-ink">
               <TriangleAlert aria-hidden="true" className="h-4 w-4 text-warning" strokeWidth={2.25} />
               {es.admin.bloqueos.impactoTitulo}
             </h3>

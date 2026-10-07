@@ -40,11 +40,11 @@ export function ConfirmStep({
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
         {es.reserva.confirmarTitulo}
       </h2>
-      <Card className="mt-4">
-        <dl className="flex flex-col gap-2">
+      <Card className="mt-6">
+        <dl className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
               <User className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
@@ -75,7 +75,7 @@ export function ConfirmStep({
           </div>
         </dl>
       </Card>
-      <ul className="mt-3 flex flex-col gap-1.5 text-sm text-muted">
+      <ul className="mt-4 flex flex-col gap-1.5 text-sm text-muted">
         <li className="flex items-start gap-1.5">
           <Info className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
           {es.reserva.reglasAnticipacion(minCancelHours)}
@@ -90,7 +90,7 @@ export function ConfirmStep({
           {es.reserva.errorGenerico}
         </p>
       ) : null}
-      <Button variant="primary" className="mt-4" onPress={onConfirm} isPending={isPending}>
+      <Button variant="primary" className="mt-6" onPress={onConfirm} isPending={isPending}>
         {isPending ? es.reserva.confirmando : es.reserva.confirmarBoton}
       </Button>
     </motion.div>

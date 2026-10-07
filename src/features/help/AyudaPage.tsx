@@ -18,12 +18,12 @@ export function AyudaPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
         <HelpCircle className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.ayuda.titulo}
       </h1>
 
-      <section className="mt-6">
+      <section className="mt-8">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
           <Phone className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.contactoTitulo}
@@ -65,7 +65,7 @@ export function AyudaPage() {
         )}
       </section>
 
-      <section className="mt-8 border-t border-line pt-6">
+      <section className="mt-10 border-t border-line pt-8">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
           <ShieldCheck className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.privacidadTitulo}
@@ -76,7 +76,7 @@ export function AyudaPage() {
         </RouterLink>
       </section>
 
-      <section className="mt-8 border-t border-line pt-6">
+      <section className="mt-10 border-t border-line pt-8">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
           <Accessibility className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.accesibilidadTitulo}

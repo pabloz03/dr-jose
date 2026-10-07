@@ -88,8 +88,8 @@ export function BookingPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
-      <h1 className="font-display text-2xl text-ink">{es.reserva.titulo}</h1>
+    <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
+      <h1 className="font-display text-3xl text-ink">{es.reserva.titulo}</h1>
       <StepProgress current={step} />
 
       <AnimatePresence mode="wait" initial={false} custom={dir}>

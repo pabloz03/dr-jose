@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Button as RACButton, type ButtonProps as RACButtonProps } from "react-aria-components/Button";
 
-type Variant = "primary" | "secondary" | "danger" | "quiet";
+type Variant = "primary" | "secondary" | "danger" | "quiet" | "hero";
 
 export interface ButtonProps extends RACButtonProps {
   variant?: Variant;
@@ -18,6 +18,10 @@ const variants: Record<Variant, string> = {
   secondary: "bg-transparent text-accent border border-border-ui data-[hovered]:bg-surface",
   danger: "bg-danger text-on-accent shadow-[var(--shadow-1)] data-[hovered]:opacity-90",
   quiet: "bg-transparent text-ink data-[hovered]:bg-surface",
+  // Para usarse sobre el bloque hero (fondo oscuro fijo, ver tokens.css
+  // --hero-*) — bg-accent normal no garantiza contraste ahí porque ese
+  // token sí cambia con el tema.
+  hero: "bg-[var(--hero-accent)] text-[var(--hero-accent-ink)] shadow-[var(--shadow-1)] data-[hovered]:opacity-90",
 };
 
 export function Button({ variant = "primary", className, children, ...props }: ButtonProps) {

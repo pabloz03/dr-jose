@@ -23,10 +23,10 @@ const ICON: Record<Status, typeof Check> = {
   no_show: X,
 };
 
-export function AppointmentStatusBadge({ status }: { status: Status }) {
+export function AppointmentStatusBadge({ status, onDark }: { status: Status; onDark?: boolean }) {
   const Icon = ICON[status];
   return (
-    <Badge tone={TONE[status]} icon={<Icon className="h-3.5 w-3.5" strokeWidth={2.5} />}>
+    <Badge tone={TONE[status]} icon={<Icon className="h-3.5 w-3.5" strokeWidth={2.5} />} onDark={onDark}>
       {es.citas.estado[status]}
     </Badge>
   );

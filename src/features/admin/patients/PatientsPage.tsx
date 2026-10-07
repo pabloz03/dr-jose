@@ -5,6 +5,7 @@ import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { usePatientSearch } from "../appointments/queries";
@@ -20,15 +21,16 @@ export function PatientsPage() {
 
   return (
     <AdminLayout>
+      <Eyebrow>{es.admin.nav.pacientes}</Eyebrow>
       <h1
         ref={headingRef}
         tabIndex={-1}
-        className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
+        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
       >
-        <Users aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
+        <Users aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.pacientes.titulo}
       </h1>
-      <div className="mt-4 max-w-sm">
+      <div className="mt-6 max-w-sm">
         <Field
           label={es.admin.pacientes.buscarPlaceholder}
           inputProps={{ value: query, onChange: (e) => setQuery(e.target.value) }}
@@ -37,7 +39,7 @@ export function PatientsPage() {
 
       {query.trim().length >= 2 ? (
         searchQuery.data && searchQuery.data.length > 0 ? (
-          <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-4 flex flex-col gap-2">
+          <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
             {searchQuery.data.map((p) => (
               <motion.li key={p.id} variants={cardEnter}>
                 <Card>
@@ -55,7 +57,7 @@ export function PatientsPage() {
             ))}
           </motion.ul>
         ) : (
-          <p className="mt-4 text-sm text-muted">{es.admin.pacientes.sinResultados}</p>
+          <p className="mt-6 text-sm text-muted">{es.admin.pacientes.sinResultados}</p>
         )
       ) : null}
     </AdminLayout>

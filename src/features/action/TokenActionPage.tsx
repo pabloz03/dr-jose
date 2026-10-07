@@ -30,12 +30,12 @@ function useFocusOnMount<T extends HTMLElement>() {
 }
 
 function Shell({ children }: { children: ReactNode }) {
-  return <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">{children}</main>;
+  return <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-10">{children}</main>;
 }
 
 function AppointmentSummary({ appointment }: { appointment: TokenAppointment }) {
   return (
-    <Card className="mt-4">
+    <Card className="mt-6">
       <p className="flex items-center gap-1.5 text-sm text-muted">
         <MapPin className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
         {appointment.clinic.name}
@@ -59,12 +59,12 @@ function InvalidState() {
   return (
     <Shell>
       <motion.div initial="hidden" animate="visible" variants={cardEnter}>
-        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
           <AlertCircle className="h-6 w-6 shrink-0 text-warning" strokeWidth={2.25} aria-hidden="true" />
           {es.accion.invalidoTitulo}
         </h1>
-        <p className="mt-2 text-muted">{es.accion.invalidoDescripcion}</p>
-        <Button variant="primary" className="mt-6 self-start" onPress={() => navigate("/ingresar")}>
+        <p className="mt-3 text-muted">{es.accion.invalidoDescripcion}</p>
+        <Button variant="primary" className="mt-8 self-start" onPress={() => navigate("/ingresar")}>
           {es.accion.irALaApp}
         </Button>
       </motion.div>
@@ -81,11 +81,11 @@ function ResultState({ purpose }: { purpose: "confirm" | "cancel" | "reschedule"
   return (
     <Shell>
       <motion.div initial="hidden" animate="visible" variants={cardEnter}>
-        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
           <Icon className="h-6 w-6 shrink-0 text-success" strokeWidth={2.25} aria-hidden="true" />
           {message}
         </h1>
-        <Button variant="primary" className="mt-6 self-start" onPress={() => navigate("/ingresar")}>
+        <Button variant="primary" className="mt-8 self-start" onPress={() => navigate("/ingresar")}>
           {es.accion.verDetalle}
         </Button>
         <LiveRegion message={message} />
@@ -115,13 +115,13 @@ function ConfirmView({ token, appointment }: { token: string; appointment: Token
   return (
     <Shell>
       <motion.div initial="hidden" animate="visible" variants={cardEnter}>
-        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
           <CalendarCheck2 className="h-6 w-6 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
           {es.accion.confirmarTitulo}
         </h1>
         <AppointmentSummary appointment={appointment} />
         {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
-        <Button variant="primary" className="mt-6" isPending={execute.isPending} onPress={onConfirm}>
+        <Button variant="primary" className="mt-8" isPending={execute.isPending} onPress={onConfirm}>
           {es.accion.confirmarBoton}
         </Button>
       </motion.div>
@@ -150,7 +150,7 @@ function CancelView({ token, appointment }: { token: string; appointment: TokenA
   return (
     <Shell>
       <motion.div initial="hidden" animate="visible" variants={cardEnter}>
-        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
           <CalendarX2 className="h-6 w-6 shrink-0 text-danger" strokeWidth={2.25} aria-hidden="true" />
           {es.accion.cancelarTitulo}
         </h1>
@@ -160,7 +160,7 @@ function CancelView({ token, appointment }: { token: string; appointment: TokenA
           {es.accion.cancelarAyuda}
         </p>
         {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
-        <Button variant="danger" className="mt-6" isPending={execute.isPending} onPress={onCancel}>
+        <Button variant="danger" className="mt-8" isPending={execute.isPending} onPress={onCancel}>
           {es.accion.cancelarBoton}
         </Button>
       </motion.div>
@@ -194,8 +194,8 @@ function RescheduleView({ token, appointment }: { token: string; appointment: To
   if (done) return <ResultState purpose="reschedule" />;
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-10">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-3xl text-ink outline-none">
         <CalendarClock className="h-6 w-6 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.accion.reprogramarTitulo}
       </h1>
@@ -206,7 +206,7 @@ function RescheduleView({ token, appointment }: { token: string; appointment: To
           {es.common.cargando}
         </p>
       ) : (
-        <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-8">
+        <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar
             aria-label={es.accion.reprogramarTitulo}
             minValue={minDate}

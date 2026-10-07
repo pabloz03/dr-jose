@@ -16,16 +16,16 @@ export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: st
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
         {es.reserva.tipoTitulo}
       </h2>
 
       {typesQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <ul className="mt-6 flex flex-col gap-2.5">
           {(typesQuery.data ?? []).map((t) => (
             <li key={t.id}>
               <Card onPress={() => onSelect(t.id)} className="flex items-center justify-between">

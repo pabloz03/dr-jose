@@ -87,3 +87,20 @@ describe("contraste de tokens (WCAG 2.2 AA)", () => {
     });
   });
 });
+
+// El bloque "hero" (tarjeta de próxima cita, etc.) es invariante de
+// tema a propósito — se verifica una sola vez, no por claro/oscuro.
+const heroPairs: Pair[] = [
+  { label: "hero-ink sobre hero-bg", fg: "hero-ink", bg: "hero-bg", min: TEXT_MIN },
+  { label: "hero-accent-ink sobre hero-accent (texto de botón sobre el bloque hero)", fg: "hero-accent-ink", bg: "hero-accent", min: TEXT_MIN },
+  { label: "hero-danger sobre hero-bg (Badge onDark)", fg: "hero-danger", bg: "hero-bg", min: TEXT_MIN },
+  { label: "hero-success sobre hero-bg (Badge onDark)", fg: "hero-success", bg: "hero-bg", min: TEXT_MIN },
+  { label: "hero-warning sobre hero-bg (Badge onDark)", fg: "hero-warning", bg: "hero-bg", min: TEXT_MIN },
+];
+
+describe("contraste del bloque hero (invariante de tema)", () => {
+  it.each(heroPairs)("$label ≥ $min:1", ({ fg, bg, min }) => {
+    const ratio = contrastRatio(getColor(light, fg), getColor(light, bg));
+    expect(ratio).toBeGreaterThanOrEqual(min);
+  });
+});

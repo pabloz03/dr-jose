@@ -16,9 +16,10 @@ const links = [
  * paciente siempre estén visibles, sin depender de un enlace dentro de
  * cada pantalla (heurística "reconocer en vez de recordar"). Glass es
  * uno de los usos explícitamente permitidos por la regla dura #12 ("nav
- * inferior") — la única otra capa glass que puede coexistir con esta en
- * el mismo viewport es la tarjeta de "próxima cita" de Home, nunca
- * ambas más algo extra (límite de 2 capas).
+ * inferior") — hoy la tarjeta de "próxima cita" de Home ya no es glass
+ * (usa el bloque --hero-* sólido), así que en la práctica este nav es
+ * la única capa glass visible en Home; el límite de 2 capas sigue
+ * aplicando si algún sheet/modal se abre encima.
  */
 export function PatientBottomNav() {
   return (

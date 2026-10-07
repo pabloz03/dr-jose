@@ -21,23 +21,23 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
         {es.reserva.pacienteTitulo}
       </h2>
 
       {patientsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : patients.length === 0 ? (
-        <div className="mt-4 flex flex-col items-start gap-3">
+        <div className="mt-6 flex flex-col items-start gap-3">
           <p className="text-muted">{es.reserva.pacienteVacio}</p>
           <Button variant="primary" onPress={() => navigate("/perfil")}>
             {es.reserva.irAPerfil}
           </Button>
         </div>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <ul className="mt-6 flex flex-col gap-2.5">
           {patients.map((p) => (
             <li key={p.id}>
               <Card onPress={() => onSelect(p.id)} className="flex items-center gap-3">

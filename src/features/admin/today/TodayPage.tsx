@@ -6,6 +6,7 @@ import { es } from "@/i18n/es";
 import { CLINIC_TZ, clinicDayBounds, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Card } from "@/components/ui/Card";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
@@ -34,15 +35,18 @@ export function TodayPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between gap-3">
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="font-display flex items-center gap-2 text-2xl text-ink outline-none"
-        >
-          <CalendarClock aria-hidden="true" className="h-6 w-6 text-accent" strokeWidth={2.25} />
-          {es.admin.hoy.titulo}
-        </h1>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <Eyebrow>{es.admin.nav.hoy}</Eyebrow>
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
+          >
+            <CalendarClock aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
+            {es.admin.hoy.titulo}
+          </h1>
+        </div>
         <button
           type="button"
           onClick={() => navigate("/admin/citas/nueva")}
@@ -54,17 +58,17 @@ export function TodayPage() {
       </div>
 
       {staffQuery.isLoading || appointmentsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : appointments.length === 0 ? (
-        <p className="mt-4 text-muted">{es.admin.hoy.vacio}</p>
+        <p className="mt-6 text-muted">{es.admin.hoy.vacio}</p>
       ) : (
         <motion.ul
           initial="hidden"
           animate="visible"
           variants={staggerList}
-          className="mt-4 flex flex-col gap-2"
+          className="mt-6 flex flex-col gap-2.5"
         >
           {appointments.map((a) => (
             <motion.li key={a.id} variants={cardEnter}>

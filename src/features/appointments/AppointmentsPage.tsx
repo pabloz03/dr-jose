@@ -45,9 +45,9 @@ export function AppointmentsPage() {
   const groups = useMemo(() => groupAppointmentsByPatient(appointmentsQuery.data ?? []), [appointmentsQuery.data]);
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
+    <main className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-8">
       <div className="flex items-center justify-between gap-3">
-        <h1 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display text-3xl text-ink outline-none">
           {es.citas.titulo}
         </h1>
         <Button variant="primary" onPress={() => navigate("/citas/nueva")}>
@@ -70,7 +70,7 @@ export function AppointmentsPage() {
           </Button>
         </div>
       ) : groups.length === 0 ? (
-        <div className="flex flex-col items-start gap-3">
+        <div className="flex flex-col items-start gap-4">
           <p className="text-muted">{es.citas.sinCitas}</p>
           <Button variant="primary" onPress={() => navigate("/citas/nueva")}>
             <CalendarPlus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
@@ -79,16 +79,16 @@ export function AppointmentsPage() {
         </div>
       ) : (
         groups.map((group) => (
-          <section key={group.patient.id} className="flex flex-col gap-4">
-            <h2 className="font-display text-lg text-ink">{group.patient.full_name}</h2>
+          <section key={group.patient.id} className="flex flex-col gap-5">
+            <h2 className="font-display text-xl text-ink">{group.patient.full_name}</h2>
 
             <div>
               <h3 className="text-sm font-medium text-muted">{es.citas.proximas}</h3>
               {group.proximas.length === 0 ? (
-                <p className="mt-2 text-sm text-muted">{es.citas.sinCitas}</p>
+                <p className="mt-3 text-sm text-muted">{es.citas.sinCitas}</p>
               ) : (
                 <motion.ul
-                  className="mt-2 flex flex-col gap-2"
+                  className="mt-3 flex flex-col gap-2"
                   variants={staggerList}
                   initial="hidden"
                   animate="visible"
@@ -104,7 +104,7 @@ export function AppointmentsPage() {
               <div>
                 <h3 className="text-sm font-medium text-muted">{es.citas.pasadas}</h3>
                 <motion.ul
-                  className="mt-2 flex flex-col gap-2"
+                  className="mt-3 flex flex-col gap-2"
                   variants={staggerList}
                   initial="hidden"
                   animate="visible"

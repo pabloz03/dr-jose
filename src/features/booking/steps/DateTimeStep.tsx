@@ -52,17 +52,17 @@ export function DateTimeStep({
 
   return (
     <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
-      <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
+      <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
         {es.reserva.fechaTitulo}
       </h2>
       <p className="mt-1 text-sm text-muted">{es.reserva.fechaZona}</p>
 
       {slotsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
+        <p className="mt-6 text-muted" role="status">
           {es.common.cargando}
         </p>
       ) : (
-        <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:gap-8">
+        <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar
             aria-label={es.reserva.fechaTitulo}
             minValue={minDate}
