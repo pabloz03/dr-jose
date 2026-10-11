@@ -16,10 +16,13 @@ module.exports = {
       assertions: {
         "categories:accessibility": ["error", { minScore: 0.95 }],
         // El presupuesto duro de "LCP p75 ≤ 2.5s" es un AC explícito de
-        // E8-S2. Ya se cumple: contra la URL real de Vercel
-        // (https://dr-jose-tan.vercel.app/ingresar) Lighthouse midió LCP
-        // 2.28–2.48s en 3 corridas (perf 0.95–0.97, a11y 1.0) — dentro del
-        // presupuesto. Re-verificado tras el rediseño tipográfico (E9):
+        // E8-S2. Re-verificado tras el reemplazo completo de paleta y
+        // tipografía (Archivo+Inter+Geist Mono por Montserrat+Open Sans,
+        // "segunda pasada de diseño" Notion/Airbnb/Nike): contra la URL
+        // real de Vercel (https://dr-jose-tan.vercel.app/ingresar)
+        // Lighthouse midió LCP 2.43–2.47s en 3 corridas (perf 0.94–0.97,
+        // a11y 1.0 en las tres) — dentro del presupuesto, mismo rango que
+        // la medición anterior (2.28–2.48s). Historial previo (E9):
         // agregar fuentes autohospedadas (Montserrat+Open Sans) subió el
         // LCP real a ~2.58s en la primera medición — se corrigió con
         // `font-display: optional` + subsets latin/latin-ext únicamente
