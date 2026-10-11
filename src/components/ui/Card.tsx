@@ -21,7 +21,7 @@ export function Card({ children, className = "", onPress }: CardProps) {
       <button
         type="button"
         onClick={onPress}
-        className={`${base} w-full text-left transition-shadow duration-150 hover:shadow-[var(--shadow-2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${className}`}
+        className={`${base} w-full text-left transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-2)] active:translate-y-0 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${className}`}
       >
         {children}
       </button>

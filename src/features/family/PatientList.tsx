@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { Badge } from "@/components/ui/Badge";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { usePatients, useRemovePatient } from "./queries";
 import { PatientFormDialog } from "./PatientFormDialog";
 import type { Tables } from "@/lib/database.types";
@@ -19,7 +21,7 @@ export function PatientList() {
   const [isAdding, setIsAdding] = useState(false);
 
   if (patientsQuery.isLoading) {
-    return <p className="text-muted" role="status">{es.common.cargando}</p>;
+    return <SkeletonList count={2} />;
   }
 
   if (patientsQuery.isError) {
@@ -40,7 +42,7 @@ export function PatientList() {
   return (
     <div className="flex flex-col gap-3">
       {patients.length === 0 ? (
-        <p className="text-muted">{es.familia.vacio}</p>
+        <EmptyState icon={<UserRound className="h-8 w-8" strokeWidth={2.25} />} title={es.familia.vacio} />
       ) : (
         <ul className="flex flex-col gap-2">
           {patients.map((p) => (

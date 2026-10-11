@@ -4,6 +4,7 @@ import { AnimatePresence } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { es } from "@/i18n/es";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { StepProgress } from "@/features/booking/StepProgress";
 import type { SlotRow } from "@/features/booking/queries";
 import type { GuestDatosValues } from "./schemas";
@@ -68,9 +69,7 @@ export function GuestBookingPage() {
   if (optionsQuery.isLoading || !optionsQuery.data) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <Skeleton className="h-6 w-40" />
       </main>
     );
   }

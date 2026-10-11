@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { es } from "@/i18n/es";
 import { usePatients } from "@/features/family/queries";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { StepProgress } from "./StepProgress";
 import { PatientStep } from "./steps/PatientStep";
 import { TypeStep } from "./steps/TypeStep";
@@ -72,9 +73,7 @@ export function BookingPage() {
   if (clinicQuery.isLoading || !clinicQuery.data) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <Skeleton className="h-6 w-40" />
       </main>
     );
   }

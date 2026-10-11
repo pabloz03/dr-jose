@@ -3,76 +3,85 @@
    CSP font-src 'self' ya desplegado, sin llamada a Google Fonts. SOLO
    los subsets latin + latin-ext (lo único que pide texto en español —
    los *.css completos de @fontsource también traen cyrillic/vietnamese/
-   greek que nunca se usan) y `font-display: optional` en vez de "swap"
-   (default de @fontsource) en las dos familias: medido en producción
-   contra /ingresar (pantalla con presupuesto de LCP ≤2.5s ya
-   verificado, E8-S2), "swap" en Montserrat solo subía el LCP a ~2.58s
-   sin que "optional" por sí solo lo arreglara del todo — la fuente se
-   sigue pidiendo igual, "optional" solo evita que bloquee/reflow el
-   primer pintado si no llega a tiempo. El resto del ahorro salió de
-   quitar `.font-display` del <h1> de LoginPage (ver comentario ahí). */
+   greek que nunca se usan).
+
+   Inter (cuerpo/UI) usa font-display: optional, no "swap": es el mismo
+   mitigante ya medido en producción contra /ingresar (pantalla con
+   presupuesto de LCP ≤2.5s, E8-S2) cuando el cuerpo era Open Sans —
+   "swap" ahí hacía reflow del primer pintado; Inter hereda esa misma
+   protección porque sigue siendo el cuerpo de esa pantalla. Archivo
+   (headings) y Geist Mono (datos numéricos) sí usan "swap" como pide
+   el spec: ninguno de los dos se usa en el elemento LCP de /ingresar,
+   así que no hay regresión que proteger ahí — a re-verificar con
+   Lighthouse en la fase de QA. */
 @font-face {
-  font-family: "Open Sans";
+  font-family: "Inter";
   font-style: normal;
   font-weight: 400;
   font-display: optional;
-  src: url("@fontsource/open-sans/files/open-sans-latin-400-normal.woff2") format("woff2");
+  src: url("@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Open Sans";
+  font-family: "Inter";
   font-style: normal;
   font-weight: 400;
   font-display: optional;
-  src: url("@fontsource/open-sans/files/open-sans-latin-ext-400-normal.woff2") format("woff2");
+  src: url("@fontsource/inter/files/inter-latin-ext-400-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: "Open Sans";
+  font-family: "Inter";
   font-style: normal;
   font-weight: 600;
   font-display: optional;
-  src: url("@fontsource/open-sans/files/open-sans-latin-600-normal.woff2") format("woff2");
+  src: url("@fontsource/inter/files/inter-latin-600-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Open Sans";
+  font-family: "Inter";
   font-style: normal;
   font-weight: 600;
   font-display: optional;
-  src: url("@fontsource/open-sans/files/open-sans-latin-ext-600-normal.woff2") format("woff2");
+  src: url("@fontsource/inter/files/inter-latin-ext-600-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+/* Archivo variable (eje wght+wdth, archivo "standard" de @fontsource-variable):
+   un solo archivo por subset cubre 700–800 sin descargas extra — el eje
+   wdth queda disponible vía `font-stretch` para quien lo necesite (ej.
+   números hero más expandidos), sin forzarlo por defecto. */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 700 800;
+  font-stretch: 75% 125%;
+  font-display: swap;
+  src: url("@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 700 800;
+  font-stretch: 75% 125%;
+  font-display: swap;
+  src: url("@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2") format("woff2-variations");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: "Montserrat";
+  font-family: "Geist Mono";
   font-style: normal;
-  font-weight: 600;
-  font-display: optional;
-  src: url("@fontsource/montserrat/files/montserrat-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+  font-weight: 500;
+  font-display: swap;
+  src: url("@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Montserrat";
+  font-family: "Geist Mono";
   font-style: normal;
-  font-weight: 600;
-  font-display: optional;
-  src: url("@fontsource/montserrat/files/montserrat-latin-ext-600-normal.woff2") format("woff2");
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
-@font-face {
-  font-family: "Montserrat";
-  font-style: normal;
-  font-weight: 700;
-  font-display: optional;
-  src: url("@fontsource/montserrat/files/montserrat-latin-700-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Montserrat";
-  font-style: normal;
-  font-weight: 700;
-  font-display: optional;
-  src: url("@fontsource/montserrat/files/montserrat-latin-ext-700-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  src: url("@fontsource/geist-mono/files/geist-mono-latin-ext-500-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @import "./tokens.css";
@@ -84,11 +93,14 @@
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-on-accent: var(--on-accent);
+  --color-accent-2: var(--accent-2);
+  --color-on-accent-2: var(--on-accent-2);
   --color-border-ui: var(--border-ui);
   --color-line: var(--line);
   --color-danger: var(--danger);
@@ -99,10 +111,12 @@
   --radius-sm: var(--r-sm);
   --radius-md: var(--r-md);
   --radius-lg: var(--r-lg);
+  --radius-pill: var(--r-pill);
 
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 
   --spacing-tap: var(--tap);
 }
@@ -111,14 +125,22 @@ html {
   font-family: var(--font-sans);
 }
 
-/* h1/h2 de página usan Montserrat (marca/jerarquía); todo lo demás
-   hereda Open Sans de la cascada global de arriba. Clase explícita, no
-   selector de etiqueta: varios h1/h2 de diálogos/secciones internas no
-   deben heredar el peso "display". */
+/* h1/h2 de página usan Archivo (marca/jerarquía, tracking negativo para
+   el look "bold/expandida" del spec); todo lo demás hereda Inter de la
+   cascada global de arriba. Clase explícita, no selector de etiqueta:
+   varios h1/h2 de diálogos/secciones internas no deben heredar el peso
+   "display". */
 .font-display {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+/* Números/métricas (ej. duración de cita, conteos en admin): mono +
+   tabular-nums para que las cifras no salten de ancho al cambiar. */
+.font-mono-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 body {
@@ -156,7 +178,11 @@ body {
   background-size: 200% 100%;
 }
 
-/* Regla dura #11: sin transformaciones bajo reduced motion, solo opacidad corta. */
+/* Regla dura #11: sin transformaciones bajo reduced motion, solo opacidad corta.
+   Cubre tanto animaciones de React Aria (modales/sheets) como el hover-lift
+   y whileTap-scale CSS de Button/Card (Fase 2) — MotionConfig
+   reducedMotion="user" solo gobierna componentes motion/react, estas
+   transiciones son CSS plano y necesitan su propio guard. */
 @media (prefers-reduced-motion: reduce) {
   .react-aria-ModalOverlay[data-entering],
   .react-aria-ModalOverlay[data-exiting],
@@ -165,5 +191,14 @@ body {
     animation-duration: 1ms !important;
     animation-name: modal-fade !important;
   }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-hovered],
+  [data-pressed] {
+    transform: none !important;
+  }
 }
-

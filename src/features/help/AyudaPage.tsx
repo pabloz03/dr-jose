@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Accessibility, HelpCircle, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { Accessibility, Building2, HelpCircle, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { es } from "@/i18n/es";
 import { useClinic } from "@/features/booking/queries";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SkeletonCard } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export function AyudaPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -29,11 +31,13 @@ export function AyudaPage() {
           {es.ayuda.contactoTitulo}
         </h2>
         {clinicQuery.isLoading ? (
-          <p className="mt-2 text-muted" role="status">
-            {es.common.cargando}
-          </p>
+          <div className="mt-3">
+            <SkeletonCard />
+          </div>
         ) : !clinic ? (
-          <p className="mt-2 text-muted">{es.ayuda.sinClinica}</p>
+          <div className="mt-3">
+            <EmptyState icon={<Building2 className="h-8 w-8" strokeWidth={2.25} />} title={es.ayuda.sinClinica} />
+          </div>
         ) : (
           <Card className="mt-3 flex flex-col gap-2">
             <p className="font-medium text-ink">{clinic.name}</p>

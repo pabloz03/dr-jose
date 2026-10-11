@@ -4,6 +4,7 @@ import { Stethoscope } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
 import { Card } from "@/components/ui/Card";
+import { SkeletonList } from "@/components/ui/Skeleton";
 import type { GuestType } from "./queries";
 
 /**
@@ -37,9 +38,9 @@ export function GuestTypeStep({
       </h2>
 
       {isLoading ? (
-        <p className="mt-4 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-4">
+          <SkeletonList count={3} />
+        </div>
       ) : (
         <ul className="mt-4 flex flex-col gap-2">
           {types.map((t) => (

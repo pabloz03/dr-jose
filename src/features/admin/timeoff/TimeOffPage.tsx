@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "../clinics/queries";
@@ -105,11 +107,12 @@ export function TimeOffPage() {
 
       <section className="mt-6">
         {timeOffQuery.isLoading ? (
-          <p className="text-muted" role="status">
-            {es.common.cargando}
-          </p>
+          <SkeletonList count={3} />
         ) : timeOffList.length === 0 ? (
-          <p className="text-muted">{es.admin.bloqueos.vacio}</p>
+          <EmptyState
+            icon={<CalendarOff aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+            title={es.admin.bloqueos.vacio}
+          />
         ) : (
           <motion.ul initial="hidden" animate="visible" variants={staggerList} className="flex flex-col gap-2">
             {timeOffList.map((t) => (
@@ -196,11 +199,16 @@ export function TimeOffPage() {
               {es.admin.bloqueos.impactoTitulo}
             </h3>
             {affected.isPending ? (
-              <p className="mt-2 text-muted" role="status">
-                {es.common.cargando}
-              </p>
+              <div className="mt-2">
+                <SkeletonList count={2} />
+              </div>
             ) : (affected.data ?? []).length === 0 ? (
-              <p className="mt-2 text-muted">{es.admin.bloqueos.impactoVacio}</p>
+              <div className="mt-2">
+                <EmptyState
+                  icon={<CheckCircle2 aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+                  title={es.admin.bloqueos.impactoVacio}
+                />
+              </div>
             ) : (
               <>
                 <p className="mt-1 text-sm text-muted">{es.admin.bloqueos.impactoDescripcion}</p>

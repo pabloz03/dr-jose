@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Users, UserRound } from "lucide-react";
+import { SearchX, Users, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { usePatientSearch } from "../appointments/queries";
@@ -57,7 +58,12 @@ export function PatientsPage() {
             ))}
           </motion.ul>
         ) : (
-          <p className="mt-6 text-sm text-muted">{es.admin.pacientes.sinResultados}</p>
+          <div className="mt-6">
+            <EmptyState
+              icon={<SearchX aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+              title={es.admin.pacientes.sinResultados}
+            />
+          </div>
         )
       ) : null}
     </AdminLayout>

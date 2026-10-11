@@ -3,6 +3,7 @@ import { CalendarCog, Clock } from "lucide-react";
 import { es } from "@/i18n/es";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { WeeklySchedule } from "./WeeklySchedule";
@@ -30,9 +31,7 @@ export function HorariosPage() {
       </h1>
 
       {isLoading || staffQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <Skeleton className="mt-6 h-10 w-64" />
       ) : clinics.length > 1 ? (
         <div className="mt-6 flex gap-2">
           {clinics.map((c) => (

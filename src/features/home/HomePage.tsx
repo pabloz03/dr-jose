@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarCheck, CalendarPlus, Clock, LogOut, MapPin, ShieldCheck } from "lucide-react";
+import { CalendarCheck, Clock, LogOut, MapPin, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
@@ -10,6 +10,8 @@ import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatu
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonCard } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const UPCOMING_STATUSES = new Set(["scheduled", "confirmed"]);
 
@@ -61,17 +63,12 @@ function NextAppointmentCard({ appointment }: { appointment: AppointmentWithDeta
 function EmptyNextAppointment() {
   const navigate = useNavigate();
   return (
-    <Card className="flex flex-col items-start gap-3">
-      <h2 className="font-display flex items-center gap-2 text-lg text-ink">
-        <CalendarCheck className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
-        {es.home.sinProximaCitaTitulo}
-      </h2>
-      <p className="text-muted">{es.home.sinProximaCitaDescripcion}</p>
-      <Button variant="primary" onPress={() => navigate("/citas/nueva")}>
-        <CalendarPlus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-        {es.citas.reservarCta}
-      </Button>
-    </Card>
+    <EmptyState
+      icon={<CalendarCheck className="h-8 w-8" strokeWidth={2.25} />}
+      title={es.home.sinProximaCitaTitulo}
+      description={es.home.sinProximaCitaDescripcion}
+      action={{ label: es.citas.reservarCta, onPress: () => navigate("/citas/nueva") }}
+    />
   );
 }
 
@@ -107,11 +104,7 @@ export function HomePage() {
       </header>
 
       {appointmentsQuery.isLoading ? (
-        <Card>
-          <p className="text-muted" role="status">
-            {es.common.cargando}
-          </p>
-        </Card>
+        <SkeletonCard />
       ) : nextAppointment ? (
         <NextAppointmentCard appointment={nextAppointment} />
       ) : (

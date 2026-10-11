@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarPlus, CheckCircle2, Stethoscope, UserRound } from "lucide-react";
+import { CalendarPlus, CheckCircle2, SearchX, Stethoscope, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonCard } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { useDoctor, useAppointmentTypes, type SlotRow } from "@/features/booking/queries";
@@ -121,7 +123,10 @@ export function ManualBookingPage() {
               ))}
             </ul>
           ) : query.trim().length >= 2 && searchQuery.data ? (
-            <p className="text-sm text-muted">{es.admin.pacientes.sinResultados}</p>
+            <EmptyState
+              icon={<SearchX aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+              title={es.admin.pacientes.sinResultados}
+            />
           ) : null}
 
           <Checkbox isSelected={isNewPatient} onChange={setIsNewPatient}>
@@ -182,9 +187,9 @@ export function ManualBookingPage() {
             />
           </div>
         ) : (
-          <p className="mt-6 text-muted" role="status">
-            {es.common.cargando}
-          </p>
+          <div className="mt-6">
+            <SkeletonCard />
+          </div>
         )
       ) : (
         <div className="mt-6 flex flex-col gap-4">

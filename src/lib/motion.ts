@@ -1,5 +1,6 @@
-export const spring = { type: "spring", stiffness: 300, damping: 30 } as const;
-export const fade = { duration: 0.15 } as const;
+export const spring = { type: "spring", stiffness: 350, damping: 30 } as const;
+/** Tween para opacidad pura (sin transform) — 200–300ms ease-out. */
+export const fade = { duration: 0.24, ease: "easeOut" } as const;
 
 export const stepVariants = {
   enter: (dir: 1 | -1) => ({ opacity: 0, x: 20 * dir }),
@@ -20,4 +21,13 @@ export const staggerList = {
 };
 
 /** Micro-feedback de tap para tarjetas/filas interactivas que no son <Button> (que ya tiene su propio scale vía data-[pressed]). */
-export const pressFeedback = { scale: 0.98 };
+export const pressFeedback = { scale: 0.97 };
+
+/** Hover lift sutil para Card/Button — solo transform/opacity (regla dura #11), nunca box-shadow animado directo (reflow). */
+export const hoverLift = { y: -2, transition: { duration: 0.15, ease: "easeOut" } };
+
+/** Confirmación puntual (ej. ícono de éxito en BookingSuccess) — una sola vez, nunca en loop. */
+export const successPop = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 350, damping: 22 } },
+};

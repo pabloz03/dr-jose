@@ -7,6 +7,8 @@ import { CLINIC_TZ, clinicDayBounds, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
@@ -58,11 +60,16 @@ export function TodayPage() {
       </div>
 
       {staffQuery.isLoading || appointmentsQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-6">
+          <SkeletonList count={3} />
+        </div>
       ) : appointments.length === 0 ? (
-        <p className="mt-6 text-muted">{es.admin.hoy.vacio}</p>
+        <div className="mt-6">
+          <EmptyState
+            icon={<CalendarClock aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+            title={es.admin.hoy.vacio}
+          />
+        </div>
       ) : (
         <motion.ul
           initial="hidden"

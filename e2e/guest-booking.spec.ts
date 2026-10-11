@@ -15,7 +15,15 @@ const OPTIONS_BODY = {
   settings: { min_cancel_hours: 24, max_booking_days: 90 },
 };
 
-const SLOT = { slot_start: "2026-10-09T18:00:00.000Z", slot_end: "2026-10-09T18:30:00.000Z" };
+// Relativa a "ahora" (+3 días) en vez de una fecha fija: una fecha
+// hardcodeada queda en el pasado tarde o temprano y el calendario la
+// deshabilita, rompiendo el test sin que haya ninguna regresión real.
+const slotDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+slotDate.setUTCHours(18, 0, 0, 0);
+const SLOT = {
+  slot_start: slotDate.toISOString(),
+  slot_end: new Date(slotDate.getTime() + 30 * 60 * 1000).toISOString(),
+};
 
 function mockGuestBooking(page: import("@playwright/test").Page, bookResponse: Record<string, unknown>) {
   return page.route("**/functions/v1/guest-booking*", (route) => {

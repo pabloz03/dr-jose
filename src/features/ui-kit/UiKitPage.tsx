@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { DialogTrigger } from "react-aria-components/Dialog";
-import { Check, CircleDot, RotateCcw, X } from "lucide-react";
+import { Calendar, Check, CircleDot, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Dialog } from "@/components/ui/Dialog";
 import { Sheet } from "@/components/ui/Sheet";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Skeleton, SkeletonCard, SkeletonList } from "@/components/ui/Skeleton";
 import { toastQueue } from "@/components/ui/Toast";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -35,10 +37,11 @@ export function UiKitPage() {
       <Section title="Tipografía">
         <div className="flex flex-col gap-2">
           <Eyebrow>Eyebrow — etiqueta editorial</Eyebrow>
-          <p className="font-display text-3xl text-ink">Montserrat — h1 de página</p>
-          <p className="font-display text-lg text-ink">Montserrat — h2 de sección</p>
-          <p className="text-base text-ink">Open Sans — cuerpo de texto, el resto de la app hereda esto por defecto.</p>
-          <p className="text-sm text-muted">Open Sans — texto secundario/ayuda.</p>
+          <p className="font-display text-3xl text-ink">Archivo — h1 de página</p>
+          <p className="font-display text-lg text-ink">Archivo — h2 de sección</p>
+          <p className="text-base text-ink">Inter — cuerpo de texto, el resto de la app hereda esto por defecto.</p>
+          <p className="text-sm text-muted">Inter — texto secundario/ayuda.</p>
+          <p className="font-mono-nums text-base text-ink">Geist Mono — 12:30 p.m. · 20 min</p>
         </div>
       </Section>
 
@@ -108,6 +111,29 @@ export function UiKitPage() {
           <p className="font-medium text-ink">Tarjeta interactiva (onPress)</p>
           <p className="text-sm text-muted">Toda el área es un botón accesible.</p>
         </Card>
+      </Section>
+
+      <Section title="Skeleton (reemplaza &quot;Cargando…&quot; de texto plano)">
+        <div className="w-full max-w-sm">
+          <Skeleton className="h-4 w-full" />
+        </div>
+        <div className="w-full max-w-sm">
+          <SkeletonCard />
+        </div>
+        <div className="w-full max-w-sm">
+          <SkeletonList count={2} />
+        </div>
+      </Section>
+
+      <Section title="EmptyState">
+        <div className="w-full max-w-sm">
+          <EmptyState
+            icon={<Calendar className="h-8 w-8" strokeWidth={1.75} />}
+            title="Sin citas registradas"
+            description="Reserve una cita para empezar."
+            action={{ label: "Reservar cita", onPress: () => setLiveMessage("Acción de EmptyState") }}
+          />
+        </div>
       </Section>
 
       <Section title="GlassSurface (solo: header sticky, próxima cita, sheets/diálogos/toasts — nunca listas ni calendario)">

@@ -4,8 +4,9 @@ import { motion } from "motion/react";
 import { User } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { usePatients } from "@/features/family/queries";
 
 export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patientId: string) => void }) {
@@ -26,15 +27,16 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
       </h2>
 
       {patientsQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-6">
+          <SkeletonList count={2} />
+        </div>
       ) : patients.length === 0 ? (
-        <div className="mt-6 flex flex-col items-start gap-3">
-          <p className="text-muted">{es.reserva.pacienteVacio}</p>
-          <Button variant="primary" onPress={() => navigate("/perfil")}>
-            {es.reserva.irAPerfil}
-          </Button>
+        <div className="mt-6">
+          <EmptyState
+            icon={<User className="h-8 w-8" strokeWidth={2.25} />}
+            title={es.reserva.pacienteVacio}
+            action={{ label: es.reserva.irAPerfil, onPress: () => navigate("/perfil") }}
+          />
         </div>
       ) : (
         <ul className="mt-6 flex flex-col gap-2.5">

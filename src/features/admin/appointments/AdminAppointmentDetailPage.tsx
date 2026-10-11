@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 import { AdminLayout } from "../AdminLayout";
 import { useMarkAttendance } from "./queries";
 import {
@@ -89,9 +90,7 @@ export function AdminAppointmentDetailPage() {
   if (appointmentQuery.isLoading) {
     return (
       <AdminLayout>
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <SkeletonCard />
       </AdminLayout>
     );
   }

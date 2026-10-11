@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { CalendarPlus, ChevronRight, Clock } from "lucide-react";
+import { CalendarPlus, CalendarX2, ChevronRight, Clock } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { useAppointments } from "./queries";
 import { groupAppointmentsByPatient } from "./groupAppointments";
@@ -57,9 +59,7 @@ export function AppointmentsPage() {
       </div>
 
       {appointmentsQuery.isLoading ? (
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <SkeletonList count={3} />
       ) : appointmentsQuery.isError ? (
         <div className="flex flex-col gap-2">
           <p className="text-danger" role="alert">
@@ -70,13 +70,11 @@ export function AppointmentsPage() {
           </Button>
         </div>
       ) : groups.length === 0 ? (
-        <div className="flex flex-col items-start gap-4">
-          <p className="text-muted">{es.citas.sinCitas}</p>
-          <Button variant="primary" onPress={() => navigate("/citas/nueva")}>
-            <CalendarPlus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-            {es.citas.reservarCta}
-          </Button>
-        </div>
+        <EmptyState
+          icon={<CalendarX2 className="h-8 w-8" strokeWidth={2.25} />}
+          title={es.citas.sinCitas}
+          action={{ label: es.citas.reservarCta, onPress: () => navigate("/citas/nueva") }}
+        />
       ) : (
         groups.map((group) => (
           <section key={group.patient.id} className="flex flex-col gap-5">

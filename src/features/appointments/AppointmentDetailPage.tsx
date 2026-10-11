@@ -21,6 +21,7 @@ import { buildIcs, downloadIcs } from "@/lib/ics";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import {
   useAppointment,
@@ -107,9 +108,7 @@ export function AppointmentDetailPage() {
   if (appointmentQuery.isLoading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <SkeletonCard />
       </main>
     );
   }

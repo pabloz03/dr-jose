@@ -32,14 +32,14 @@ export function PatientBottomNav() {
           <NavLink key={link.to} to={link.to} end={link.end} className="relative">
             {({ isActive }) => (
               <span
-                className={`relative z-10 flex min-h-tap min-w-tap flex-col items-center justify-center gap-0.5 rounded-md px-3 py-1 text-xs font-medium transition-colors duration-150 ${
+                className={`relative z-10 flex min-h-tap min-w-tap flex-col items-center justify-center gap-0.5 rounded-[var(--r-pill)] px-3 py-1 text-xs font-medium transition-colors duration-150 ${
                   isActive ? "text-on-accent" : "text-muted hover:text-ink"
                 }`}
               >
                 {isActive ? (
                   <motion.span
                     layoutId="patient-nav-pill"
-                    className="absolute inset-0 -z-10 rounded-md bg-accent"
+                    className="absolute inset-0 -z-10 rounded-[var(--r-pill)] bg-accent"
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 ) : null}

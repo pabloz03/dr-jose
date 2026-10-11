@@ -21,7 +21,7 @@ function extractBlock(selectorRegex: RegExp): string {
 
 function colorsFromBlock(block: string): Map<string, string> {
   const out = new Map<string, string>();
-  for (const m of block.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)) {
+  for (const m of block.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})/g)) {
     const [, name, hex] = m;
     if (name && hex) out.set(name, hex);
   }
@@ -68,7 +68,10 @@ const pairs: Pair[] = [
   { label: "ink sobre bg", fg: "ink", bg: "bg", min: TEXT_MIN },
   { label: "muted sobre bg", fg: "muted", bg: "bg", min: TEXT_MIN },
   { label: "accent sobre surface (enlaces/acciones)", fg: "accent", bg: "surface", min: TEXT_MIN },
+  { label: "accent sobre bg (enlaces fuera de una tarjeta, ej. botón Atrás)", fg: "accent", bg: "bg", min: TEXT_MIN },
   { label: "on-accent sobre accent (texto de botón primario)", fg: "on-accent", bg: "accent", min: TEXT_MIN },
+  { label: "on-accent-2 sobre accent-2 (texto sobre acento volt)", fg: "on-accent-2", bg: "accent-2", min: TEXT_MIN },
+  { label: "ink sobre surface-elevated", fg: "ink", bg: "surface-elevated", min: TEXT_MIN },
   { label: "danger sobre surface", fg: "danger", bg: "surface", min: TEXT_MIN },
   { label: "success sobre surface", fg: "success", bg: "surface", min: TEXT_MIN },
   { label: "warning sobre surface", fg: "warning", bg: "surface", min: TEXT_MIN },

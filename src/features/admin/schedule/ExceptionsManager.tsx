@@ -6,6 +6,8 @@ import { formatClinicDateTime } from "@/lib/tz";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useAddScheduleException, useRemoveScheduleException, useScheduleExceptions } from "./queries";
 import { exceptionFormSchema, type ExceptionFormValues } from "./schemas";
 
@@ -38,11 +40,12 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
   return (
     <div className="flex flex-col gap-4">
       {exceptionsQuery.isLoading ? (
-        <p className="text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <SkeletonList count={2} />
       ) : exceptions.length === 0 ? (
-        <p className="text-muted">{es.admin.horarios.excepcionesVacio}</p>
+        <EmptyState
+          icon={<CalendarOff aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+          title={es.admin.horarios.excepcionesVacio}
+        />
       ) : (
         <ul className="flex flex-col gap-2">
           {exceptions.map((e) => (

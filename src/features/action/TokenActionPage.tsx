@@ -16,6 +16,7 @@ import { Calendar } from "@/components/ui/Calendar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 import { cardEnter } from "@/lib/motion";
 import { groupSlotsByDate } from "@/features/booking/groupSlotsByDate";
 import type { SlotRow } from "@/features/booking/queries";
@@ -202,9 +203,9 @@ function RescheduleView({ token, appointment }: { token: string; appointment: To
       <AppointmentSummary appointment={appointment} />
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
       {slotsQuery.isLoading ? (
-        <p className="mt-4 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-4">
+          <SkeletonCard />
+        </div>
       ) : (
         <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar
@@ -250,9 +251,7 @@ export function TokenActionPage() {
   if (!token || peek.isLoading) {
     return (
       <Shell>
-        <p className="text-muted" role="status">
-          {es.accion.cargandoTitulo}
-        </p>
+        <Skeleton label={es.accion.cargandoTitulo} className="h-6 w-48" />
       </Shell>
     );
   }

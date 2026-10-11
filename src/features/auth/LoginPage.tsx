@@ -22,13 +22,16 @@ type Step = "email" | "code";
  * nunca es lo primero que carga un visitante sin sesión.
  *
  * Mismo criterio para los `<h1>` de esta pantalla: usan `font-semibold`
- * (Open Sans, ya cargada) en vez de `.font-display` (Montserrat) del
- * rediseño premium. Medido en producción: agregar Montserrat acá subía
- * el LCP real de 2.26s a ~2.58s (la fuente nueva se pide igual aunque
- * sea `font-display: optional`, solo cambia si bloquea el swap, no si
- * se descarga) — por encima del presupuesto de la AC de E8-S2. El resto
- * de la app sí usa Montserrat en sus `<h1>` sin este problema porque no
- * es la primera pantalla de una visita sin sesión.
+ * (Inter, cuerpo ya cargado) en vez de `.font-display` (Archivo) del
+ * rediseño. Medido en producción con la familia anterior (Montserrat
+ * sobre Open Sans): agregar la fuente display al LCP subía el tiempo
+ * real de 2.26s a ~2.58s (la fuente nueva se pide igual aunque sea
+ * `font-display: swap/optional`, solo cambia si bloquea el pintado, no
+ * si se descarga) — por encima del presupuesto de la AC de E8-S2. El
+ * mismo riesgo aplica con Archivo+Inter, así que se mantiene la misma
+ * mitigación; a reverificar con Lighthouse en QA tras el cambio de
+ * tipografía. El resto de la app sí usa Archivo en sus `<h1>` sin este
+ * problema porque no es la primera pantalla de una visita sin sesión.
  */
 function useFocusOnMount<T extends HTMLElement>() {
   const ref = useRef<T>(null);

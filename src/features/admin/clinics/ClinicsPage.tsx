@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "./queries";
@@ -45,11 +47,17 @@ export function ClinicsPage() {
       </div>
 
       {clinicsQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-6">
+          <SkeletonList count={3} />
+        </div>
       ) : clinics.length === 0 ? (
-        <p className="mt-6 text-muted">{es.admin.clinicas.vacio}</p>
+        <div className="mt-6">
+          <EmptyState
+            icon={<Stethoscope aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+            title={es.admin.clinicas.vacio}
+            action={{ label: es.admin.clinicas.agregar, onPress: () => setIsAdding(true) }}
+          />
+        </div>
       ) : (
         <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
           {clinics.map((clinic) => (

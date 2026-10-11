@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { today, type CalendarDate } from "@internationalized/date";
-import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight, Grid3x3 } from "lucide-react";
+import { CalendarDays, CalendarRange, CalendarX2, ChevronLeft, ChevronRight, Grid3x3 } from "lucide-react";
 import { es } from "@/i18n/es";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Calendar } from "@/components/ui/Calendar";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { SkeletonList } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AdminAppointmentRow } from "../appointments/AdminAppointmentRow";
@@ -79,9 +81,9 @@ export function CalendarPage() {
       </div>
 
       {appointmentsQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-6">
+          <SkeletonList count={4} />
+        </div>
       ) : view === "mes" ? (
         <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar
@@ -149,7 +151,20 @@ function DayAppointments({
 }) {
   const items = list ?? [];
   if (items.length === 0) {
-    return <p className="mt-2 text-sm text-muted">{es.admin.calendario.vacio}</p>;
+    // En vista semana cada celda es parte de la grilla del calendario; un
+    // EmptyState completo por celda sería un reemplazo estructural de esa
+    // grilla, así que esa variante compacta conserva el texto simple.
+    if (compact) {
+      return <p className="mt-2 text-sm text-muted">{es.admin.calendario.vacio}</p>;
+    }
+    return (
+      <div className="mt-2">
+        <EmptyState
+          icon={<CalendarX2 aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+          title={es.admin.calendario.vacio}
+        />
+      </div>
+    );
   }
   if (compact) {
     return (

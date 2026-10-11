@@ -6,6 +6,7 @@ import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { Calendar } from "@/components/ui/Calendar";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 import { useAvailableSlots, useClinicSettings, type SlotRow } from "../queries";
 import { groupSlotsByDate } from "../groupSlotsByDate";
 
@@ -58,9 +59,9 @@ export function DateTimeStep({
       <p className="mt-1 text-sm text-muted">{es.reserva.fechaZona}</p>
 
       {slotsQuery.isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <div className="mt-6">
+          <SkeletonCard />
+        </div>
       ) : (
         <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-10">
           <Calendar

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { ListChecks, Settings, SlidersHorizontal } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { RulesForm } from "./RulesForm";
@@ -28,9 +29,7 @@ export function AjustesPage() {
       </h1>
 
       {isLoading ? (
-        <p className="mt-6 text-muted" role="status">
-          {es.common.cargando}
-        </p>
+        <Skeleton className="mt-6 h-10 w-64" />
       ) : clinics.length > 1 ? (
         <div className="mt-6 flex gap-2">
           {clinics.map((c) => (
