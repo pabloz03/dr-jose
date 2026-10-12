@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
-import { Field } from "@/components/ui/Field";
+import { ControlledField } from "@/components/ui/ControlledField";
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { showToast } from "@/components/ui/Toast";
@@ -18,7 +18,7 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
   const [formError, setFormError] = useState<string | null>(null);
   // z.coerce.number() tiene input `unknown` y output `number` — dos
   // generics para que register() y handleSubmit() usen cada tipo correcto.
-  const { register, handleSubmit, reset, formState } = useForm<
+  const { control, handleSubmit, reset } = useForm<
     z.input<typeof rulesFormSchema>,
     unknown,
     z.output<typeof rulesFormSchema>
@@ -62,35 +62,35 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Field
+      <ControlledField
+        control={control}
+        name="min_cancel_hours"
         label={es.admin.ajustes.anticipacionLabel}
-        isInvalid={!!formState.errors.min_cancel_hours}
-        errorMessage={formState.errors.min_cancel_hours?.message}
-        inputProps={{ type: "number", min: 0, ...register("min_cancel_hours") }}
+        inputProps={{ type: "number", min: 0 }}
       />
-      <Field
+      <ControlledField
+        control={control}
+        name="min_lead_hours"
         label="Antelación mínima de reserva (horas)"
-        isInvalid={!!formState.errors.min_lead_hours}
-        errorMessage={formState.errors.min_lead_hours?.message}
-        inputProps={{ type: "number", min: 0, ...register("min_lead_hours") }}
+        inputProps={{ type: "number", min: 0 }}
       />
-      <Field
+      <ControlledField
+        control={control}
+        name="max_booking_days"
         label={es.admin.ajustes.ventanaLabel}
-        isInvalid={!!formState.errors.max_booking_days}
-        errorMessage={formState.errors.max_booking_days?.message}
-        inputProps={{ type: "number", min: 1, ...register("max_booking_days") }}
+        inputProps={{ type: "number", min: 1 }}
       />
-      <Field
+      <ControlledField
+        control={control}
+        name="slot_step_min"
         label={es.admin.ajustes.pasoLabel}
-        isInvalid={!!formState.errors.slot_step_min}
-        errorMessage={formState.errors.slot_step_min?.message}
-        inputProps={{ type: "number", min: 5, step: 5, ...register("slot_step_min") }}
+        inputProps={{ type: "number", min: 5, step: 5 }}
       />
-      <Field
+      <ControlledField
+        control={control}
+        name="reminder_local_time"
         label={es.admin.ajustes.recordatorioLabel}
-        isInvalid={!!formState.errors.reminder_local_time}
-        errorMessage={formState.errors.reminder_local_time?.message}
-        inputProps={{ type: "time", ...register("reminder_local_time") }}
+        inputProps={{ type: "time" }}
       />
       <Button type="submit" variant="primary" isPending={updateSettings.isPending} className="self-start">
         <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />

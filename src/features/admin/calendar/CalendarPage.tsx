@@ -52,7 +52,7 @@ export function CalendarPage() {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout wide>
       <Eyebrow>{es.admin.nav.calendario}</Eyebrow>
       <h1
         ref={headingRef}
@@ -107,11 +107,11 @@ export function CalendarPage() {
       ) : view === "semana" ? (
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-7">
           {weekDays(selected).map((d) => (
-            <div key={d.toString()}>
+            <div key={d.toString()} className="min-w-0">
               <h2 className="text-sm font-semibold text-ink">
                 {formatClinicDateTime(`${d.toString()}T12:00:00`, "EEE d")}
               </h2>
-              <div className="mt-2 flex flex-col gap-1.5">
+              <div className="mt-2 flex min-w-0 flex-col gap-1.5">
                 <DayAppointments
                   list={appointmentsByDate.get(d.toString()) ?? []}
                   isError={appointmentsQuery.isError}
@@ -209,7 +209,7 @@ function DayAppointments({
     return (
       <>
         {items.map((a) => (
-          <AdminAppointmentRow key={a.id} appointment={a} />
+          <AdminAppointmentRow key={a.id} appointment={a} compact />
         ))}
       </>
     );

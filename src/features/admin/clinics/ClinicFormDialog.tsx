@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
-import { Field } from "@/components/ui/Field";
+import { ControlledField } from "@/components/ui/ControlledField";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/components/ui/Toast";
@@ -23,17 +23,23 @@ export function ClinicFormDialog({
 }) {
   const saveClinic = useSaveClinic();
   const [formError, setFormError] = useState<string | null>(null);
-  const { control, register, handleSubmit, formState } = useForm<ClinicFormValues>({
+  const { control, handleSubmit, formState, reset } = useForm<ClinicFormValues>({
     resolver: zodResolver(clinicFormSchema),
-    defaultValues: {
-      name: clinic?.name ?? "",
-      address: clinic?.address ?? "",
-      maps_url: clinic?.maps_url ?? "",
-      phone: clinic?.phone ?? "",
-      whatsapp: clinic?.whatsapp ?? "",
-      is_active: clinic?.is_active ?? true,
-    },
+    defaultValues: { name: "", address: "", maps_url: "", phone: "", whatsapp: "", is_active: true },
   });
+
+  useEffect(() => {
+    if (clinic) {
+      reset({
+        name: clinic.name,
+        address: clinic.address ?? "",
+        maps_url: clinic.maps_url ?? "",
+        phone: clinic.phone ?? "",
+        whatsapp: clinic.whatsapp ?? "",
+        is_active: clinic.is_active,
+      });
+    }
+  }, [clinic, reset]);
 
   async function onSubmit(values: ClinicFormValues) {
     setFormError(null);
@@ -62,22 +68,26 @@ export function ClinicFormDialog({
       onOpenChange={onOpenChange}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Field
-          label={es.admin.clinicas.nombreLabel}
-          isRequired
-          isInvalid={!!formState.errors.name}
-          errorMessage={formState.errors.name?.message}
-          inputProps={register("name")}
-        />
-        <Field label={es.admin.clinicas.direccionLabel} inputProps={register("address")} />
-        <Field
+        <ControlledField control={control} name="name" label={es.admin.clinicas.nombreLabel} isRequired />
+        <ControlledField control={control} name="address" label={es.admin.clinicas.direccionLabel} />
+        <ControlledField
+          control={control}
+          name="maps_url"
           label={es.admin.clinicas.mapsLabel}
-          isInvalid={!!formState.errors.maps_url}
-          errorMessage={formState.errors.maps_url?.message}
-          inputProps={{ type: "url", ...register("maps_url") }}
+          inputProps={{ type: "url" }}
         />
-        <Field label={es.admin.clinicas.telefonoLabel} inputProps={{ type: "tel", ...register("phone") }} />
-        <Field label={es.admin.clinicas.whatsappLabel} inputProps={{ type: "tel", ...register("whatsapp") }} />
+        <ControlledField
+          control={control}
+          name="phone"
+          label={es.admin.clinicas.telefonoLabel}
+          inputProps={{ type: "tel" }}
+        />
+        <ControlledField
+          control={control}
+          name="whatsapp"
+          label={es.admin.clinicas.whatsappLabel}
+          inputProps={{ type: "tel" }}
+        />
         <Controller
           control={control}
           name="is_active"

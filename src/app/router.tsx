@@ -1,8 +1,9 @@
 import { lazy, Suspense, type ReactNode } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RequireAuth } from "@/features/auth/RequireAuth";
 import { RequireDoctor } from "@/features/auth/RequireDoctor";
 import { RequireStaff } from "@/features/auth/RequireStaff";
+import { useMyStaff } from "@/features/auth/useMyStaff";
 import { es } from "@/i18n/es";
 
 const HomePage = lazy(() => import("@/features/home/HomePage").then((m) => ({ default: m.HomePage })));
@@ -39,6 +40,9 @@ const CalendarPage = lazy(() =>
 const PatientsPage = lazy(() =>
   import("@/features/admin/patients/PatientsPage").then((m) => ({ default: m.PatientsPage })),
 );
+const DashboardPage = lazy(() =>
+  import("@/features/admin/dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })),
+);
 const AdminAppointmentDetailPage = lazy(() =>
   import("@/features/admin/appointments/AdminAppointmentDetailPage").then((m) => ({
     default: m.AdminAppointmentDetailPage,
@@ -73,15 +77,36 @@ function Lazy({ children }: { children: ReactNode }) {
   return <Suspense fallback={<RouteFallback />}>{children}</Suspense>;
 }
 
+/** El personal (doctor/asistente) aterriza directo en /admin, nunca en el inicio de paciente. */
+function HomeOrAdminRedirect({ children }: { children: ReactNode }) {
+  const staffQuery = useMyStaff();
+
+  if (staffQuery.isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center text-muted" role="status">
+        {es.common.cargando}
+      </div>
+    );
+  }
+
+  if (staffQuery.data) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <Lazy>
         <RequireAuth>
-          <PatientLayout>
-            <HomePage />
-          </PatientLayout>
+          <HomeOrAdminRedirect>
+            <PatientLayout>
+              <HomePage />
+            </PatientLayout>
+          </HomeOrAdminRedirect>
         </RequireAuth>
       </Lazy>
     ),
@@ -171,6 +196,18 @@ export const router = createBrowserRouter([
         <RequireAuth>
           <RequireStaff>
             <PatientsPage />
+          </RequireStaff>
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/admin/metricas",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <RequireStaff>
+            <DashboardPage />
           </RequireStaff>
         </RequireAuth>
       </Lazy>

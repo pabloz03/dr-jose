@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 import type { Tables, TablesInsert, TablesUpdate } from "@/lib/database.types";
 
 type Clinic = Tables<"clinics">;
 
 export function useAdminClinics() {
+  const { session } = useAuth();
   return useQuery({
     queryKey: ["admin-clinics"],
+    enabled: !!session,
     queryFn: async () => {
       const { data, error } = await supabase.from("clinics").select("*").order("created_at", { ascending: true });
       if (error) throw error;

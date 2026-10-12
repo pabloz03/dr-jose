@@ -5,7 +5,7 @@ import { Monitor, ShieldCheck, User, Users } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Field } from "@/components/ui/Field";
+import { ControlledField } from "@/components/ui/ControlledField";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveRegion } from "@/components/ui/LiveRegion";
@@ -26,7 +26,7 @@ export function ProfilePage() {
     headingRef.current?.focus();
   }, []);
 
-  const { control, register, handleSubmit, reset, formState } = useForm<ProfileFormValues>({
+  const { control, handleSubmit, reset, formState } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: { full_name: "", phone: "", consent: false },
   });
@@ -68,17 +68,13 @@ export function ProfilePage() {
           <ErrorState onRetry={() => profileQuery.refetch()} />
         ) : (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Field
-            label={es.perfil.nombreLabel}
-            isRequired
-            isInvalid={!!formState.errors.full_name}
-            errorMessage={formState.errors.full_name?.message}
-            inputProps={register("full_name")}
-          />
-          <Field
+          <ControlledField control={control} name="full_name" label={es.perfil.nombreLabel} isRequired />
+          <ControlledField
+            control={control}
+            name="phone"
             label={es.perfil.telefonoLabel}
             description={es.perfil.telefonoAyuda}
-            inputProps={{ type: "tel", autoComplete: "tel", ...register("phone") }}
+            inputProps={{ type: "tel", autoComplete: "tel" }}
           />
 
           <Card>

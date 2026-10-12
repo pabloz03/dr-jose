@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
-import { Field } from "@/components/ui/Field";
+import { ControlledField } from "@/components/ui/ControlledField";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/components/ui/Toast";
@@ -24,20 +24,26 @@ export function AppointmentTypeFormDialog({
 }) {
   const saveType = useSaveAppointmentType();
   const [formError, setFormError] = useState<string | null>(null);
-  const { control, register, handleSubmit, formState } = useForm<
+  const { control, handleSubmit, formState, reset } = useForm<
     z.input<typeof appointmentTypeFormSchema>,
     unknown,
     z.output<typeof appointmentTypeFormSchema>
   >({
     resolver: zodResolver(appointmentTypeFormSchema),
-    defaultValues: {
-      name: type?.name ?? "",
-      duration_min: type?.duration_min ?? 20,
-      buffer_after_min: type?.buffer_after_min ?? 0,
-      is_active: type?.is_active ?? true,
-      bookable_online: type?.bookable_online ?? true,
-    },
+    defaultValues: { name: "", duration_min: 20, buffer_after_min: 0, is_active: true, bookable_online: true },
   });
+
+  useEffect(() => {
+    if (type) {
+      reset({
+        name: type.name,
+        duration_min: type.duration_min,
+        buffer_after_min: type.buffer_after_min,
+        is_active: type.is_active,
+        bookable_online: type.bookable_online,
+      });
+    }
+  }, [type, reset]);
 
   async function onSubmit(values: AppointmentTypeFormValues) {
     setFormError(null);
@@ -58,25 +64,19 @@ export function AppointmentTypeFormDialog({
       onOpenChange={onOpenChange}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Field
-          label={es.admin.ajustes.tipoNombreLabel}
-          isRequired
-          isInvalid={!!formState.errors.name}
-          errorMessage={formState.errors.name?.message}
-          inputProps={register("name")}
-        />
-        <Field
+        <ControlledField control={control} name="name" label={es.admin.ajustes.tipoNombreLabel} isRequired />
+        <ControlledField
+          control={control}
+          name="duration_min"
           label={es.admin.ajustes.tipoDuracionLabel}
           isRequired
-          isInvalid={!!formState.errors.duration_min}
-          errorMessage={formState.errors.duration_min?.message}
-          inputProps={{ type: "number", min: 5, step: 5, ...register("duration_min") }}
+          inputProps={{ type: "number", min: 5, step: 5 }}
         />
-        <Field
+        <ControlledField
+          control={control}
+          name="buffer_after_min"
           label={es.admin.ajustes.tipoBufferLabel}
-          isInvalid={!!formState.errors.buffer_after_min}
-          errorMessage={formState.errors.buffer_after_min?.message}
-          inputProps={{ type: "number", min: 0, step: 5, ...register("buffer_after_min") }}
+          inputProps={{ type: "number", min: 0, step: 5 }}
         />
         <Controller
           control={control}

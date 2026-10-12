@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 import { notifyAppointment } from "@/lib/email";
 import type { Tables } from "@/lib/database.types";
 import type { AppointmentWithDetails } from "@/features/appointments/queries";
@@ -44,17 +45,15 @@ export function useMarkAttendance() {
 }
 
 export function usePatientSearch(query: string) {
+  const { session } = useAuth();
+  const trimmed = query.trim();
   return useQuery({
-    queryKey: ["admin-patient-search", query],
-    enabled: query.trim().length >= 2,
+    queryKey: ["admin-patient-search", trimmed],
+    enabled: !!session,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("patients")
-        .select("*")
-        .is("deleted_at", null)
-        .ilike("full_name", `%${query.trim()}%`)
-        .order("full_name", { ascending: true })
-        .limit(10);
+      let request = supabase.from("patients").select("*").is("deleted_at", null);
+      if (trimmed) request = request.ilike("full_name", `%${trimmed}%`);
+      const { data, error } = await request.order("full_name", { ascending: true }).limit(200);
       if (error) throw error;
       return data as Tables<"patients">[];
     },

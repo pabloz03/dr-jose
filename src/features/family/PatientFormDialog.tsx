@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
-import { Field } from "@/components/ui/Field";
+import { ControlledField } from "@/components/ui/ControlledField";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Dialog } from "@/components/ui/Dialog";
 import { showToast } from "@/components/ui/Toast";
@@ -24,14 +24,16 @@ export function PatientFormDialog({
 }) {
   const savePatient = useSavePatient();
   const [formError, setFormError] = useState<string | null>(null);
-  const { control, register, handleSubmit, formState } = useForm<PatientFormValues>({
+  const { control, handleSubmit, formState, reset } = useForm<PatientFormValues>({
     resolver: zodResolver(patientFormSchema),
-    defaultValues: {
-      full_name: patient?.full_name ?? "",
-      birth_date: patient?.birth_date ?? "",
-      is_self: patient?.is_self ?? false,
-    },
+    defaultValues: { full_name: "", birth_date: "", is_self: false },
   });
+
+  useEffect(() => {
+    if (patient) {
+      reset({ full_name: patient.full_name, birth_date: patient.birth_date ?? "", is_self: patient.is_self });
+    }
+  }, [patient, reset]);
 
   async function onSubmit(values: PatientFormValues) {
     setFormError(null);
@@ -57,16 +59,12 @@ export function PatientFormDialog({
       onOpenChange={onOpenChange}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Field
-          label={es.familia.nombreLabel}
-          isRequired
-          isInvalid={!!formState.errors.full_name}
-          errorMessage={formState.errors.full_name?.message}
-          inputProps={register("full_name")}
-        />
-        <Field
+        <ControlledField control={control} name="full_name" label={es.familia.nombreLabel} isRequired />
+        <ControlledField
+          control={control}
+          name="birth_date"
           label={es.familia.fechaNacimientoLabel}
-          inputProps={{ type: "date", ...register("birth_date") }}
+          inputProps={{ type: "date" }}
         />
         <Controller
           control={control}
