@@ -22,6 +22,11 @@ function btn(href: string, label: string, primary = false): string {
   return `<a href="${href}" style="display:inline-block;min-height:48px;line-height:48px;padding:0 22px;margin:6px 6px 6px 0;border-radius:12px;font:600 16px/48px Arial,sans-serif;text-decoration:none;${style}">${label}</a>`;
 }
 
+/** Botón "Cómo llegar" cuando la clínica tiene maps_url — mismo botón secundario que ya usa la app (AppointmentDetailPage, BookingSuccess). */
+function mapsBtn(appt: any): string {
+  return appt.clinic.maps_url ? btn(appt.clinic.maps_url, "Cómo llegar") : "";
+}
+
 function whatsappNote(appt: any): string {
   return appt.clinic.whatsapp
     ? `Si no puede usar los botones, escríbanos por WhatsApp: ${appt.clinic.whatsapp}.`
@@ -52,7 +57,7 @@ export function renderReminder({ appt, links }: { appt: any; links: Partial<Reco
 <p style="margin:0 0 16px;font-size:18px"><strong>${when}</strong></p>
 <p style="margin:0 0 16px">${appt.clinic.address ?? ""}</p>
 <p style="margin:0 0 8px">${confirmed ? "Su cita ya está confirmada. Si algo cambió, puede reprogramarla o cancelarla:" : "Por favor confirme su asistencia:"}</p>
-<div>${links.confirm ? btn(links.confirm, "Confirmar mi cita", true) : ""}${links.reschedule ? btn(links.reschedule, "Cambiar fecha u hora") : ""}${links.cancel ? btn(links.cancel, "Cancelar cita") : ""}</div>`;
+<div>${links.confirm ? btn(links.confirm, "Confirmar mi cita", true) : ""}${links.reschedule ? btn(links.reschedule, "Cambiar fecha u hora") : ""}${links.cancel ? btn(links.cancel, "Cancelar cita") : ""}${mapsBtn(appt)}</div>`;
   const html = shell({ clinicName: appt.clinic.name, title: "Recordatorio de cita", bodyHtml, footerNote: whatsappNote(appt) });
   const text = textLines([
     appt.clinic.name,
@@ -63,6 +68,7 @@ export function renderReminder({ appt, links }: { appt: any; links: Partial<Reco
     links.confirm && `Confirmar: ${links.confirm}`,
     links.reschedule && `Cambiar fecha u hora: ${links.reschedule}`,
     links.cancel && `Cancelar: ${links.cancel}`,
+    appt.clinic.maps_url && `Cómo llegar: ${appt.clinic.maps_url}`,
   ]);
   return { subject, html, text };
 }
@@ -76,7 +82,7 @@ export function renderBooked({ appt, links }: { appt: any; links: { reschedule: 
 <p style="margin:0 0 16px;font-size:18px"><strong>${when}</strong></p>
 <p style="margin:0 0 16px">${appt.clinic.address ?? ""}</p>
 <p style="margin:0 0 8px">Le enviaremos un recordatorio un día antes. Si necesita cambiar algo:</p>
-<div>${btn(links.reschedule, "Cambiar fecha u hora")}${btn(links.cancel, "Cancelar cita")}</div>`;
+<div>${btn(links.reschedule, "Cambiar fecha u hora")}${btn(links.cancel, "Cancelar cita")}${mapsBtn(appt)}</div>`;
   const html = shell({ clinicName: appt.clinic.name, title: "Su cita quedó reservada", bodyHtml, footerNote: whatsappNote(appt) });
   const text = textLines([
     appt.clinic.name,
@@ -86,6 +92,7 @@ export function renderBooked({ appt, links }: { appt: any; links: { reschedule: 
     appt.clinic.address ?? "",
     `Cambiar fecha u hora: ${links.reschedule}`,
     `Cancelar: ${links.cancel}`,
+    appt.clinic.maps_url && `Cómo llegar: ${appt.clinic.maps_url}`,
   ]);
   return { subject, html, text };
 }
@@ -111,7 +118,7 @@ export function renderRescheduled({ appt, links }: { appt: any; links: { resched
 <p style="margin:0 0 16px">Su cita quedó reprogramada para:</p>
 <p style="margin:0 0 16px;font-size:18px"><strong>${when}</strong></p>
 <p style="margin:0 0 8px">Si necesita cambiar algo de nuevo:</p>
-<div>${btn(links.reschedule, "Cambiar fecha u hora")}${btn(links.cancel, "Cancelar cita")}</div>`;
+<div>${btn(links.reschedule, "Cambiar fecha u hora")}${btn(links.cancel, "Cancelar cita")}${mapsBtn(appt)}</div>`;
   const html = shell({ clinicName: appt.clinic.name, title: "Cita reprogramada", bodyHtml, footerNote: whatsappNote(appt) });
   const text = textLines([
     appt.clinic.name,
@@ -120,6 +127,7 @@ export function renderRescheduled({ appt, links }: { appt: any; links: { resched
     when,
     `Cambiar fecha u hora: ${links.reschedule}`,
     `Cancelar: ${links.cancel}`,
+    appt.clinic.maps_url && `Cómo llegar: ${appt.clinic.maps_url}`,
   ]);
   return { subject, html, text };
 }

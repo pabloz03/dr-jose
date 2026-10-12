@@ -54,9 +54,8 @@ export const es = {
     telefonoLabel: "Teléfono",
     telefonoAyuda: "Para contactarle sobre su cita si es necesario.",
     consentimientoTitulo: "Aviso de privacidad",
-    // TODO(P2): reemplazar por el texto real que entregue la clínica antes de piloto.
     consentimientoTexto:
-      "Usamos sus datos únicamente para gestionar sus citas en esta clínica: nombre, teléfono y correo para contactarle, y el historial de citas de sus pacientes. No compartimos su información con terceros ni la usamos con fines publicitarios. Puede pedir que eliminemos sus datos escribiéndonos.",
+      "En Dental Familiar recopilamos su nombre, teléfono, correo y el de sus pacientes a cargo, junto con su historial de citas, solo para agendar, confirmar y recordarle sus citas por correo o WhatsApp. Guardamos estos datos de forma segura mientras tenga relación con la clínica, con la ayuda de Supabase (base de datos) y Resend (correos). No los vendemos ni compartimos con fines publicitarios. Puede pedirnos ver, corregir o eliminar su información escribiendo a citas@docrodriguez.com o al WhatsApp +502 4149-3273.",
     consentimientoCheckbox: "He leído y acepto el aviso de privacidad.",
     consentimientoRequerido: "Debe aceptar el aviso de privacidad para continuar.",
     guardadoOk: "Perfil guardado.",
