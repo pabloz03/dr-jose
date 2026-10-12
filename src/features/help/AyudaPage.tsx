@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Accessibility, Building2, HelpCircle, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { Building2, HelpCircle, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { es } from "@/i18n/es";
 import { useClinic } from "@/features/booking/queries";
 import { Button } from "@/components/ui/Button";
@@ -83,17 +83,6 @@ export function AyudaPage() {
         <RouterLink to="/perfil" className="mt-2 inline-block text-accent underline">
           {es.ayuda.irAlPerfil}
         </RouterLink>
-      </section>
-
-      <section className="mt-10 border-t border-line pt-8">
-        <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
-          <Accessibility className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
-          {es.ayuda.accesibilidadTitulo}
-        </h2>
-        <p className="mt-2 text-sm text-ink">{es.ayuda.accesibilidadIntro}</p>
-        <p className="mt-2 text-sm text-muted">{es.ayuda.accesibilidadVerificado}</p>
-        <p className="mt-2 text-sm text-muted">{es.ayuda.accesibilidadPendiente}</p>
-        <p className="mt-2 text-sm text-ink">{es.ayuda.accesibilidadContacto}</p>
       </section>
     </main>
   );

@@ -76,8 +76,9 @@ test("reservar como invitado de punta a punta", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Crear cuenta" })).toBeVisible();
 
   await page.getByRole("button", { name: "Crear cuenta" }).click();
-  await expect(page).toHaveURL(/\/ingresar$/);
+  await expect(page).toHaveURL(/\/crear-cuenta$/);
   await expect(page.getByLabel(/Correo electr/)).toHaveValue("tutor@example.com");
+  await expect(page.getByLabel("Nombre completo")).toHaveValue("Juan Pérez");
 });
 
 test("si falla por un error inesperado, muestra un mensaje genérico (no se queda en silencio)", async ({ page }) => {

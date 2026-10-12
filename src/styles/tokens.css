@@ -17,7 +17,10 @@
   --accent-2: #C3F53D; --on-accent-2: #17140E;
   --border-ui: #847A6B; --line: #E4DED2;
   --danger: #B4231B; --success: #15803D; --warning: #8A4B08;
-  --focus: #1D4ED8;
+  /* Igual que --accent: el foco de teclado debe combinar con la
+     paleta, no ser un azul genérico que desentona (ver pasada de
+     login/registro). Contraste ya verificado en contrast.test.ts. */
+  --focus: #C7330B;
   --glass-bg: rgb(251 248 243 / 0.86);
   --glass-border: rgb(255 255 255 / 0.55);
   --glass-blur: 20px;
@@ -57,7 +60,7 @@
     --accent-2: #D4FF5C; --on-accent-2: #17140E;
     --border-ui: #897E6D; --line: #3A332A;
     --danger: #FF8A74; --success: #6FE08C; --warning: #F5B454;
-    --focus: #7DD3FC;
+    --focus: #FF6B40;
     --glass-bg: rgb(33 28 23 / 0.92);
     --glass-border: rgb(255 255 255 / 0.12);
   }
@@ -69,7 +72,7 @@
   --accent-2: #D4FF5C; --on-accent-2: #17140E;
   --border-ui: #897E6D; --line: #3A332A;
   --danger: #FF8A74; --success: #6FE08C; --warning: #F5B454;
-  --focus: #7DD3FC;
+  --focus: #FF6B40;
   --glass-bg: rgb(33 28 23 / 0.92);
   --glass-border: rgb(255 255 255 / 0.12);
 }

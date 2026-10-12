@@ -1,21 +1,73 @@
 import { describe, expect, it } from "vitest";
-import { emailStepSchema, codeStepSchema } from "@/features/auth/schemas";
+import { loginSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema } from "@/features/auth/schemas";
 import { profileFormSchema, patientFormSchema } from "@/features/family/schemas";
 import { guestDatosSchema } from "@/features/booking/guest/schemas";
 
-describe("auth schemas", () => {
+const validSignUp = {
+  full_name: "María López",
+  email: "tutor@example.com",
+  password: "abcd1234",
+  confirmPassword: "abcd1234",
+  consent: true,
+};
+
+describe("login schema", () => {
   it("rechaza un correo con formato inválido", () => {
-    expect(emailStepSchema.safeParse({ email: "no-es-un-correo" }).success).toBe(false);
+    expect(loginSchema.safeParse({ email: "no-es-un-correo", password: "abcd1234" }).success).toBe(false);
+  });
+
+  it("rechaza contraseña vacía", () => {
+    expect(loginSchema.safeParse({ email: "tutor@example.com", password: "" }).success).toBe(false);
+  });
+
+  it("acepta correo y contraseña válidos", () => {
+    expect(loginSchema.safeParse({ email: "tutor@example.com", password: "abcd1234" }).success).toBe(true);
+  });
+});
+
+describe("sign up schema", () => {
+  it("pasa con datos válidos", () => {
+    expect(signUpSchema.safeParse(validSignUp).success).toBe(true);
+  });
+
+  it("rechaza contraseña menor a 8 caracteres", () => {
+    expect(signUpSchema.safeParse({ ...validSignUp, password: "abc123", confirmPassword: "abc123" }).success).toBe(false);
+  });
+
+  it("rechaza contraseña solo con letras", () => {
+    expect(signUpSchema.safeParse({ ...validSignUp, password: "abcdefgh", confirmPassword: "abcdefgh" }).success).toBe(false);
+  });
+
+  it("rechaza contraseña solo con dígitos", () => {
+    expect(signUpSchema.safeParse({ ...validSignUp, password: "12345678", confirmPassword: "12345678" }).success).toBe(false);
+  });
+
+  it("rechaza si la confirmación no coincide", () => {
+    expect(signUpSchema.safeParse({ ...validSignUp, confirmPassword: "otraClave1" }).success).toBe(false);
+  });
+
+  it("rechaza si no se acepta el consentimiento", () => {
+    expect(signUpSchema.safeParse({ ...validSignUp, consent: false }).success).toBe(false);
+  });
+});
+
+describe("forgot password schema", () => {
+  it("rechaza un correo inválido", () => {
+    expect(forgotPasswordSchema.safeParse({ email: "no-es-un-correo" }).success).toBe(false);
   });
 
   it("acepta un correo válido", () => {
-    expect(emailStepSchema.safeParse({ email: "tutor@example.com" }).success).toBe(true);
+    expect(forgotPasswordSchema.safeParse({ email: "tutor@example.com" }).success).toBe(true);
+  });
+});
+
+describe("reset password schema", () => {
+  it("pasa con contraseñas válidas que coinciden", () => {
+    expect(resetPasswordSchema.safeParse({ password: "abcd1234", confirmPassword: "abcd1234" }).success).toBe(true);
   });
 
-  it("exige exactamente 6 dígitos para el código", () => {
-    expect(codeStepSchema.safeParse({ code: "12345" }).success).toBe(false);
-    expect(codeStepSchema.safeParse({ code: "abcdef" }).success).toBe(false);
-    expect(codeStepSchema.safeParse({ code: "123456" }).success).toBe(true);
+  it("rechaza si la confirmación no coincide", () => {
+    expect(resetPasswordSchema.safeParse({ password: "abcd1234", confirmPassword: "distinta1" }).success).toBe(false);
   });
 });
 

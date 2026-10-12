@@ -7,6 +7,13 @@ import { es } from "@/i18n/es";
 
 const HomePage = lazy(() => import("@/features/home/HomePage").then((m) => ({ default: m.HomePage })));
 const LoginPage = lazy(() => import("@/features/auth/LoginPage").then((m) => ({ default: m.LoginPage })));
+const SignUpPage = lazy(() => import("@/features/auth/SignUpPage").then((m) => ({ default: m.SignUpPage })));
+const ForgotPasswordPage = lazy(() =>
+  import("@/features/auth/ForgotPasswordPage").then((m) => ({ default: m.ForgotPasswordPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("@/features/auth/ResetPasswordPage").then((m) => ({ default: m.ResetPasswordPage })),
+);
 const ProfilePage = lazy(() => import("@/features/family/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 const BookingPage = lazy(() => import("@/features/booking/BookingPage").then((m) => ({ default: m.BookingPage })));
 const AppointmentsPage = lazy(() =>
@@ -266,6 +273,30 @@ export const router = createBrowserRouter([
     element: (
       <Lazy>
         <GuestBookingPage />
+      </Lazy>
+    ),
+  },
+  {
+    path: "/crear-cuenta",
+    element: (
+      <Lazy>
+        <SignUpPage />
+      </Lazy>
+    ),
+  },
+  {
+    path: "/recuperar",
+    element: (
+      <Lazy>
+        <ForgotPasswordPage />
+      </Lazy>
+    ),
+  },
+  {
+    path: "/recuperar/confirmar",
+    element: (
+      <Lazy>
+        <ResetPasswordPage />
       </Lazy>
     ),
   },

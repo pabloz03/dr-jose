@@ -2,36 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { KeyRound, Mail } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
+import { PasswordField } from "@/components/ui/PasswordField";
 import { LiveRegion } from "@/components/ui/LiveRegion";
-import { codeStepSchema, emailStepSchema, type CodeStepValues, type EmailStepValues } from "./schemas";
-
-type Step = "email" | "code";
+import { loginSchema, type LoginValues } from "./schemas";
 
 /**
- * Cada paso maneja su propio foco al montar. Sin `motion/react` acá a
- * propósito: esta es la pantalla de aterrizaje sin sesión (E8-S2, LCP ≤
- * 2.5s) y esa librería pesaba ~40KB gzip solo para una transición de
- * paso de 2 pantallas — el resto de la app (stepper de reserva, etc.)
- * sigue usando Motion normalmente, ahí el costo sí se justifica porque
- * nunca es lo primero que carga un visitante sin sesión.
- *
- * Mismo criterio para los `<h1>` de esta pantalla: usan `font-semibold`
- * (Inter, cuerpo ya cargado) en vez de `.font-display` (Archivo) del
- * rediseño. Medido en producción con la familia anterior (Montserrat
- * sobre Open Sans): agregar la fuente display al LCP subía el tiempo
- * real de 2.26s a ~2.58s (la fuente nueva se pide igual aunque sea
- * `font-display: swap/optional`, solo cambia si bloquea el pintado, no
- * si se descarga) — por encima del presupuesto de la AC de E8-S2. El
- * mismo riesgo aplica con Archivo+Inter, así que se mantiene la misma
- * mitigación; a reverificar con Lighthouse en QA tras el cambio de
- * tipografía. El resto de la app sí usa Archivo en sus `<h1>` sin este
- * problema porque no es la primera pantalla de una visita sin sesión.
+ * Esta es la pantalla de aterrizaje sin sesión (E8-S2, LCP ≤ 2.5s) —
+ * sin `motion/react` a propósito, igual que antes del cambio de
+ * magic-link a contraseña (esa librería pesaba ~40KB gzip solo para
+ * una transición de 2 pantallas que ya no existen, pero el mismo
+ * presupuesto de LCP sigue aplicando a esta pantalla única).
  */
 function useFocusOnMount<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -51,186 +37,89 @@ function useFadeIn() {
   return `motion-safe:transition-opacity motion-safe:duration-200 ${visible ? "opacity-100" : "opacity-0"}`;
 }
 
-function EmailStep({
-  onSubmitted,
-  formError,
-  setFormError,
-  defaultEmail,
-}: {
-  onSubmitted: (email: string) => void;
-  formError: string | null;
-  setFormError: (error: string | null) => void;
-  defaultEmail?: string;
-}) {
-  const headingRef = useFocusOnMount<HTMLHeadingElement>();
-  const fadeClass = useFadeIn();
-  const form = useForm<EmailStepValues>({ resolver: zodResolver(emailStepSchema) });
-  const { reset } = form;
-
-  useEffect(() => {
-    if (defaultEmail) reset({ email: defaultEmail });
-  }, [defaultEmail, reset]);
-
-  async function onSubmit(values: EmailStepValues) {
-    setFormError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email: values.email });
-    if (error) {
-      setFormError(error.status === 429 ? es.auth.errorLimite : es.auth.errorEnvio);
-      return;
-    }
-    onSubmitted(values.email);
-  }
-
-  return (
-    <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
-        <Mail className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
-        {es.auth.tituloIngreso}
-      </h1>
-      <form className="mt-6 flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-        <Field
-          label={es.auth.emailLabel}
-          description={es.auth.emailAyuda}
-          isRequired
-          isInvalid={!!form.formState.errors.email}
-          errorMessage={form.formState.errors.email?.message}
-          inputProps={{
-            type: "email",
-            autoComplete: "email",
-            placeholder: es.auth.emailPlaceholder,
-            ...form.register("email"),
-          }}
-        />
-        {formError ? <p className="text-sm text-danger">{formError}</p> : null}
-        <Button type="submit" variant="primary" isPending={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? es.auth.enviandoCodigo : es.auth.enviarCodigo}
-        </Button>
-      </form>
-      <Link to="/reservar-invitado" className="mt-4 inline-block text-sm text-accent underline">
-        {es.reservaInvitado.enlaceIngresar}
-      </Link>
-    </div>
-  );
-}
-
-function CodeStep({
-  email,
-  onVerified,
-  onChangeEmail,
-  formError,
-  setFormError,
-  setAnnounce,
-}: {
-  email: string;
-  onVerified: () => void;
-  onChangeEmail: () => void;
-  formError: string | null;
-  setFormError: (error: string | null) => void;
-  setAnnounce: (message: string) => void;
-}) {
-  const headingRef = useFocusOnMount<HTMLHeadingElement>();
-  const fadeClass = useFadeIn();
-  const form = useForm<CodeStepValues>({ resolver: zodResolver(codeStepSchema) });
-
-  async function onSubmit(values: CodeStepValues) {
-    setFormError(null);
-    const { error } = await supabase.auth.verifyOtp({ email, token: values.code, type: "email" });
-    if (error) {
-      setFormError(es.auth.errorCodigo);
-      return;
-    }
-    setAnnounce(es.auth.sesionIniciada);
-    onVerified();
-  }
-
-  async function onResend() {
-    setFormError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    setAnnounce(error ? "" : es.auth.codigoEnviado);
-    if (error) setFormError(error.status === 429 ? es.auth.errorLimite : es.auth.errorEnvio);
-  }
-
-  return (
-    <div className={fadeClass}>
-      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
-        <KeyRound className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
-        {es.auth.codigoTitulo}
-      </h1>
-      <p className="mt-1 text-muted">{es.auth.codigoDescripcion(email)}</p>
-      <form className="mt-6 flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-        <Field
-          label={es.auth.codigoLabel}
-          description={es.auth.codigoAyuda}
-          isRequired
-          isInvalid={!!form.formState.errors.code}
-          errorMessage={form.formState.errors.code?.message}
-          inputProps={{
-            inputMode: "numeric",
-            autoComplete: "one-time-code",
-            maxLength: 6,
-            ...form.register("code"),
-          }}
-        />
-        {formError ? <p className="text-sm text-danger">{formError}</p> : null}
-        <Button type="submit" variant="primary" isPending={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? es.auth.confirmandoCodigo : es.auth.confirmarCodigo}
-        </Button>
-        <div className="flex justify-between text-sm">
-          <Button variant="quiet" onPress={onChangeEmail}>
-            {es.auth.cambiarCorreo}
-          </Button>
-          <Button variant="quiet" onPress={onResend}>
-            {es.auth.reenviarCodigo}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { session } = useAuth();
   const prefillEmail = (location.state as { prefillEmail?: string } | null)?.prefillEmail;
-  const [step, setStep] = useState<Step>("email");
-  const [email, setEmail] = useState("");
+  const headingRef = useFocusOnMount<HTMLHeadingElement>();
+  const fadeClass = useFadeIn();
   const [announce, setAnnounce] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+  const { reset } = form;
+
+  useEffect(() => {
+    if (prefillEmail) reset({ email: prefillEmail, password: "" });
+  }, [prefillEmail, reset]);
 
   useEffect(() => {
     if (session) navigate("/", { replace: true });
   }, [session, navigate]);
 
+  async function onSubmit(values: LoginValues) {
+    setFormError(null);
+    const { error } = await supabase.auth.signInWithPassword(values);
+    if (error) {
+      setFormError(error.status === 429 ? es.auth.errorLimite : es.auth.errorCredenciales);
+      return;
+    }
+    setAnnounce(es.auth.sesionIniciada);
+  }
+
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-      {step === "email" ? (
-        <EmailStep
-          key="email"
-          formError={formError}
-          setFormError={setFormError}
-          defaultEmail={prefillEmail}
-          onSubmitted={(submittedEmail) => {
-            setEmail(submittedEmail);
-            setStep("code");
-            setFormError(null);
-            setAnnounce(es.auth.codigoEnviado);
-          }}
-        />
-      ) : (
-        <CodeStep
-          key="code"
-          email={email}
-          formError={formError}
-          setFormError={setFormError}
-          setAnnounce={setAnnounce}
-          onChangeEmail={() => {
-            setFormError(null);
-            setStep("email");
-          }}
-          onVerified={() => navigate("/", { replace: true })}
-        />
-      )}
+      <div className={fadeClass}>
+        <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
+          <LogIn className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
+          {es.auth.tituloIngreso}
+        </h1>
+        <form className="mt-6 flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <Field
+            label={es.auth.emailLabel}
+            description={es.auth.emailAyuda}
+            isRequired
+            isInvalid={!!form.formState.errors.email}
+            errorMessage={form.formState.errors.email?.message}
+            inputProps={{
+              type: "email",
+              autoComplete: "email",
+              placeholder: es.auth.emailPlaceholder,
+              ...form.register("email"),
+            }}
+          />
+          <PasswordField
+            label={es.auth.passwordLabel}
+            isRequired
+            autoComplete="current-password"
+            isInvalid={!!form.formState.errors.password}
+            errorMessage={form.formState.errors.password?.message}
+            inputProps={form.register("password")}
+          />
+          {formError ? (
+            <p className="text-sm text-danger" role="alert">
+              {formError}
+            </p>
+          ) : null}
+          <Button type="submit" variant="primary" isPending={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? es.auth.ingresando : es.auth.ingresar}
+          </Button>
+        </form>
+        <div className="mt-4 flex flex-col gap-2 text-sm">
+          <Link to="/recuperar" className="inline-flex min-h-tap items-center text-accent underline">
+            {es.auth.enlaceOlvideContrasena}
+          </Link>
+          <Link to="/crear-cuenta" state={{ prefillEmail }} className="inline-flex min-h-tap items-center text-accent underline">
+            {es.auth.enlaceCrearCuenta}
+          </Link>
+          <Link to="/reservar-invitado" className="inline-flex min-h-tap items-center text-accent underline">
+            {es.reservaInvitado.enlaceIngresar}
+          </Link>
+        </div>
+      </div>
       <LiveRegion message={announce} />
     </main>
   );
