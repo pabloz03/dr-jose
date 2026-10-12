@@ -826,6 +826,61 @@ export type Database = {
           slot_start: string
         }[]
       }
+      get_dashboard_appointment_metrics: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          clinic_id: string
+          clinic_name: string
+          day: string
+          n_appointments: number
+          n_confirmed: number
+          status: Database["public"]["Enums"]["appointment_status"]
+          type_id: string
+          type_name: string
+        }[]
+      }
+      get_dashboard_new_patients: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          day: string
+          n_new_patients: number
+        }[]
+      }
+      guest_book_appointment: {
+        Args: {
+          p_clinic: string
+          p_contact_email: string
+          p_doctor: string
+          p_full_name: string
+          p_start: string
+          p_type: string
+        }
+        Returns: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          clinic_id: string
+          confirmed_at: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          ends_at: string
+          id: string
+          patient_id: string
+          reminder_sent_at: string | null
+          rescheduled_from: string | null
+          source: string
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          type_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       is_doctor: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       mark_appointment_attendance: {
