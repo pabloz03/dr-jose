@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 export function AyudaPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -33,6 +34,10 @@ export function AyudaPage() {
         {clinicQuery.isLoading ? (
           <div className="mt-3">
             <SkeletonCard />
+          </div>
+        ) : clinicQuery.isError ? (
+          <div className="mt-3">
+            <ErrorState onRetry={() => clinicQuery.refetch()} />
           </div>
         ) : !clinic ? (
           <div className="mt-3">

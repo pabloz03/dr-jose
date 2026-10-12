@@ -7,6 +7,7 @@ import { stepVariants } from "@/lib/motion";
 import { Card } from "@/components/ui/Card";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { usePatients } from "@/features/family/queries";
 
 export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patientId: string) => void }) {
@@ -29,6 +30,10 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
       {patientsQuery.isLoading ? (
         <div className="mt-6">
           <SkeletonList count={2} />
+        </div>
+      ) : patientsQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState onRetry={() => patientsQuery.refetch()} />
         </div>
       ) : patients.length === 0 ? (
         <div className="mt-6">

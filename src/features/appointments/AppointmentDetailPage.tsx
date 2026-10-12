@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import {
   useAppointment,
@@ -109,6 +110,17 @@ export function AppointmentDetailPage() {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
         <SkeletonCard />
+      </main>
+    );
+  }
+
+  if (appointmentQuery.isError) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-8">
+        <ErrorState onRetry={() => appointmentQuery.refetch()} />
+        <Button variant="secondary" className="mt-3" onPress={() => navigate("/citas")}>
+          {es.citas.volver}
+        </Button>
       </main>
     );
   }

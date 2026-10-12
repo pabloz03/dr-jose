@@ -5,6 +5,7 @@ import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
 import { Card } from "@/components/ui/Card";
 import { SkeletonList } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useAppointmentTypes } from "../queries";
 
 export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: string) => void }) {
@@ -24,6 +25,10 @@ export function TypeStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (typeId: st
       {typesQuery.isLoading ? (
         <div className="mt-6">
           <SkeletonList count={3} />
+        </div>
+      ) : typesQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState onRetry={() => typesQuery.refetch()} />
         </div>
       ) : (
         <ul className="mt-6 flex flex-col gap-2.5">

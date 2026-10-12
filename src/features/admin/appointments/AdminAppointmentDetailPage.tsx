@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
 import { useMarkAttendance } from "./queries";
 import {
@@ -91,6 +92,14 @@ export function AdminAppointmentDetailPage() {
     return (
       <AdminLayout>
         <SkeletonCard />
+      </AdminLayout>
+    );
+  }
+
+  if (appointmentQuery.isError) {
+    return (
+      <AdminLayout>
+        <ErrorState onRetry={() => appointmentQuery.refetch()} />
       </AdminLayout>
     );
   }

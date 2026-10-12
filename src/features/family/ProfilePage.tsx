@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { formatClinicDateTime } from "@/lib/tz";
@@ -63,6 +64,9 @@ export function ProfilePage() {
 
       <section className="flex flex-col gap-5">
         <h2 className="font-display text-lg text-ink">{es.perfil.datosTitulo}</h2>
+        {profileQuery.isError ? (
+          <ErrorState onRetry={() => profileQuery.refetch()} />
+        ) : (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Field
             label={es.perfil.nombreLabel}
@@ -107,6 +111,7 @@ export function ProfilePage() {
             {es.common.guardar}
           </Button>
         </form>
+        )}
       </section>
 
       <section className="flex flex-col gap-5 border-t border-line pt-10">

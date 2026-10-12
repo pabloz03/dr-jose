@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
@@ -62,6 +63,15 @@ export function TodayPage() {
       {staffQuery.isLoading || appointmentsQuery.isLoading ? (
         <div className="mt-6">
           <SkeletonList count={3} />
+        </div>
+      ) : staffQuery.isError || appointmentsQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState
+            onRetry={() => {
+              if (staffQuery.isError) void staffQuery.refetch();
+              if (appointmentsQuery.isError) void appointmentsQuery.refetch();
+            }}
+          />
         </div>
       ) : appointments.length === 0 ? (
         <div className="mt-6">

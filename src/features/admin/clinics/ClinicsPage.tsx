@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "./queries";
@@ -49,6 +50,10 @@ export function ClinicsPage() {
       {clinicsQuery.isLoading ? (
         <div className="mt-6">
           <SkeletonList count={3} />
+        </div>
+      ) : clinicsQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState onRetry={() => clinicsQuery.refetch()} />
         </div>
       ) : clinics.length === 0 ? (
         <div className="mt-6">

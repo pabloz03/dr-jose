@@ -7,6 +7,7 @@ import { stepVariants } from "@/lib/motion";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { Calendar } from "@/components/ui/Calendar";
 import { SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useAvailableSlots, useClinicSettings, type SlotRow } from "../queries";
 import { groupSlotsByDate } from "../groupSlotsByDate";
 
@@ -61,6 +62,10 @@ export function DateTimeStep({
       {slotsQuery.isLoading ? (
         <div className="mt-6">
           <SkeletonCard />
+        </div>
+      ) : slotsQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState onRetry={() => slotsQuery.refetch()} />
         </div>
       ) : (
         <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-10">

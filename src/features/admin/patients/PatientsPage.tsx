@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { usePatientSearch } from "../appointments/queries";
@@ -39,7 +40,11 @@ export function PatientsPage() {
       </div>
 
       {query.trim().length >= 2 ? (
-        searchQuery.data && searchQuery.data.length > 0 ? (
+        searchQuery.isError ? (
+          <div className="mt-6">
+            <ErrorState onRetry={() => searchQuery.refetch()} />
+          </div>
+        ) : searchQuery.data && searchQuery.data.length > 0 ? (
           <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
             {searchQuery.data.map((p) => (
               <motion.li key={p.id} variants={cardEnter}>

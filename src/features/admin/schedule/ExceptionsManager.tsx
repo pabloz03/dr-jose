@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarOff, Plus, Trash2 } from "lucide-react";
@@ -8,6 +9,8 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { showToast } from "@/components/ui/Toast";
 import { useAddScheduleException, useRemoveScheduleException, useScheduleExceptions } from "./queries";
 import { exceptionFormSchema, type ExceptionFormValues } from "./schemas";
 
@@ -15,6 +18,7 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
   const exceptionsQuery = useScheduleExceptions(clinicId, doctorId);
   const addException = useAddScheduleException();
   const removeException = useRemoveScheduleException();
+  const [formError, setFormError] = useState<string | null>(null);
 
   const { control, register, handleSubmit, watch, reset, formState } = useForm<ExceptionFormValues>({
     resolver: zodResolver(exceptionFormSchema),
@@ -23,16 +27,31 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
   const isClosed = watch("is_closed");
 
   async function onSubmit(values: ExceptionFormValues) {
-    await addException.mutateAsync({
-      clinic_id: clinicId,
-      doctor_id: doctorId,
-      on_date: values.on_date,
-      is_closed: values.is_closed,
-      start_time: values.is_closed ? null : values.start_time || null,
-      end_time: values.is_closed ? null : values.end_time || null,
-      note: values.note || null,
-    });
-    reset({ on_date: "", is_closed: true, start_time: "", end_time: "", note: "" });
+    setFormError(null);
+    try {
+      await addException.mutateAsync({
+        clinic_id: clinicId,
+        doctor_id: doctorId,
+        on_date: values.on_date,
+        is_closed: values.is_closed,
+        start_time: values.is_closed ? null : values.start_time || null,
+        end_time: values.is_closed ? null : values.end_time || null,
+        note: values.note || null,
+      });
+      reset({ on_date: "", is_closed: true, start_time: "", end_time: "", note: "" });
+      showToast({ title: es.admin.horarios.excepcionGuardadoOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
+    }
+  }
+
+  async function onRemove(id: string) {
+    try {
+      await removeException.mutateAsync(id);
+      showToast({ title: es.admin.horarios.excepcionEliminadaOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
+    }
   }
 
   const exceptions = exceptionsQuery.data ?? [];
@@ -41,6 +60,8 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
     <div className="flex flex-col gap-4">
       {exceptionsQuery.isLoading ? (
         <SkeletonList count={2} />
+      ) : exceptionsQuery.isError ? (
+        <ErrorState onRetry={() => exceptionsQuery.refetch()} />
       ) : exceptions.length === 0 ? (
         <EmptyState
           icon={<CalendarOff aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
@@ -58,7 +79,7 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
               </span>
               <button
                 type="button"
-                onClick={() => removeException.mutate(e.id)}
+                onClick={() => onRemove(e.id)}
                 className="inline-flex items-center gap-1 text-sm text-muted hover:text-danger"
               >
                 <Trash2 aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
@@ -94,6 +115,11 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
           <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.horarios.excepcionAgregar}
         </Button>
+        {formError ? (
+          <p className="text-sm text-danger" role="alert">
+            {formError}
+          </p>
+        ) : null}
       </form>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -7,6 +8,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
+import { showToast } from "@/components/ui/Toast";
 import { useSaveAppointmentType } from "./queries";
 import { appointmentTypeFormSchema, type AppointmentTypeFormValues } from "./schemas";
 import type { Tables } from "@/lib/database.types";
@@ -21,6 +23,7 @@ export function AppointmentTypeFormDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const saveType = useSaveAppointmentType();
+  const [formError, setFormError] = useState<string | null>(null);
   const { control, register, handleSubmit, formState } = useForm<
     z.input<typeof appointmentTypeFormSchema>,
     unknown,
@@ -37,8 +40,14 @@ export function AppointmentTypeFormDialog({
   });
 
   async function onSubmit(values: AppointmentTypeFormValues) {
-    await saveType.mutateAsync({ id: type?.id, ...values, sort: type?.sort ?? 0 });
-    onOpenChange(false);
+    setFormError(null);
+    try {
+      await saveType.mutateAsync({ id: type?.id, ...values, sort: type?.sort ?? 0 });
+      onOpenChange(false);
+      showToast({ title: es.admin.ajustes.tipoGuardadoOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
+    }
   }
 
   return (
@@ -78,6 +87,11 @@ export function AppointmentTypeFormDialog({
             </Checkbox>
           )}
         />
+        {formError ? (
+          <p className="text-sm text-danger" role="alert">
+            {formError}
+          </p>
+        ) : null}
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="quiet" onPress={() => onOpenChange(false)}>
             {es.common.cancelar}

@@ -6,6 +6,7 @@ import { es } from "@/i18n/es";
 import { usePatients } from "@/features/family/queries";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { StepProgress } from "./StepProgress";
 import { PatientStep } from "./steps/PatientStep";
 import { TypeStep } from "./steps/TypeStep";
@@ -70,10 +71,18 @@ export function BookingPage() {
   const patient = patientsQuery.data?.find((p) => p.id === patientId) ?? null;
   const type = typesQuery.data?.find((t) => t.id === typeId) ?? null;
 
-  if (clinicQuery.isLoading || !clinicQuery.data) {
+  if (clinicQuery.isLoading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
         <Skeleton className="h-6 w-40" />
+      </main>
+    );
+  }
+
+  if (clinicQuery.isError || !clinicQuery.data) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-8">
+        <ErrorState onRetry={() => clinicQuery.refetch()} />
       </main>
     );
   }
@@ -111,6 +120,9 @@ export function BookingPage() {
               goTo(2);
             }}
           />
+        )}
+        {step === 2 && clinicId && doctorQuery.isError && (
+          <ErrorState key="datetime-error" onRetry={() => doctorQuery.refetch()} />
         )}
         {step === 2 && clinicId && doctorQuery.data && typeId && (
           <DateTimeStep

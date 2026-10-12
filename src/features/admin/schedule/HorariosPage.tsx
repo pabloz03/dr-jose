@@ -4,6 +4,7 @@ import { es } from "@/i18n/es";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { WeeklySchedule } from "./WeeklySchedule";
@@ -44,6 +45,12 @@ export function HorariosPage() {
               {c.name}
             </button>
           ))}
+        </div>
+      ) : null}
+
+      {!isLoading && !staffQuery.isLoading && staffQuery.isError ? (
+        <div className="mt-6">
+          <ErrorState onRetry={() => staffQuery.refetch()} />
         </div>
       ) : null}
 

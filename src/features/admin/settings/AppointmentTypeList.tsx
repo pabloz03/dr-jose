@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentTypes } from "./queries";
 import { AppointmentTypeFormDialog } from "./AppointmentTypeFormDialog";
@@ -23,6 +24,8 @@ export function AppointmentTypeList() {
     <div className="flex flex-col gap-3">
       {typesQuery.isLoading ? (
         <SkeletonList count={3} />
+      ) : typesQuery.isError ? (
+        <ErrorState onRetry={() => typesQuery.refetch()} />
       ) : types.length === 0 ? (
         // Sin `action`: el botón "Agregar tipo de cita" ya queda justo
         // debajo (persistente), duplicarlo aquí sería un CTA redundante.

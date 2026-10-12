@@ -8,6 +8,7 @@ import { Calendar } from "@/components/ui/Calendar";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AdminAppointmentRow } from "../appointments/AdminAppointmentRow";
@@ -96,7 +97,11 @@ export function CalendarPage() {
             <h2 className="font-display text-lg text-ink">
               {formatClinicDateTime(`${selected.toString()}T12:00:00`, "d 'de' MMMM")}
             </h2>
-            <DayAppointments list={appointmentsByDate.get(selected.toString()) ?? []} />
+            <DayAppointments
+              list={appointmentsByDate.get(selected.toString()) ?? []}
+              isError={appointmentsQuery.isError}
+              onRetry={() => appointmentsQuery.refetch()}
+            />
           </div>
         </div>
       ) : view === "semana" ? (
@@ -107,7 +112,12 @@ export function CalendarPage() {
                 {formatClinicDateTime(`${d.toString()}T12:00:00`, "EEE d")}
               </h2>
               <div className="mt-2 flex flex-col gap-1.5">
-                <DayAppointments list={appointmentsByDate.get(d.toString()) ?? []} compact />
+                <DayAppointments
+                  list={appointmentsByDate.get(d.toString()) ?? []}
+                  isError={appointmentsQuery.isError}
+                  onRetry={() => appointmentsQuery.refetch()}
+                  compact
+                />
               </div>
             </div>
           ))}
@@ -135,7 +145,11 @@ export function CalendarPage() {
               <ChevronRight aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
             </button>
           </div>
-          <DayAppointments list={appointmentsByDate.get(selected.toString()) ?? []} />
+          <DayAppointments
+            list={appointmentsByDate.get(selected.toString()) ?? []}
+            isError={appointmentsQuery.isError}
+            onRetry={() => appointmentsQuery.refetch()}
+          />
         </div>
       )}
     </AdminLayout>
@@ -145,11 +159,36 @@ export function CalendarPage() {
 function DayAppointments({
   list,
   compact,
+  isError,
+  onRetry,
 }: {
   list: ReturnType<typeof useAdminAppointmentsRange>["data"];
   compact?: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
 }) {
   const items = list ?? [];
+  // El grid/calendario nunca se reemplaza por un error: solo esta lista de
+  // citas del día/rango seleccionado refleja que la consulta falló.
+  if (isError) {
+    if (compact) {
+      return (
+        <p className="mt-2 flex flex-col items-start gap-1 text-sm text-danger" role="alert">
+          {es.common.errorCargaGenerico}
+          {onRetry ? (
+            <button type="button" onClick={onRetry} className="min-h-tap inline-flex items-center underline">
+              {es.common.reintentar}
+            </button>
+          ) : null}
+        </p>
+      );
+    }
+    return (
+      <div className="mt-2">
+        <ErrorState onRetry={onRetry} />
+      </div>
+    );
+  }
   if (items.length === 0) {
     // En vista semana cada celda es parte de la grilla del calendario; un
     // EmptyState completo por celda sería un reemplazo estructural de esa

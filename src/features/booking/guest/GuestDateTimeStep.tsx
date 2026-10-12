@@ -7,6 +7,7 @@ import { stepVariants } from "@/lib/motion";
 import { CLINIC_TZ, formatClinicDateTime } from "@/lib/tz";
 import { Calendar } from "@/components/ui/Calendar";
 import { SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { groupSlotsByDate } from "@/features/booking/groupSlotsByDate";
 import { useGuestSlots, type GuestSettings } from "./queries";
 import type { SlotRow } from "@/features/booking/queries";
@@ -64,6 +65,10 @@ export function GuestDateTimeStep({
       {slotsQuery.isLoading ? (
         <div className="mt-4">
           <SkeletonCard />
+        </div>
+      ) : slotsQuery.isError ? (
+        <div className="mt-4">
+          <ErrorState onRetry={() => slotsQuery.refetch()} />
         </div>
       ) : (
         <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:gap-8">

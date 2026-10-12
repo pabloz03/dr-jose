@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { cardEnter } from "@/lib/motion";
 import { groupSlotsByDate } from "@/features/booking/groupSlotsByDate";
 import type { SlotRow } from "@/features/booking/queries";
@@ -103,12 +104,16 @@ function ConfirmView({ token, appointment }: { token: string; appointment: Token
 
   async function onConfirm() {
     setError(null);
-    const result = await execute.mutateAsync({ token });
-    if (!result.ok) {
+    try {
+      const result = await execute.mutateAsync({ token });
+      if (!result.ok) {
+        setError(es.accion.errorGenerico);
+        return;
+      }
+      setDone(true);
+    } catch {
       setError(es.accion.errorGenerico);
-      return;
     }
-    setDone(true);
   }
 
   if (done) return <ResultState purpose="confirm" />;
@@ -138,12 +143,16 @@ function CancelView({ token, appointment }: { token: string; appointment: TokenA
 
   async function onCancel() {
     setError(null);
-    const result = await execute.mutateAsync({ token });
-    if (!result.ok) {
-      setError(result.error?.includes("too_late") ? es.accion.errorTooLate : es.accion.errorGenerico);
-      return;
+    try {
+      const result = await execute.mutateAsync({ token });
+      if (!result.ok) {
+        setError(result.error?.includes("too_late") ? es.accion.errorTooLate : es.accion.errorGenerico);
+        return;
+      }
+      setDone(true);
+    } catch {
+      setError(es.accion.errorGenerico);
     }
-    setDone(true);
   }
 
   if (done) return <ResultState purpose="cancel" />;
@@ -184,12 +193,16 @@ function RescheduleView({ token, appointment }: { token: string; appointment: To
 
   async function onPick(slot: SlotRow) {
     setError(null);
-    const result = await execute.mutateAsync({ token, new_start: slot.slot_start });
-    if (!result.ok) {
-      setError(result.error?.includes("too_late") ? es.accion.errorTooLate : es.accion.errorGenerico);
-      return;
+    try {
+      const result = await execute.mutateAsync({ token, new_start: slot.slot_start });
+      if (!result.ok) {
+        setError(result.error?.includes("too_late") ? es.accion.errorTooLate : es.accion.errorGenerico);
+        return;
+      }
+      setDone(true);
+    } catch {
+      setError(es.accion.errorGenerico);
     }
-    setDone(true);
   }
 
   if (done) return <ResultState purpose="reschedule" />;
@@ -205,6 +218,10 @@ function RescheduleView({ token, appointment }: { token: string; appointment: To
       {slotsQuery.isLoading ? (
         <div className="mt-4">
           <SkeletonCard />
+        </div>
+      ) : slotsQuery.isError ? (
+        <div className="mt-4">
+          <ErrorState onRetry={() => slotsQuery.refetch()} />
         </div>
       ) : (
         <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:gap-10">
@@ -252,6 +269,14 @@ export function TokenActionPage() {
     return (
       <Shell>
         <Skeleton label={es.accion.cargandoTitulo} className="h-6 w-48" />
+      </Shell>
+    );
+  }
+
+  if (peek.isError) {
+    return (
+      <Shell>
+        <ErrorState onRetry={() => peek.refetch()} />
       </Shell>
     );
   }

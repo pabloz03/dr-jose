@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 
 const UPCOMING_STATUSES = new Set(["scheduled", "confirmed"]);
 
@@ -105,6 +106,8 @@ export function HomePage() {
 
       {appointmentsQuery.isLoading ? (
         <SkeletonCard />
+      ) : appointmentsQuery.isError ? (
+        <ErrorState onRetry={() => appointmentsQuery.refetch()} />
       ) : nextAppointment ? (
         <NextAppointmentCard appointment={nextAppointment} />
       ) : (

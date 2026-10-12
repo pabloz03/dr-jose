@@ -8,11 +8,12 @@ import { Sheet } from "@/components/ui/Sheet";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Skeleton, SkeletonCard, SkeletonList } from "@/components/ui/Skeleton";
-import { toastQueue } from "@/components/ui/Toast";
+import { showToast } from "@/components/ui/Toast";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -136,6 +137,12 @@ export function UiKitPage() {
         </div>
       </Section>
 
+      <Section title="ErrorState (la carga/acción FALLÓ, distinto de un vacío legítimo)">
+        <div className="w-full max-w-sm">
+          <ErrorState onRetry={() => setLiveMessage("Reintentar desde ErrorState")} />
+        </div>
+      </Section>
+
       <Section title="GlassSurface (solo: header sticky, próxima cita, sheets/diálogos/toasts — nunca listas ni calendario)">
         <GlassSurface className="w-full max-w-sm p-4">
           <p className="font-medium text-ink">Próxima cita</p>
@@ -176,7 +183,7 @@ export function UiKitPage() {
         <Button
           variant="secondary"
           onPress={() =>
-            toastQueue.add({ title: "Cita confirmada", description: "Le enviamos un comprobante por correo.", tone: "success" })
+            showToast({ title: "Cita confirmada", description: "Le enviamos un comprobante por correo.", tone: "success" })
           }
         >
           Mostrar toast

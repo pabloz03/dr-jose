@@ -10,6 +10,7 @@ import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinicSelection } from "../useAdminClinicSelection";
 import { useDoctor, useAppointmentTypes, type SlotRow } from "@/features/booking/queries";
@@ -46,8 +47,12 @@ export function ManualBookingPage() {
 
   async function onCreateGuest() {
     if (!newName.trim()) return;
-    const p = await createGuest.mutateAsync({ full_name: newName.trim(), contact_email: newEmail.trim() || undefined });
-    setPatient(p);
+    try {
+      const p = await createGuest.mutateAsync({ full_name: newName.trim(), contact_email: newEmail.trim() || undefined });
+      setPatient(p);
+    } catch {
+      setAnnounce(es.citas.errorGenerico);
+    }
   }
 
   async function onConfirm() {
@@ -111,7 +116,9 @@ export function ManualBookingPage() {
               onChange: (e) => setQuery(e.target.value),
             }}
           />
-          {searchQuery.data && searchQuery.data.length > 0 ? (
+          {query.trim().length >= 2 && searchQuery.isError ? (
+            <ErrorState onRetry={() => searchQuery.refetch()} />
+          ) : searchQuery.data && searchQuery.data.length > 0 ? (
             <ul className="flex flex-col gap-2">
               {searchQuery.data.map((p) => (
                 <li key={p.id}>
@@ -164,18 +171,28 @@ export function ManualBookingPage() {
             <Stethoscope aria-hidden="true" className="h-4 w-4 text-accent" strokeWidth={2.25} />
             {es.admin.citaManual.tipoLabel}
           </h2>
-          <ul className="mt-3 flex flex-col gap-2">
-            {(typesQuery.data ?? []).map((t) => (
-              <li key={t.id}>
-                <Card onPress={() => setTypeId(t.id)}>
-                  {t.name} <span className="text-sm text-muted">({t.duration_min} min)</span>
-                </Card>
-              </li>
-            ))}
-          </ul>
+          {typesQuery.isError ? (
+            <div className="mt-3">
+              <ErrorState onRetry={() => typesQuery.refetch()} />
+            </div>
+          ) : (
+            <ul className="mt-3 flex flex-col gap-2">
+              {(typesQuery.data ?? []).map((t) => (
+                <li key={t.id}>
+                  <Card onPress={() => setTypeId(t.id)}>
+                    {t.name} <span className="text-sm text-muted">({t.duration_min} min)</span>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       ) : !slot ? (
-        selectedClinic && doctorQuery.data ? (
+        selectedClinic && doctorQuery.isError ? (
+          <div className="mt-6">
+            <ErrorState onRetry={() => doctorQuery.refetch()} />
+          </div>
+        ) : selectedClinic && doctorQuery.data ? (
           <div className="mt-6">
             <DateTimeStep
               dir={1}

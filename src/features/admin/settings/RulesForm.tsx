@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -6,6 +6,8 @@ import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { showToast } from "@/components/ui/Toast";
 import { useClinicSettings } from "@/features/booking/queries";
 import { useUpdateClinicSettings } from "./queries";
 import { rulesFormSchema, type RulesFormValues } from "./schemas";
@@ -13,6 +15,7 @@ import { rulesFormSchema, type RulesFormValues } from "./schemas";
 export function RulesForm({ clinicId }: { clinicId: string }) {
   const settingsQuery = useClinicSettings(clinicId);
   const updateSettings = useUpdateClinicSettings();
+  const [formError, setFormError] = useState<string | null>(null);
   // z.coerce.number() tiene input `unknown` y output `number` — dos
   // generics para que register() y handleSubmit() usen cada tipo correcto.
   const { register, handleSubmit, reset, formState } = useForm<
@@ -36,7 +39,13 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
   }, [settingsQuery.data, reset]);
 
   async function onSubmit(values: RulesFormValues) {
-    await updateSettings.mutateAsync({ clinic_id: clinicId, ...values });
+    setFormError(null);
+    try {
+      await updateSettings.mutateAsync({ clinic_id: clinicId, ...values });
+      showToast({ title: es.admin.ajustes.reglasGuardadoOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
+    }
   }
 
   if (settingsQuery.isLoading) {
@@ -45,6 +54,10 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
         {es.common.cargando}
       </p>
     );
+  }
+
+  if (settingsQuery.isError) {
+    return <ErrorState onRetry={() => settingsQuery.refetch()} />;
   }
 
   return (
@@ -83,6 +96,11 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
         <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
         {es.common.guardar}
       </Button>
+      {formError ? (
+        <p className="text-sm text-danger" role="alert">
+          {formError}
+        </p>
+      ) : null}
     </form>
   );
 }

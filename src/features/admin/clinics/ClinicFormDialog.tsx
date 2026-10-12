@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
@@ -6,6 +7,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
+import { showToast } from "@/components/ui/Toast";
 import { useSaveClinic } from "./queries";
 import { clinicFormSchema, type ClinicFormValues } from "./schemas";
 import type { Tables } from "@/lib/database.types";
@@ -20,6 +22,7 @@ export function ClinicFormDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const saveClinic = useSaveClinic();
+  const [formError, setFormError] = useState<string | null>(null);
   const { control, register, handleSubmit, formState } = useForm<ClinicFormValues>({
     resolver: zodResolver(clinicFormSchema),
     defaultValues: {
@@ -33,16 +36,22 @@ export function ClinicFormDialog({
   });
 
   async function onSubmit(values: ClinicFormValues) {
-    await saveClinic.mutateAsync({
-      id: clinic?.id,
-      name: values.name,
-      address: values.address || null,
-      maps_url: values.maps_url || null,
-      phone: values.phone || null,
-      whatsapp: values.whatsapp || null,
-      is_active: values.is_active,
-    });
-    onOpenChange(false);
+    setFormError(null);
+    try {
+      await saveClinic.mutateAsync({
+        id: clinic?.id,
+        name: values.name,
+        address: values.address || null,
+        maps_url: values.maps_url || null,
+        phone: values.phone || null,
+        whatsapp: values.whatsapp || null,
+        is_active: values.is_active,
+      });
+      onOpenChange(false);
+      showToast({ title: es.admin.clinicas.guardadoOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
+    }
   }
 
   return (
@@ -78,6 +87,11 @@ export function ClinicFormDialog({
             </Checkbox>
           )}
         />
+        {formError ? (
+          <p className="text-sm text-danger" role="alert">
+            {formError}
+          </p>
+        ) : null}
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="quiet" onPress={() => onOpenChange(false)}>
             {es.common.cancelar}

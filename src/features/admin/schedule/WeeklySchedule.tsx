@@ -6,6 +6,8 @@ import { Plus, X } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { showToast } from "@/components/ui/Toast";
 import { useAddClinicHour, useClinicHours, useRemoveClinicHour, OverlapError } from "./queries";
 import { hourFormSchema, type HourFormValues } from "./schemas";
 import { timeRangesOverlap } from "./timeOverlap";
@@ -40,8 +42,19 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
     try {
       await addHour.mutateAsync({ clinic_id: clinicId, doctor_id: doctorId, ...values });
       reset({ weekday: values.weekday, start_time: "08:00", end_time: "17:00" });
+      showToast({ title: es.admin.horarios.guardadoOk, tone: "success" });
     } catch (error) {
       setFormError(error instanceof OverlapError ? es.admin.horarios.errorSolape : es.citas.errorGenerico);
+    }
+  }
+
+  async function onRemoveHour(id: string) {
+    setFormError(null);
+    try {
+      await removeHour.mutateAsync(id);
+      showToast({ title: es.admin.horarios.franjaEliminadaOk, tone: "success" });
+    } catch {
+      setFormError(es.common.errorAccionGenerico);
     }
   }
 
@@ -51,6 +64,8 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
         <p className="text-muted" role="status">
           {es.common.cargando}
         </p>
+      ) : hoursQuery.isError ? (
+        <ErrorState onRetry={() => hoursQuery.refetch()} />
       ) : (
         <div className="flex flex-col gap-3">
           {es.admin.horarios.dias.map((dayLabel, i) => {
@@ -70,7 +85,7 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
                         </span>
                         <button
                           type="button"
-                          onClick={() => removeHour.mutate(h.id)}
+                          onClick={() => onRemoveHour(h.id)}
                           aria-label={`Quitar franja ${h.start_time.slice(0, 5)} a ${h.end_time.slice(0, 5)} el ${dayLabel}`}
                           className="text-muted hover:text-danger"
                         >

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { LiveRegion } from "@/components/ui/LiveRegion";
+import { showToast } from "@/components/ui/Toast";
 import { useClaimableGuestPatients, useClaimPatients } from "./queries";
 
 /**
@@ -35,8 +36,12 @@ export function ClaimGuestPatientsBanner() {
 
   async function onConfirm() {
     const ids = candidates.filter((p) => selected.has(p.id) || allSelected).map((p) => p.id);
-    await claimPatients.mutateAsync(ids.length > 0 ? ids : candidates.map((p) => p.id));
-    setAnnounce(es.familia.reclamarOk);
+    try {
+      await claimPatients.mutateAsync(ids.length > 0 ? ids : candidates.map((p) => p.id));
+      showToast({ title: es.familia.reclamarOk, tone: "success" });
+    } catch {
+      setAnnounce(es.common.errorAccionGenerico);
+    }
   }
 
   return (

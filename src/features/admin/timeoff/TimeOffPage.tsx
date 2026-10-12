@@ -7,7 +7,7 @@ import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { notifyAppointment } from "@/lib/email";
 import { useMyStaff } from "@/features/auth/useMyStaff";
-import { useCancelAppointment, useRescheduleAppointment } from "@/features/appointments/queries";
+import { useCancelAppointment, useRescheduleAppointment, SlotUnavailableError } from "@/features/appointments/queries";
 import { Field } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +16,8 @@ import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { showToast } from "@/components/ui/Toast";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
 import { useAdminClinics } from "../clinics/queries";
@@ -33,6 +35,8 @@ export function TimeOffPage() {
   const [range, setRange] = useState<{ starts_at: string; ends_at: string; clinic_id: string | null } | null>(null);
   const [reschedulingAppt, setReschedulingAppt] = useState<AppointmentWithDetails | null>(null);
   const [resolvedIds, setResolvedIds] = useState<Set<string>>(new Set());
+  const [previewError, setPreviewError] = useState(false);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const staffQuery = useMyStaff();
   const clinicsQuery = useAdminClinics();
@@ -61,34 +65,69 @@ export function TimeOffPage() {
     if (!staffQuery.data) return;
     const { starts_at, ends_at } = timeOffRangeUtc(values);
     const clinicId = values.clinic_id || null;
+    setPreviewError(false);
     setRange({ starts_at, ends_at, clinic_id: clinicId });
     setResolvedIds(new Set());
-    await affected.mutateAsync({ doctorId: staffQuery.data.id, clinicId, from: starts_at, to: ends_at });
+    try {
+      await affected.mutateAsync({ doctorId: staffQuery.data.id, clinicId, from: starts_at, to: ends_at });
+    } catch {
+      setPreviewError(true);
+    }
   }
 
   async function onConfirmBlock() {
     if (!staffQuery.data || !range) return;
-    await createTimeOff.mutateAsync({
-      doctor_id: staffQuery.data.id,
-      clinic_id: range.clinic_id,
-      starts_at: range.starts_at,
-      ends_at: range.ends_at,
-      reason: watch("reason") || null,
-    });
-    // Las citas que el doctor ya movió o canceló en el panel reciben su
-    // propio comprobante (rescheduled/cancelled) desde esos mismos hooks;
-    // acá solo avisamos las que quedaron sin resolver, para que el
-    // paciente sepa que debe reprogramar.
-    for (const a of affected.data ?? []) {
-      if (!resolvedIds.has(a.id)) notifyAppointment("time_off_notice", a.id);
+    setConfirmError(null);
+    try {
+      await createTimeOff.mutateAsync({
+        doctor_id: staffQuery.data.id,
+        clinic_id: range.clinic_id,
+        starts_at: range.starts_at,
+        ends_at: range.ends_at,
+        reason: watch("reason") || null,
+      });
+      // Las citas que el doctor ya movió o canceló en el panel reciben su
+      // propio comprobante (rescheduled/cancelled) desde esos mismos hooks;
+      // acá solo avisamos las que quedaron sin resolver, para que el
+      // paciente sepa que debe reprogramar.
+      for (const a of affected.data ?? []) {
+        if (!resolvedIds.has(a.id)) notifyAppointment("time_off_notice", a.id);
+      }
+      showToast({ title: es.admin.bloqueos.guardadoOk, tone: "success" });
+      setRange(null);
+    } catch {
+      setConfirmError(es.common.errorAccionGenerico);
     }
-    setAnnounce(es.admin.bloqueos.guardadoOk);
-    setRange(null);
   }
 
   async function onCancelAffected(appt: AppointmentWithDetails) {
-    await cancelAppointment.mutateAsync({ id: appt.id, reason: "Bloqueo de agenda" });
-    setResolvedIds((prev) => new Set(prev).add(appt.id));
+    try {
+      await cancelAppointment.mutateAsync({ id: appt.id, reason: "Bloqueo de agenda" });
+      setResolvedIds((prev) => new Set(prev).add(appt.id));
+    } catch {
+      showToast({ title: es.citas.errorGenerico, tone: "danger" });
+    }
+  }
+
+  async function onRemoveTimeOff(id: string) {
+    try {
+      await removeTimeOff.mutateAsync(id);
+      showToast({ title: es.admin.bloqueos.eliminarOk, tone: "success" });
+    } catch {
+      showToast({ title: es.common.errorAccionGenerico, tone: "danger" });
+    }
+  }
+
+  async function onRescheduleAffected(slot: SlotRow) {
+    if (!reschedulingAppt) return;
+    try {
+      await rescheduleAppointment.mutateAsync({ id: reschedulingAppt.id, newStart: slot.slot_start });
+      setResolvedIds((prev) => new Set(prev).add(reschedulingAppt.id));
+      setReschedulingAppt(null);
+    } catch (error) {
+      setReschedulingAppt(null);
+      setAnnounce(error instanceof SlotUnavailableError ? es.reserva.errorSlotTomado : es.citas.errorGenerico);
+    }
   }
 
   const timeOffList = timeOffQuery.data ?? [];
@@ -108,6 +147,13 @@ export function TimeOffPage() {
       <section className="mt-6">
         {timeOffQuery.isLoading ? (
           <SkeletonList count={3} />
+        ) : staffQuery.isError || timeOffQuery.isError ? (
+          <ErrorState
+            onRetry={() => {
+              if (staffQuery.isError) void staffQuery.refetch();
+              if (timeOffQuery.isError) void timeOffQuery.refetch();
+            }}
+          />
         ) : timeOffList.length === 0 ? (
           <EmptyState
             icon={<CalendarOff aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
@@ -126,10 +172,7 @@ export function TimeOffPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={async () => {
-                        await removeTimeOff.mutateAsync(t.id);
-                        setAnnounce(es.admin.bloqueos.eliminarOk);
-                      }}
+                      onClick={() => onRemoveTimeOff(t.id)}
                       className="inline-flex items-center gap-1 text-sm text-muted hover:text-danger"
                     >
                       <Trash2 aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
@@ -172,18 +215,22 @@ export function TimeOffPage() {
             <label htmlFor="clinic_id" className="text-sm font-medium text-ink">
               {es.admin.bloqueos.clinicaLabel}
             </label>
-            <select
-              id="clinic_id"
-              {...register("clinic_id")}
-              className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink"
-            >
-              <option value="">{es.admin.bloqueos.todasLasClinicas}</option>
-              {(clinicsQuery.data ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            {clinicsQuery.isError ? (
+              <ErrorState onRetry={() => clinicsQuery.refetch()} />
+            ) : (
+              <select
+                id="clinic_id"
+                {...register("clinic_id")}
+                className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink"
+              >
+                <option value="">{es.admin.bloqueos.todasLasClinicas}</option>
+                {(clinicsQuery.data ?? []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <Field label={es.admin.bloqueos.motivoLabel} inputProps={register("reason")} />
           {formState.errors.to_date ? <p className="text-sm text-danger">{formState.errors.to_date.message}</p> : null}
@@ -201,6 +248,13 @@ export function TimeOffPage() {
             {affected.isPending ? (
               <div className="mt-2">
                 <SkeletonList count={2} />
+              </div>
+            ) : previewError ? (
+              <div className="mt-2">
+                <ErrorState
+                  title={es.admin.bloqueos.impactoError}
+                  onRetry={() => handleSubmit(onPreview)()}
+                />
               </div>
             ) : (affected.data ?? []).length === 0 ? (
               <div className="mt-2">
@@ -257,6 +311,11 @@ export function TimeOffPage() {
               <CalendarOff aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.admin.bloqueos.confirmarBloqueo}
             </Button>
+            {confirmError ? (
+              <p className="mt-2 text-sm text-danger" role="alert">
+                {confirmError}
+              </p>
+            ) : null}
           </Card>
         ) : null}
       </section>
@@ -268,15 +327,11 @@ export function TimeOffPage() {
           clinicId={reschedulingAppt.clinic_id}
           doctorId={reschedulingAppt.doctor_id}
           typeId={reschedulingAppt.type_id}
-          onSelect={async (slot: SlotRow) => {
-            await rescheduleAppointment.mutateAsync({ id: reschedulingAppt.id, newStart: slot.slot_start });
-            setResolvedIds((prev) => new Set(prev).add(reschedulingAppt.id));
-            setReschedulingAppt(null);
-          }}
+          onSelect={onRescheduleAffected}
         />
       ) : null}
 
-      <LiveRegion message={announce} />
+      <LiveRegion message={announce} assertive />
     </AdminLayout>
   );
 }
