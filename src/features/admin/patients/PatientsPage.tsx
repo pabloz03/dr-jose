@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { SearchX, Users, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
@@ -14,6 +15,7 @@ import { AdminLayout } from "../AdminLayout";
 import { usePatientSearch } from "../appointments/queries";
 
 export function PatientsPage() {
+  const navigate = useNavigate();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [query, setQuery] = useState("");
   const searchQuery = usePatientSearch(query);
@@ -52,7 +54,7 @@ export function PatientsPage() {
         <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
           {searchQuery.data.map((p) => (
             <motion.li key={p.id} variants={cardEnter}>
-              <Card>
+              <Card onPress={() => navigate(`/admin/pacientes/${p.id}`)}>
                 <div className="flex items-center gap-2">
                   <UserRound aria-hidden="true" className="h-4 w-4 text-muted" strokeWidth={2.25} />
                   <span className="font-medium text-ink">{p.full_name}</span>

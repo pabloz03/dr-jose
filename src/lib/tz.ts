@@ -1,4 +1,5 @@
 import { formatInTimeZone, fromZonedTime, toZonedTime } from "date-fns-tz";
+import { es as esLocale } from "date-fns/locale";
 
 /**
  * Única fuente de verdad para zona horaria en el cliente. Guatemala es
@@ -21,7 +22,7 @@ export function fromClinicTime(local: Date | string): Date {
 
 /** Formatea un instante UTC directamente en hora local de la clínica, sin paso intermedio. */
 export function formatClinicDateTime(utc: Date | string, pattern: string): string {
-  return formatInTimeZone(utc, CLINIC_TZ, pattern);
+  return formatInTimeZone(utc, CLINIC_TZ, pattern, { locale: esLocale });
 }
 
 export function formatClinicDateLong(utc: Date | string): string {

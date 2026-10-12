@@ -40,6 +40,9 @@ const CalendarPage = lazy(() =>
 const PatientsPage = lazy(() =>
   import("@/features/admin/patients/PatientsPage").then((m) => ({ default: m.PatientsPage })),
 );
+const PatientDetailPage = lazy(() =>
+  import("@/features/admin/patients/PatientDetailPage").then((m) => ({ default: m.PatientDetailPage })),
+);
 const DashboardPage = lazy(() =>
   import("@/features/admin/dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })),
 );
@@ -196,6 +199,18 @@ export const router = createBrowserRouter([
         <RequireAuth>
           <RequireStaff>
             <PatientsPage />
+          </RequireStaff>
+        </RequireAuth>
+      </Lazy>
+    ),
+  },
+  {
+    path: "/admin/pacientes/:id",
+    element: (
+      <Lazy>
+        <RequireAuth>
+          <RequireStaff>
+            <PatientDetailPage />
           </RequireStaff>
         </RequireAuth>
       </Lazy>

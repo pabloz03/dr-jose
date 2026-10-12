@@ -37,12 +37,14 @@ export function AdminAppointmentDetailPage() {
   const cancelAppointment = useCancelAppointment();
   const rescheduleAppointment = useRescheduleAppointment();
   const markAttendance = useMarkAttendance();
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
-
   const appointment = appointmentQuery.data;
+
+  // El <h1> real solo existe una vez que `appointment` llega (antes se
+  // muestra SkeletonCard, sin heading) — depender de `appointment`, no
+  // de `[]`, para que el foco sí llegue ahí tras la carga asíncrona.
+  useEffect(() => {
+    if (appointment) headingRef.current?.focus();
+  }, [appointment]);
 
   async function onConfirm() {
     if (!appointment) return;

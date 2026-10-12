@@ -322,6 +322,17 @@ export const es = {
       sinResultados: "Sin resultados.",
       invitado: "Invitado",
     },
+    pacienteDetalle: {
+      eyebrow: "Paciente",
+      correoLabel: "Correo",
+      sinCorreo: "Sin correo registrado.",
+      fechaNacimientoLabel: "Fecha de nacimiento",
+      sinFechaNacimiento: "Sin fecha de nacimiento registrada.",
+      pacienteDesde: (fecha: string) => `Paciente desde el ${fecha}`,
+      citasTitulo: "Citas",
+      sinCitas: "Todavía no tiene citas registradas.",
+      volver: "Volver a pacientes",
+    },
     bloqueos: {
       titulo: "Bloqueos",
       agregar: "Agregar bloqueo",
