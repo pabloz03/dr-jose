@@ -44,8 +44,11 @@
      — a propósito, no hereda --ink/--bg/--accent porque esos SÍ
      cambian con el tema y romperían el contraste fijo que este bloque
      necesita. El acento volt/lima es el momento de "logro" que pide el
-     spec, reservado a este único punto focal de la app. */
-  --hero-bg: #171310; --hero-ink: #F5F0E8;
+     spec, reservado a este único punto focal de la app.
+     OJO: tiene que ser más oscuro que el --bg de modo oscuro (#171310)
+     o la tarjeta se vuelve invisible ahí (mismo color exacto que la
+     página) — por eso no es el mismo tono "near-black" que --bg. */
+  --hero-bg: #0D0A07; --hero-ink: #F5F0E8;
   --hero-accent: #D4FF5C; --hero-accent-ink: #17140E;
   /* Mismos valores que --danger/--success/--warning en modo oscuro
      abajo — reusados acá, no inventados, para que Badge onDark lea

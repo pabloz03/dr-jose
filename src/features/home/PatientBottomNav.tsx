@@ -25,7 +25,7 @@ export function PatientBottomNav() {
   return (
     <GlassSurface
       as="section"
-      className="fixed inset-x-0 bottom-0 z-20 rounded-none border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-4 bottom-0 z-20 rounded-t-[var(--r-lg)] rounded-b-none border-b-0 pb-[env(safe-area-inset-bottom)]"
     >
       <nav aria-label={es.home.navPrincipal} className="mx-auto flex max-w-2xl justify-around px-2 py-1.5">
         {links.map((link) => (

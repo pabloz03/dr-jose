@@ -1,8 +1,20 @@
 import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "motion/react";
-import { BarChart3, Calendar, CalendarOff, CalendarPlus, Clock, Menu, Settings, Stethoscope, Users } from "lucide-react";
+import {
+  BarChart3,
+  Calendar,
+  CalendarOff,
+  CalendarPlus,
+  Clock,
+  LogOut,
+  Menu,
+  Settings,
+  Stethoscope,
+  Users,
+} from "lucide-react";
 import { es } from "@/i18n/es";
+import { supabase } from "@/lib/supabase";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { Sheet } from "@/components/ui/Sheet";
 
@@ -55,6 +67,22 @@ function NavItem({
   );
 }
 
+function LogoutButton({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        onNavigate?.();
+        await supabase.auth.signOut();
+      }}
+      className="flex min-h-tap w-full items-center gap-2.5 rounded-full px-3.5 text-sm font-medium text-muted transition-colors duration-150 hover:text-ink"
+    >
+      <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+      {es.home.cerrarSesion}
+    </button>
+  );
+}
+
 export function AdminLayout({ children, wide }: { children: ReactNode; wide?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,6 +105,9 @@ export function AdminLayout({ children, wide }: { children: ReactNode; wide?: bo
             <NavItem key={link.to} to={link.to} end={link.end} label={link.label} Icon={link.icon} vertical />
           ))}
         </nav>
+        <div className="mt-auto border-t border-line pt-2">
+          <LogoutButton />
+        </div>
       </GlassSurface>
 
       {/* Barra superior compacta en mobile: nombre de la app + botón de
@@ -114,6 +145,9 @@ export function AdminLayout({ children, wide }: { children: ReactNode; wide?: bo
             />
           ))}
         </nav>
+        <div className="mt-2 border-t border-line pt-2">
+          <LogoutButton onNavigate={() => setIsMenuOpen(false)} />
+        </div>
       </Sheet>
 
       <main className="min-h-dvh flex-1">
