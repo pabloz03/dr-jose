@@ -115,7 +115,7 @@ export function AdminLayout({ children, wide }: { children: ReactNode; wide?: bo
           en vez de amontonar los 7 enlaces en una fila que se envuelve. */}
       <GlassSurface
         as="section"
-        className="sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-3 md:hidden"
+        className="sticky top-0 z-10 mx-4 flex items-center justify-between rounded-t-none rounded-b-[var(--r-lg)] border-t-0 px-4 py-3 md:hidden"
       >
         <div className="flex items-center gap-2">
           <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />

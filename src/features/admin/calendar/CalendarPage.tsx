@@ -10,6 +10,7 @@ import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
+import { useAdminClinic } from "../AdminClinicContext";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AdminAppointmentRow } from "../appointments/AdminAppointmentRow";
 import { dayRangeUtc, weekRangeUtc, monthRangeUtc, weekDays } from "./dateRanges";
@@ -19,6 +20,7 @@ type View = "dia" | "semana" | "mes";
 export function CalendarPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const staffQuery = useMyStaff();
+  const { clinics, selectedId, setSelectedId } = useAdminClinic();
   const [view, setView] = useState<View>(() => (typeof window !== "undefined" && window.innerWidth >= 768 ? "semana" : "dia"));
   const [selected, setSelected] = useState<CalendarDate>(today(CLINIC_TZ));
 
@@ -32,7 +34,7 @@ export function CalendarPage() {
     return monthRangeUtc(selected);
   }, [view, selected]);
 
-  const appointmentsQuery = useAdminAppointmentsRange(staffQuery.data?.id, range.from, range.to);
+  const appointmentsQuery = useAdminAppointmentsRange(staffQuery.data?.id, range.from, range.to, selectedId);
 
   const appointmentsByDate = useMemo(() => {
     const map = new Map<string, NonNullable<typeof appointmentsQuery.data>>();
@@ -62,6 +64,30 @@ export function CalendarPage() {
         <CalendarRange aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.calendario.titulo}
       </h1>
+
+      {clinics.length > 1 ? (
+        <div role="group" aria-label={es.admin.calendario.filtrarPorClinica} className="mt-6 flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={selectedId === "all"}
+            onClick={() => setSelectedId("all")}
+            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+          >
+            {es.admin.calendario.todasLasClinicas}
+          </button>
+          {clinics.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={selectedId === c.id}
+              onClick={() => setSelectedId(c.id)}
+              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div role="group" aria-label={es.admin.calendario.titulo} className="mt-6 flex gap-2">
         {(["dia", "semana", "mes"] as const).map((v) => {

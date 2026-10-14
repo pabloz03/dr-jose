@@ -24,6 +24,7 @@ export function useClinicHours(clinicId: string | undefined, doctorId: string | 
         .eq("clinic_id", clinicId!)
         .eq("doctor_id", doctorId!)
         .order("weekday", { ascending: true })
+        .order("week_of_month", { ascending: true, nullsFirst: true })
         .order("start_time", { ascending: true });
       if (error) throw error;
       return data as ClinicHour[];

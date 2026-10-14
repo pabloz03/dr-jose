@@ -113,8 +113,10 @@ export const es = {
     titulo: "Reservar cita",
     pasoProgreso: (actual: number, total: number) => `Paso ${actual} de ${total}`,
     pasos: ["Paciente", "Tipo de cita", "Fecha y hora", "Confirmar"],
+    pasoClinica: "Clínica",
     pasoCompletado: "completado",
     pasoActual: "paso actual",
+    clinicaTitulo: "¿En qué clínica desea atenderse?",
     pacienteTitulo: "¿Para quién es la cita?",
     pacienteVacio: "Primero agregue un paciente en su perfil.",
     irAPerfil: "Ir a mi perfil",
@@ -151,6 +153,8 @@ export const es = {
     enlaceIngresar: "¿Prefiere reservar sin crear una cuenta?",
     titulo: "Reservar sin cuenta",
     pasos: ["Paciente", "Tipo de cita", "Fecha y hora", "Confirmar"],
+    pasoClinica: "Clínica",
+    clinicaTitulo: "¿En qué clínica desea atenderse?",
     datosTitulo: "¿Para quién es la cita?",
     datosDescripcion: "No necesita contraseña ni código: le enviaremos un correo con los enlaces para cancelar o reprogramar.",
     nombreLabel: "Nombre completo del paciente",
@@ -280,6 +284,8 @@ export const es = {
       titulo: "Hoy",
       vacio: "Sin citas hoy.",
       siguientePaciente: "Siguiente paciente",
+      filtrarPorClinica: "Filtrar por clínica",
+      todasLasClinicas: "Todas las clínicas",
     },
     calendario: {
       titulo: "Calendario",
@@ -291,6 +297,8 @@ export const es = {
       siguiente: "Siguiente",
       vacio: "Sin citas.",
       citasEnDia: (n: number) => (n === 1 ? "1 cita" : `${n} citas`),
+      filtrarPorClinica: "Filtrar por clínica",
+      todasLasClinicas: "Todas las clínicas",
     },
     citaDetalle: {
       eyebrow: "Agenda",
@@ -304,6 +312,7 @@ export const es = {
     citaManual: {
       eyebrow: "Agenda",
       titulo: "Crear cita manual",
+      elegirClinica: "Elegir clínica",
       buscarPacienteLabel: "Buscar paciente",
       buscarPacientePlaceholder: "Escriba un nombre…",
       sinResultados: "Sin resultados.",
@@ -321,6 +330,8 @@ export const es = {
       buscarPlaceholder: "Buscar por nombre…",
       sinResultados: "Sin resultados.",
       invitado: "Invitado",
+      filtrarPorClinica: "Filtrar por clínica",
+      todasLasClinicas: "Todas las clínicas",
     },
     pacienteDetalle: {
       eyebrow: "Paciente",
@@ -367,6 +378,12 @@ export const es = {
       activaLabel: "Clínica activa (visible para reservar)",
       guardadoOk: "Clínica guardada.",
       vacio: "Todavía no hay clínicas registradas.",
+      confirmarEliminarTitulo: "¿Eliminar esta clínica?",
+      confirmarEliminarCuerpo: (nombre: string) =>
+        `Esta acción no se puede deshacer. Se eliminará "${nombre}" junto con sus horarios y excepciones configuradas.`,
+      eliminadaOk: "Clínica eliminada.",
+      errorTieneCitas:
+        "No se puede eliminar esta clínica porque tiene citas registradas. Puede desactivarla en su lugar, desmarcando \"Clínica activa\".",
     },
     ajustes: {
       titulo: "Ajustes",
@@ -397,6 +414,11 @@ export const es = {
       errorSolape: "Esta franja se cruza con otra del mismo día.",
       errorOrden: "La hora de fin debe ser después de la de inicio.",
       vacio: "Sin franjas este día.",
+      semanaLabel: "Semana del mes",
+      semanaTodas: "Todas las semanas",
+      semanaOrdinal: ["1.ª", "2.ª", "3.ª", "4.ª", "5.ª"],
+      avisoMezclaSemanas:
+        "Para este día ya existe una franja que aplica todas las semanas. Si guarda esta nueva franja, ambas estarán activas en las semanas donde coincidan.",
       excepcionesTitulo: "Excepciones por fecha",
       excepcionAgregar: "Agregar excepción",
       fechaLabel: "Fecha",

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { loginSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema } from "@/features/auth/schemas";
 import { profileFormSchema, patientFormSchema } from "@/features/family/schemas";
 import { guestDatosSchema } from "@/features/booking/guest/schemas";
+import { hourFormSchema } from "@/features/admin/schedule/schemas";
 
 const validSignUp = {
   full_name: "María López",
@@ -90,6 +91,32 @@ describe("patient schema", () => {
 
   it("pasa con datos mínimos válidos", () => {
     expect(patientFormSchema.safeParse({ full_name: "Juan Pérez", birth_date: "", is_self: false }).success).toBe(true);
+  });
+});
+
+describe("hour form schema (horarios de clínica)", () => {
+  const base = { weekday: 6, start_time: "08:00", end_time: "14:00" };
+
+  it("convierte semana del mes vacía (\"\") a null — aplica todas las semanas", () => {
+    const result = hourFormSchema.safeParse({ ...base, week_of_month: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.week_of_month).toBeNull();
+  });
+
+  it("acepta y coerciona una semana específica (1-5)", () => {
+    const result = hourFormSchema.safeParse({ ...base, week_of_month: "3" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.week_of_month).toBe(3);
+  });
+
+  it("rechaza una semana fuera de rango", () => {
+    expect(hourFormSchema.safeParse({ ...base, week_of_month: "6" }).success).toBe(false);
+    expect(hourFormSchema.safeParse({ ...base, week_of_month: "0" }).success).toBe(false);
+  });
+
+  it("rechaza si la hora de fin no es después de la de inicio", () => {
+    const result = hourFormSchema.safeParse({ ...base, week_of_month: "", start_time: "14:00", end_time: "08:00" });
+    expect(result.success).toBe(false);
   });
 });
 

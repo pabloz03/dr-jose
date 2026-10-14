@@ -24,6 +24,8 @@ export interface GuestSettings {
 }
 export interface GuestOptions {
   ok: boolean;
+  /** Presente cuando hay más de una clínica activa y todavía no se eligió una — el resto de campos no vienen hasta elegir. */
+  clinics?: GuestClinic[];
   clinic?: GuestClinic;
   doctor?: GuestDoctor;
   types?: GuestType[];
@@ -37,10 +39,10 @@ async function callGuestBooking<T>(body: Record<string, unknown>): Promise<T> {
   return data as T;
 }
 
-export function useGuestOptions() {
+export function useGuestOptions(clinicId?: string) {
   return useQuery({
-    queryKey: ["guest-booking-options"],
-    queryFn: () => callGuestBooking<GuestOptions>({ mode: "options" }),
+    queryKey: ["guest-booking-options", clinicId],
+    queryFn: () => callGuestBooking<GuestOptions>({ mode: "options", clinic_id: clinicId }),
   });
 }
 

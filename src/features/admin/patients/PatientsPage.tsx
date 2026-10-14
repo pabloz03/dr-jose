@@ -12,13 +12,15 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
+import { useAdminClinic } from "../AdminClinicContext";
 import { usePatientSearch } from "../appointments/queries";
 
 export function PatientsPage() {
   const navigate = useNavigate();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [query, setQuery] = useState("");
-  const searchQuery = usePatientSearch(query);
+  const { clinics, selectedId, setSelectedId } = useAdminClinic();
+  const searchQuery = usePatientSearch(query, selectedId);
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -41,6 +43,30 @@ export function PatientsPage() {
           inputProps={{ value: query, onChange: (e) => setQuery(e.target.value) }}
         />
       </div>
+
+      {clinics.length > 1 ? (
+        <div role="group" aria-label={es.admin.pacientes.filtrarPorClinica} className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={selectedId === "all"}
+            onClick={() => setSelectedId("all")}
+            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+          >
+            {es.admin.pacientes.todasLasClinicas}
+          </button>
+          {clinics.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={selectedId === c.id}
+              onClick={() => setSelectedId(c.id)}
+              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {searchQuery.isLoading ? (
         <div className="mt-6">

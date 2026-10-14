@@ -9,26 +9,63 @@ import { StepProgress } from "@/features/booking/StepProgress";
 import type { SlotRow } from "@/features/booking/queries";
 import type { GuestDatosValues } from "./schemas";
 import { DatosStep } from "./DatosStep";
+import { GuestClinicStep } from "./GuestClinicStep";
 import { GuestTypeStep } from "./GuestTypeStep";
 import { GuestDateTimeStep } from "./GuestDateTimeStep";
 import { GuestConfirmStep } from "./GuestConfirmStep";
 import { GuestBookingSuccess } from "./GuestBookingSuccess";
-import { useGuestOptions, useGuestBook, GuestBookingError } from "./queries";
+import { useGuestOptions, useGuestBook, GuestBookingError, type GuestClinic } from "./queries";
 
-type StepIndex = 0 | 1 | 2 | 3;
+type StepIndex = 0 | 1 | 2 | 3 | 4;
 
 export function GuestBookingPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<StepIndex>(0);
   const [dir, setDir] = useState<1 | -1>(1);
+  const [chosenClinicId, setChosenClinicId] = useState<string | null>(null);
   const [datos, setDatos] = useState<GuestDatosValues | null>(null);
   const [typeId, setTypeId] = useState<string | null>(null);
   const [slot, setSlot] = useState<SlotRow | null>(null);
   const [appointmentId, setAppointmentId] = useState<string | null>(null);
   const [announce, setAnnounce] = useState("");
 
-  const optionsQuery = useGuestOptions();
+  const optionsQuery = useGuestOptions(chosenClinicId ?? undefined);
   const bookGuest = useGuestBook();
+  // El edge function devuelve `clinics` (sin doctor/tipos/settings
+  // todavía) cuando hay más de una clínica activa y no se ha elegido
+  // ninguna — mismo patrón que BookingPage.tsx (sesión con cuenta).
+  // OJO: esto se fija UNA SOLA VEZ con la primera respuesta resuelta,
+  // no se recalcula en cada render — si dependiera de `chosenClinicId`
+  // directamente, el mapeo de índices de paso cambiaría de golpe apenas
+  // se elige una clínica (STEP_DATOS pasa de 1 a 0) mientras `step`
+  // (estado de React) sigue en el valor anterior, saltándose el paso
+  // "Sus datos" en silencio. BookingPage.tsx (con sesión) no tiene este
+  // riesgo porque ahí `needsClinicChoice` depende de `clinics.length`,
+  // un valor que no cambia al elegir una clínica.
+  // Se fija una sola vez, con el patrón oficial de React para "derivar
+  // estado de datos que llegan async sin un efecto" (set-state
+  // condicional directo en el render, no dentro de un efecto — React
+  // descarta ese render a medio hacer y vuelve a renderizar antes de
+  // confirmar, así que nunca es visible). La lista de clínicas solo
+  // viene en la respuesta "sin elegir todavía"; se guarda aparte para
+  // que "Atrás" pueda volver a mostrar las opciones sin quedarse con
+  // una lista vacía una vez elegida una.
+  const [hasClinicStep, setHasClinicStep] = useState<boolean | null>(null);
+  const [cachedClinics, setCachedClinics] = useState<GuestClinic[]>([]);
+  if (hasClinicStep === null && optionsQuery.data?.ok) {
+    setHasClinicStep(!!optionsQuery.data.clinics);
+    if (optionsQuery.data.clinics) setCachedClinics(optionsQuery.data.clinics);
+  }
+  const needsClinicChoice = hasClinicStep === true;
+
+  const STEP_CLINIC = 0;
+  const STEP_DATOS = (needsClinicChoice ? 1 : 0) as StepIndex;
+  const STEP_TYPE = (needsClinicChoice ? 2 : 1) as StepIndex;
+  const STEP_DATETIME = (needsClinicChoice ? 3 : 2) as StepIndex;
+  const STEP_CONFIRM = (needsClinicChoice ? 4 : 3) as StepIndex;
+  const pasos = needsClinicChoice
+    ? [es.reservaInvitado.pasoClinica, ...es.reservaInvitado.pasos]
+    : es.reservaInvitado.pasos;
 
   function goTo(next: StepIndex) {
     setDir(next > step ? 1 : -1);
@@ -56,7 +93,7 @@ export function GuestBookingPage() {
       // Confirmar (ver GuestConfirmStep), sin navegar.
       if (error instanceof GuestBookingError && error.code === "slot_unavailable") {
         setAnnounce(es.reservaInvitado.errorSlotTomado);
-        goTo(2);
+        goTo(STEP_DATETIME);
       }
     }
   }
@@ -74,7 +111,7 @@ export function GuestBookingPage() {
     );
   }
 
-  if (!optionsQuery.data.ok || !clinic || !doctor) {
+  if (!optionsQuery.data.ok || (!needsClinicChoice && (!clinic || !doctor))) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
         <p className="text-danger" role="alert">
@@ -84,7 +121,7 @@ export function GuestBookingPage() {
     );
   }
 
-  if (appointmentId && datos && type) {
+  if (appointmentId && datos && type && clinic) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
         <GuestBookingSuccess
@@ -102,21 +139,32 @@ export function GuestBookingPage() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
       <h1 className="font-display text-2xl text-ink">{es.reservaInvitado.titulo}</h1>
-      <StepProgress current={step} steps={es.reservaInvitado.pasos} label={es.reservaInvitado.titulo} />
+      <StepProgress current={step} steps={pasos} label={es.reservaInvitado.titulo} />
 
       <AnimatePresence mode="wait" initial={false} custom={dir}>
-        {step === 0 && (
+        {step === STEP_CLINIC && needsClinicChoice && (
+          <GuestClinicStep
+            key="clinic"
+            dir={dir}
+            clinics={cachedClinics}
+            onSelect={(id) => {
+              setChosenClinicId(id);
+              goTo(STEP_DATOS);
+            }}
+          />
+        )}
+        {step === STEP_DATOS && (
           <DatosStep
             key="datos"
             dir={dir}
             defaultValues={datos ?? { full_name: "", contact_email: "", website: "" }}
             onContinue={(values) => {
               setDatos(values);
-              goTo(1);
+              goTo(STEP_TYPE);
             }}
           />
         )}
-        {step === 1 && (
+        {step === STEP_TYPE && (
           <GuestTypeStep
             key="type"
             dir={dir}
@@ -124,11 +172,11 @@ export function GuestBookingPage() {
             isLoading={false}
             onSelect={(id) => {
               setTypeId(id);
-              goTo(2);
+              goTo(STEP_DATETIME);
             }}
           />
         )}
-        {step === 2 && typeId && (
+        {step === STEP_DATETIME && typeId && clinic && doctor && (
           <GuestDateTimeStep
             key="datetime"
             dir={dir}
@@ -138,11 +186,11 @@ export function GuestBookingPage() {
             settings={settings}
             onSelect={(s) => {
               setSlot(s);
-              goTo(3);
+              goTo(STEP_CONFIRM);
             }}
           />
         )}
-        {step === 3 && datos && type && slot && (
+        {step === STEP_CONFIRM && datos && type && slot && clinic && (
           <GuestConfirmStep
             key="confirm"
             dir={dir}

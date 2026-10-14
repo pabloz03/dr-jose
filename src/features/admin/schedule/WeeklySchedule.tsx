@@ -18,21 +18,27 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
   const removeHour = useRemoveClinicHour();
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, formState } = useForm<
+  const { register, handleSubmit, reset, watch, formState } = useForm<
     z.input<typeof hourFormSchema>,
     unknown,
     z.output<typeof hourFormSchema>
   >({
     resolver: zodResolver(hourFormSchema),
-    defaultValues: { weekday: 1, start_time: "08:00", end_time: "17:00" },
+    defaultValues: { weekday: 1, week_of_month: "", start_time: "08:00", end_time: "17:00" },
   });
 
   const hours = hoursQuery.data ?? [];
 
+  const watchedWeekday = Number(watch("weekday"));
+  const watchedWeekOfMonth = watch("week_of_month");
+  const isAddingSpecificWeek = watchedWeekOfMonth !== "" && watchedWeekOfMonth !== undefined;
+  const showMixedBucketNotice =
+    isAddingSpecificWeek && hours.some((h) => h.weekday === watchedWeekday && h.week_of_month === null);
+
   async function onSubmit(values: HourFormValues) {
     setFormError(null);
-    const sameDay = hours.filter((h) => h.weekday === values.weekday);
-    const clashes = sameDay.some((h) =>
+    const sameBucket = hours.filter((h) => h.weekday === values.weekday && h.week_of_month === values.week_of_month);
+    const clashes = sameBucket.some((h) =>
       timeRangesOverlap(values.start_time, values.end_time, h.start_time.slice(0, 5), h.end_time.slice(0, 5)),
     );
     if (clashes) {
@@ -41,7 +47,12 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
     }
     try {
       await addHour.mutateAsync({ clinic_id: clinicId, doctor_id: doctorId, ...values });
-      reset({ weekday: values.weekday, start_time: "08:00", end_time: "17:00" });
+      reset({
+        weekday: values.weekday,
+        week_of_month: values.week_of_month === null ? "" : values.week_of_month,
+        start_time: "08:00",
+        end_time: "17:00",
+      });
       showToast({ title: es.admin.horarios.guardadoOk, tone: "success" });
     } catch (error) {
       setFormError(error instanceof OverlapError ? es.admin.horarios.errorSolape : es.citas.errorGenerico);
@@ -78,21 +89,26 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
                   <span className="text-sm text-muted">{es.admin.horarios.vacio}</span>
                 ) : (
                   <ul className="flex flex-wrap gap-2">
-                    {dayHours.map((h) => (
-                      <li key={h.id} className="flex items-center gap-1 rounded-sm border border-line bg-surface px-2 py-1 text-sm">
-                        <span>
-                          {h.start_time.slice(0, 5)}–{h.end_time.slice(0, 5)}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => onRemoveHour(h.id)}
-                          aria-label={`Quitar franja ${h.start_time.slice(0, 5)} a ${h.end_time.slice(0, 5)} el ${dayLabel}`}
-                          className="text-muted hover:text-danger"
-                        >
-                          <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
-                        </button>
-                      </li>
-                    ))}
+                    {dayHours.map((h) => {
+                      const weekPrefix =
+                        h.week_of_month != null ? `${es.admin.horarios.semanaOrdinal[h.week_of_month - 1]} semana · ` : "";
+                      return (
+                        <li key={h.id} className="flex items-center gap-1 rounded-sm border border-line bg-surface px-2 py-1 text-sm">
+                          <span>
+                            {weekPrefix}
+                            {h.start_time.slice(0, 5)}–{h.end_time.slice(0, 5)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => onRemoveHour(h.id)}
+                            aria-label={`Quitar franja ${weekPrefix}${h.start_time.slice(0, 5)} a ${h.end_time.slice(0, 5)} el ${dayLabel}`}
+                            className="text-muted hover:text-danger"
+                          >
+                            <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>
@@ -101,15 +117,19 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
         </div>
       )}
 
-      <form className="flex flex-wrap items-end gap-3" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="flex flex-col gap-1.5">
+      <form
+        className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
           <label htmlFor="weekday" className="text-sm font-medium text-ink">
             {es.admin.horarios.diaLabel}
           </label>
           <select
             id="weekday"
             {...register("weekday")}
-            className="min-h-tap rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink"
+            className="min-h-tap w-full rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink sm:w-auto"
           >
             {es.admin.horarios.dias.map((label, i) => (
               <option key={i + 1} value={i + 1}>
@@ -118,23 +138,48 @@ export function WeeklySchedule({ clinicId, doctorId }: { clinicId: string; docto
             ))}
           </select>
         </div>
-        <Field
-          label={es.admin.horarios.desdeLabel}
-          isInvalid={!!formState.errors.start_time}
-          errorMessage={formState.errors.start_time?.message}
-          inputProps={{ type: "time", ...register("start_time") }}
-        />
-        <Field
-          label={es.admin.horarios.hastaLabel}
-          isInvalid={!!formState.errors.end_time}
-          errorMessage={formState.errors.end_time?.message}
-          inputProps={{ type: "time", ...register("end_time") }}
-        />
-        <Button type="submit" variant="primary" isPending={addHour.isPending}>
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
+          <label htmlFor="week_of_month" className="text-sm font-medium text-ink">
+            {es.admin.horarios.semanaLabel}
+          </label>
+          <select
+            id="week_of_month"
+            aria-describedby="mixed-bucket-notice"
+            {...register("week_of_month")}
+            className="min-h-tap w-full rounded-sm border border-border-ui bg-surface px-3 text-[16px] text-ink sm:w-auto"
+          >
+            <option value="">{es.admin.horarios.semanaTodas}</option>
+            {es.admin.horarios.semanaOrdinal.map((label, i) => (
+              <option key={i + 1} value={i + 1}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Field
+            label={es.admin.horarios.desdeLabel}
+            isInvalid={!!formState.errors.start_time}
+            errorMessage={formState.errors.start_time?.message}
+            inputProps={{ type: "time", ...register("start_time") }}
+            className="w-full sm:w-auto"
+          />
+          <Field
+            label={es.admin.horarios.hastaLabel}
+            isInvalid={!!formState.errors.end_time}
+            errorMessage={formState.errors.end_time?.message}
+            inputProps={{ type: "time", ...register("end_time") }}
+            className="w-full sm:w-auto"
+          />
+        </div>
+        <Button type="submit" variant="primary" isPending={addHour.isPending} className="w-full sm:w-auto">
           <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
           {es.admin.horarios.franjaAgregar}
         </Button>
       </form>
+      <p id="mixed-bucket-notice" className="text-sm text-muted" aria-live="polite" aria-atomic="true">
+        {showMixedBucketNotice ? es.admin.horarios.avisoMezclaSemanas : null}
+      </p>
       {formError ? (
         <p className="text-danger" role="alert">
           {formError}

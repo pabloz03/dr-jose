@@ -26,9 +26,9 @@ export interface FieldProps extends RACTextFieldProps {
  * Field compuesto (Label + Input + descripción + error) para el caso común.
  * Para layouts custom, componer TextField/Label/Input de RAC directamente.
  */
-export function Field({ label, description, errorMessage, inputProps, children, ...props }: FieldProps) {
+export function Field({ label, description, errorMessage, inputProps, children, className, ...props }: FieldProps) {
   return (
-    <RACTextField {...props} className="flex flex-col gap-1.5">
+    <RACTextField {...props} className={`flex flex-col gap-1.5 ${className ?? ""}`}>
       <Label className="text-sm font-medium text-ink">{label}</Label>
       {children ?? <Input {...inputProps} />}
       {description ? <Text slot="description" className="text-sm text-muted">{description}</Text> : null}

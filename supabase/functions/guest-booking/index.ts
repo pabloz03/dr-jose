@@ -20,16 +20,32 @@ const cors = {
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-async function getOptions() {
-  const [{ data: clinic }, { data: types }] = await Promise.all([
-    sb.from("clinics").select("id,name,address,maps_url,timezone").eq("is_active", true).limit(1).maybeSingle(),
-    sb.from("appointment_types").select("id,name,duration_min").eq("is_active", true).eq("bookable_online", true).order("sort", { ascending: true }),
-  ]);
-  if (!clinic) return { ok: false, error: "no_clinic" };
+async function getOptions(clinicId?: string) {
+  const { data: activeClinics } = await sb
+    .from("clinics")
+    .select("id,name,address,maps_url,timezone")
+    .eq("is_active", true)
+    .order("created_at", { ascending: true });
+  if (!activeClinics || activeClinics.length === 0) return { ok: false, error: "no_clinic" };
 
-  const [{ data: staffRows }, { data: settings }] = await Promise.all([
+  // Con una sola clínica activa se autoselecciona (mismo comportamiento
+  // que cuando solo existía una). Con más de una, si todavía no llega
+  // clinic_id, se devuelve la lista para que el cliente muestre un paso
+  // de selección antes de resolver doctor/tipos/settings.
+  let clinic;
+  if (activeClinics.length === 1) {
+    clinic = activeClinics[0];
+  } else if (clinicId) {
+    clinic = activeClinics.find((c) => c.id === clinicId);
+    if (!clinic) return { ok: false, error: "no_clinic" };
+  } else {
+    return { ok: true, clinics: activeClinics };
+  }
+
+  const [{ data: staffRows }, { data: settings }, { data: types }] = await Promise.all([
     sb.from("clinic_staff").select("staff:staff_id(id, full_name, role)").eq("clinic_id", clinic.id),
     sb.from("clinic_settings").select("min_cancel_hours,max_booking_days").eq("clinic_id", clinic.id).maybeSingle(),
+    sb.from("appointment_types").select("id,name,duration_min").eq("is_active", true).eq("bookable_online", true).order("sort", { ascending: true }),
   ]);
   // deno-lint-ignore no-explicit-any
   const doctor = (staffRows ?? []).map((r: any) => r.staff).find((s: any) => s?.role === "doctor");
@@ -71,7 +87,7 @@ Deno.serve(async (req) => {
   const mode = body?.mode;
 
   if (mode === "options") {
-    return Response.json(await getOptions(), { headers: cors });
+    return Response.json(await getOptions(body?.clinic_id), { headers: cors });
   }
 
   if (mode === "slots") {

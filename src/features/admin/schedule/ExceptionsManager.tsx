@@ -102,9 +102,17 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
           )}
         />
         {!isClosed ? (
-          <div className="flex gap-3">
-            <Field label={es.admin.horarios.desdeLabel} inputProps={{ type: "time", ...register("start_time") }} />
-            <Field label={es.admin.horarios.hastaLabel} inputProps={{ type: "time", ...register("end_time") }} />
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Field
+              label={es.admin.horarios.desdeLabel}
+              inputProps={{ type: "time", ...register("start_time") }}
+              className="w-full sm:w-auto"
+            />
+            <Field
+              label={es.admin.horarios.hastaLabel}
+              inputProps={{ type: "time", ...register("end_time") }}
+              className="w-full sm:w-auto"
+            />
           </div>
         ) : null}
         <Field label={es.admin.horarios.notaLabel} inputProps={register("note")} />

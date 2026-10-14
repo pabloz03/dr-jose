@@ -192,9 +192,19 @@ export function TimeOffPage() {
           {es.admin.bloqueos.agregar}
         </h2>
         <form className="mt-5 flex flex-col gap-4" onSubmit={handleSubmit(onPreview)} noValidate>
-          <div className="flex gap-3">
-            <Field label={es.admin.bloqueos.desdeLabel} isRequired inputProps={{ type: "date", ...register("from_date") }} />
-            <Field label={es.admin.bloqueos.hastaLabel} isRequired inputProps={{ type: "date", ...register("to_date") }} />
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Field
+              label={es.admin.bloqueos.desdeLabel}
+              isRequired
+              inputProps={{ type: "date", ...register("from_date") }}
+              className="w-full sm:w-auto"
+            />
+            <Field
+              label={es.admin.bloqueos.hastaLabel}
+              isRequired
+              inputProps={{ type: "date", ...register("to_date") }}
+              className="w-full sm:w-auto"
+            />
           </div>
           <Controller
             control={control}
@@ -206,9 +216,17 @@ export function TimeOffPage() {
             )}
           />
           {!allDay ? (
-            <div className="flex gap-3">
-              <Field label={es.admin.horarios.desdeLabel} inputProps={{ type: "time", ...register("from_time") }} />
-              <Field label={es.admin.horarios.hastaLabel} inputProps={{ type: "time", ...register("to_time") }} />
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Field
+                label={es.admin.horarios.desdeLabel}
+                inputProps={{ type: "time", ...register("from_time") }}
+                className="w-full sm:w-auto"
+              />
+              <Field
+                label={es.admin.horarios.hastaLabel}
+                inputProps={{ type: "time", ...register("to_time") }}
+                className="w-full sm:w-auto"
+              />
             </div>
           ) : null}
           <div className="flex flex-col gap-1.5">

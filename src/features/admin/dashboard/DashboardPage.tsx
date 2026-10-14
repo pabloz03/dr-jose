@@ -12,7 +12,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
 import { monthRangeUtc } from "../calendar/dateRanges";
 import { useDashboardAppointmentMetrics, useDashboardNewPatients } from "./queries";
-import { useDashboardClinicFilter } from "./useDashboardClinicFilter";
+import { useAdminClinic } from "../AdminClinicContext";
 import { bucketKey, bucketLabel, trailingBucketKeys, type Granularity } from "./bucketing";
 import { TrendChart } from "./TrendChart";
 import { StatusBreakdown } from "./StatusBreakdown";
@@ -41,7 +41,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string | number;
 export function DashboardPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [granularity, setGranularity] = useState<Granularity>("semana");
-  const { clinics, filter, setFilter } = useDashboardClinicFilter();
+  const { clinics, selectedId: filter, setSelectedId: setFilter } = useAdminClinic();
 
   useEffect(() => {
     headingRef.current?.focus();

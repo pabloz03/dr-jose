@@ -5,6 +5,8 @@ import type { Tables, TablesInsert, TablesUpdate } from "@/lib/database.types";
 
 type Clinic = Tables<"clinics">;
 
+export class ClinicHasAppointmentsError extends Error {}
+
 export function useAdminClinics() {
   const { session } = useAuth();
   return useQuery({
@@ -40,6 +42,23 @@ export function useSaveClinic() {
       const { error: settingsError } = await supabase.from("clinic_settings").insert({ clinic_id: data.id });
       if (settingsError) throw settingsError;
       return data as Clinic;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-clinics"] }),
+  });
+}
+
+export function useDeleteClinic() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("clinics").delete().eq("id", id);
+      if (error) {
+        // 23503: la FK de appointments.clinic_id es NO ACTION a propósito —
+        // Postgres ya rechaza borrar una clínica con historial de citas,
+        // sin necesidad de ninguna validación extra de nuestro lado.
+        if (error.code === "23503") throw new ClinicHasAppointmentsError(error.message);
+        throw new Error(error.message);
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-clinics"] }),
   });

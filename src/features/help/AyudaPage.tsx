@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Building2, HelpCircle, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { es } from "@/i18n/es";
-import { useClinic } from "@/features/booking/queries";
+import { useClinics } from "@/features/booking/queries";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SkeletonCard } from "@/components/ui/Skeleton";
@@ -11,13 +11,13 @@ import { ErrorState } from "@/components/ui/ErrorState";
 
 export function AyudaPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const clinicQuery = useClinic();
+  const clinicsQuery = useClinics();
 
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
-  const clinic = clinicQuery.data;
+  const clinics = clinicsQuery.data ?? [];
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col px-4 py-8">
@@ -31,46 +31,52 @@ export function AyudaPage() {
           <Phone className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.contactoTitulo}
         </h2>
-        {clinicQuery.isLoading ? (
+        {clinicsQuery.isLoading ? (
           <div className="mt-3">
             <SkeletonCard />
           </div>
-        ) : clinicQuery.isError ? (
+        ) : clinicsQuery.isError ? (
           <div className="mt-3">
-            <ErrorState onRetry={() => clinicQuery.refetch()} />
+            <ErrorState onRetry={() => clinicsQuery.refetch()} />
           </div>
-        ) : !clinic ? (
+        ) : clinics.length === 0 ? (
           <div className="mt-3">
             <EmptyState icon={<Building2 className="h-8 w-8" strokeWidth={2.25} />} title={es.ayuda.sinClinica} />
           </div>
         ) : (
-          <Card className="mt-3 flex flex-col gap-2">
-            <p className="font-medium text-ink">{clinic.name}</p>
-            {clinic.address ? <p className="text-sm text-muted">{clinic.address}</p> : null}
-            <div className="mt-2 flex flex-wrap gap-2">
-              {clinic.phone ? (
-                <Button variant="secondary" onPress={() => window.open(`tel:${clinic.phone}`, "_self")}>
-                  <Phone className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-                  {es.ayuda.llamar}
-                </Button>
-              ) : null}
-              {clinic.whatsapp ? (
-                <Button
-                  variant="secondary"
-                  onPress={() => window.open(`https://wa.me/${clinic.whatsapp!.replace(/\D/g, "")}`, "_blank", "noopener")}
-                >
-                  <MessageCircle className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-                  {es.ayuda.escribirWhatsapp}
-                </Button>
-              ) : null}
-              {clinic.maps_url ? (
-                <Button variant="secondary" onPress={() => window.open(clinic.maps_url!, "_blank", "noopener")}>
-                  <MapPin className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-                  {es.ayuda.comoLlegar}
-                </Button>
-              ) : null}
-            </div>
-          </Card>
+          <div className="mt-3 flex flex-col gap-3">
+            {clinics.map((clinic) => (
+              <Card key={clinic.id} className="flex flex-col gap-2">
+                <p className="font-medium text-ink">{clinic.name}</p>
+                {clinic.address ? <p className="text-sm text-muted">{clinic.address}</p> : null}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {clinic.phone ? (
+                    <Button variant="secondary" onPress={() => window.open(`tel:${clinic.phone}`, "_self")}>
+                      <Phone className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+                      {es.ayuda.llamar}
+                    </Button>
+                  ) : null}
+                  {clinic.whatsapp ? (
+                    <Button
+                      variant="secondary"
+                      onPress={() =>
+                        window.open(`https://wa.me/${clinic.whatsapp!.replace(/\D/g, "")}`, "_blank", "noopener")
+                      }
+                    >
+                      <MessageCircle className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+                      {es.ayuda.escribirWhatsapp}
+                    </Button>
+                  ) : null}
+                  {clinic.maps_url ? (
+                    <Button variant="secondary" onPress={() => window.open(clinic.maps_url!, "_blank", "noopener")}>
+                      <MapPin className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+                      {es.ayuda.comoLlegar}
+                    </Button>
+                  ) : null}
+                </div>
+              </Card>
+            ))}
+          </div>
         )}
       </section>
 

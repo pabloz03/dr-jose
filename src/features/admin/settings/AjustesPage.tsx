@@ -4,13 +4,13 @@ import { es } from "@/i18n/es";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AdminLayout } from "../AdminLayout";
-import { useAdminClinicSelection } from "../useAdminClinicSelection";
+import { useResolvedAdminClinic } from "../AdminClinicContext";
 import { RulesForm } from "./RulesForm";
 import { AppointmentTypeList } from "./AppointmentTypeList";
 
 export function AjustesPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useAdminClinicSelection();
+  const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useResolvedAdminClinic();
 
   useEffect(() => {
     headingRef.current?.focus();

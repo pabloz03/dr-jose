@@ -12,7 +12,7 @@ import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
-import { useAdminClinicSelection } from "../useAdminClinicSelection";
+import { useResolvedAdminClinic } from "../AdminClinicContext";
 import { useDoctor, useAppointmentTypes, type SlotRow } from "@/features/booking/queries";
 import { DateTimeStep } from "@/features/booking/steps/DateTimeStep";
 import { formatClinicDateLong } from "@/lib/tz";
@@ -24,7 +24,7 @@ export function ManualBookingPage() {
   const navigate = useNavigate();
   const [announce, setAnnounce] = useState("");
 
-  const { selectedClinic } = useAdminClinicSelection();
+  const { clinics, selectedId, setSelectedId, selectedClinic } = useResolvedAdminClinic();
   const doctorQuery = useDoctor(selectedClinic?.id);
   const typesQuery = useAppointmentTypes();
 
@@ -105,6 +105,22 @@ export function ManualBookingPage() {
         <CalendarPlus aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
         {es.admin.citaManual.titulo}
       </h1>
+
+      {clinics.length > 1 ? (
+        <div role="group" aria-label={es.admin.citaManual.elegirClinica} className="mt-6 flex gap-2">
+          {clinics.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={c.id === selectedId}
+              onClick={() => setSelectedId(c.id)}
+              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${c.id === selectedId ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {!patient ? (
         <div className="mt-6 flex flex-col gap-4">

@@ -4,6 +4,7 @@ import { MotionConfig } from "motion/react";
 import { I18nProvider } from "react-aria-components/I18nProvider";
 import { AppToastRegion } from "@/components/ui/Toast";
 import { AuthProvider } from "@/lib/auth-context";
+import { AdminClinicProvider } from "@/features/admin/AdminClinicContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,8 +21,10 @@ export function Providers({ children }: { children: ReactNode }) {
       <MotionConfig reducedMotion="user">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            {children}
-            <AppToastRegion />
+            <AdminClinicProvider>
+              {children}
+              <AppToastRegion />
+            </AdminClinicProvider>
           </AuthProvider>
         </QueryClientProvider>
       </MotionConfig>

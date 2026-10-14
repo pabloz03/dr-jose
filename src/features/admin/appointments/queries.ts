@@ -8,18 +8,24 @@ import type { AppointmentWithDetails } from "@/features/appointments/queries";
 const APPOINTMENT_SELECT =
   "*, patient:patient_id(id,full_name,is_self), type:type_id(id,name,duration_min), clinic:clinic_id(id,name,address,maps_url,phone,whatsapp,timezone)";
 
-export function useAdminAppointmentsRange(doctorId: string | undefined, fromIso: string, toIso: string) {
+export function useAdminAppointmentsRange(
+  doctorId: string | undefined,
+  fromIso: string,
+  toIso: string,
+  clinicId?: "all" | string,
+) {
   return useQuery({
-    queryKey: ["admin-appointments", doctorId, fromIso, toIso],
+    queryKey: ["admin-appointments", doctorId, fromIso, toIso, clinicId],
     enabled: !!doctorId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      let request = supabase
         .from("appointments")
         .select(APPOINTMENT_SELECT)
         .eq("doctor_id", doctorId!)
         .gte("starts_at", fromIso)
-        .lt("starts_at", toIso)
-        .order("starts_at", { ascending: true });
+        .lt("starts_at", toIso);
+      if (clinicId && clinicId !== "all") request = request.eq("clinic_id", clinicId);
+      const { data, error } = await request.order("starts_at", { ascending: true });
       if (error) throw error;
       return data as unknown as AppointmentWithDetails[];
     },
@@ -44,18 +50,27 @@ export function useMarkAttendance() {
   });
 }
 
-export function usePatientSearch(query: string) {
+export function usePatientSearch(query: string, clinicId?: "all" | string) {
   const { session } = useAuth();
   const trimmed = query.trim();
   return useQuery({
-    queryKey: ["admin-patient-search", trimmed],
+    queryKey: ["admin-patient-search", trimmed, clinicId],
     enabled: !!session,
     queryFn: async () => {
-      let request = supabase.from("patients").select("*").is("deleted_at", null);
+      // Un paciente no pertenece a una sola clínica (registro global de
+      // la práctica — puede tener citas en varias), así que filtrar por
+      // clínica significa "tiene al menos una cita ahí", vía un inner
+      // join a appointments. !inner solo cambia el tipo de join (excluye
+      // pacientes sin ninguna cita en esa clínica); no aplana/duplica
+      // las filas de patients aunque tengan varias citas ahí.
+      let request = clinicId && clinicId !== "all"
+        ? supabase.from("patients").select("*, appointments!inner(clinic_id)").eq("appointments.clinic_id", clinicId)
+        : supabase.from("patients").select("*");
+      request = request.is("deleted_at", null);
       if (trimmed) request = request.ilike("full_name", `%${trimmed}%`);
       const { data, error } = await request.order("full_name", { ascending: true }).limit(200);
       if (error) throw error;
-      return data as Tables<"patients">[];
+      return data as unknown as Tables<"patients">[];
     },
   });
 }

@@ -48,7 +48,12 @@ export function AdminAppointmentRow({
               {appointment.patient.full_name}
             </span>
           </span>
-          <span className="block truncate text-sm text-muted">{appointment.type.name}</span>
+          <span
+            className="block truncate text-sm text-muted"
+            title={`${appointment.type.name} — ${appointment.clinic.name}`}
+          >
+            {appointment.type.name} — {appointment.clinic.name}
+          </span>
         </span>
         <span className="shrink-0">
           <AppointmentStatusBadge status={appointment.status} />

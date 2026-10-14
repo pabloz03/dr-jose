@@ -14,6 +14,7 @@ import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
 import { AdminLayout } from "../AdminLayout";
+import { useAdminClinic } from "../AdminClinicContext";
 
 function todayLocalDate(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: CLINIC_TZ }).format(new Date());
@@ -23,8 +24,9 @@ export function TodayPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const navigate = useNavigate();
   const staffQuery = useMyStaff();
+  const { clinics, selectedId, setSelectedId } = useAdminClinic();
   const { from, to } = clinicDayBounds(todayLocalDate());
-  const appointmentsQuery = useAdminAppointmentsRange(staffQuery.data?.id, from, to);
+  const appointmentsQuery = useAdminAppointmentsRange(staffQuery.data?.id, from, to, selectedId);
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -59,6 +61,30 @@ export function TodayPage() {
           {es.admin.citaDetalle.crearManual}
         </button>
       </div>
+
+      {clinics.length > 1 ? (
+        <div role="group" aria-label={es.admin.hoy.filtrarPorClinica} className="mt-6 flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={selectedId === "all"}
+            onClick={() => setSelectedId("all")}
+            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+          >
+            {es.admin.hoy.todasLasClinicas}
+          </button>
+          {clinics.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={selectedId === c.id}
+              onClick={() => setSelectedId(c.id)}
+              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {staffQuery.isLoading || appointmentsQuery.isLoading ? (
         <div className="mt-6">
@@ -110,7 +136,9 @@ export function TodayPage() {
                       <User aria-hidden="true" className="h-4 w-4 text-muted" strokeWidth={2.25} />
                       {a.patient.full_name}
                     </span>
-                    <span className="block text-sm text-muted">{a.type.name}</span>
+                    <span className="block text-sm text-muted">
+                      {a.type.name} — {a.clinic.name}
+                    </span>
                   </span>
                   <AppointmentStatusBadge status={a.status} />
                 </div>

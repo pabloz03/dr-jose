@@ -218,6 +218,7 @@ export type Database = {
           end_time: string
           id: string
           start_time: string
+          week_of_month: number | null
           weekday: number
         }
         Insert: {
@@ -226,6 +227,7 @@ export type Database = {
           end_time: string
           id?: string
           start_time: string
+          week_of_month?: number | null
           weekday: number
         }
         Update: {
@@ -234,6 +236,7 @@ export type Database = {
           end_time?: string
           id?: string
           start_time?: string
+          week_of_month?: number | null
           weekday?: number
         }
         Relationships: [

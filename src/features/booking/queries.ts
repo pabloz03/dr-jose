@@ -8,14 +8,22 @@ type AppointmentType = Tables<"appointment_types">;
 type Staff = Tables<"staff">;
 type ClinicSettings = Tables<"clinic_settings">;
 
-/** MVP: una sola clínica activa (D4 — UI oculta el selector si hay una). */
-export function useClinic() {
+/**
+ * Todas las clínicas activas. El caller decide: con 1 sola se
+ * autoselecciona sin mostrar nada (mismo comportamiento que el MVP de
+ * una sola clínica); con más de 1, se le pide al paciente elegir.
+ */
+export function useClinics() {
   return useQuery({
-    queryKey: ["clinic"],
+    queryKey: ["clinics"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("clinics").select("*").eq("is_active", true).limit(1).maybeSingle();
+      const { data, error } = await supabase
+        .from("clinics")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: true });
       if (error) throw error;
-      return data as Clinic | null;
+      return data as Clinic[];
     },
   });
 }

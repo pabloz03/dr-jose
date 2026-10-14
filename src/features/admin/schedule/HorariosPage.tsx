@@ -6,14 +6,14 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
-import { useAdminClinicSelection } from "../useAdminClinicSelection";
+import { useResolvedAdminClinic } from "../AdminClinicContext";
 import { WeeklySchedule } from "./WeeklySchedule";
 import { ExceptionsManager } from "./ExceptionsManager";
 
 export function HorariosPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const staffQuery = useMyStaff();
-  const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useAdminClinicSelection();
+  const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useResolvedAdminClinic();
 
   useEffect(() => {
     headingRef.current?.focus();

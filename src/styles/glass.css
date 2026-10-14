@@ -16,3 +16,12 @@
   .glass { background: Canvas; border: 1px solid CanvasText; backdrop-filter: none; box-shadow: none; }
 }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* tabindex="-1" nunca es alcanzable con Tab — solo recibe foco por
+   script (el patrón de "mover el foco al <h1>/<h2> nuevo" de la regla
+   dura #14, para que el lector de pantalla lo anuncie). Un usuario de
+   teclado jamás puede llegar aquí tabulando, así que el anillo visible
+   no cumple ninguna función de accesibilidad real — solo aparece como
+   ruido visual tras cada navegación. Cada encabezado ya traía
+   `outline-none` con esa intención, pero esta regla global (misma
+   especificidad, cargada después) la pisaba.  */
+[tabindex="-1"]:focus-visible { outline: none; }
