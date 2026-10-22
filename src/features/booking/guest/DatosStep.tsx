@@ -58,7 +58,7 @@ export function DatosStep({
           <input id="website" type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
         </div>
 
-        <Button type="submit" variant="primary" className="self-start">
+        <Button type="submit" variant="primary" size="lg" className="w-full">
           {es.reservaInvitado.continuar}
         </Button>
       </form>

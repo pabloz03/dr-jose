@@ -114,7 +114,7 @@ export function GuestConfirmStep({
           {errorMessage}
         </p>
       ) : null}
-      <Button variant="primary" className="mt-4" onPress={onConfirm} isPending={isPending}>
+      <Button variant="primary" size="lg" className="mt-4 w-full" onPress={onConfirm} isPending={isPending}>
         {isPending ? es.reservaInvitado.confirmando : es.reservaInvitado.confirmarBoton}
       </Button>
     </motion.div>

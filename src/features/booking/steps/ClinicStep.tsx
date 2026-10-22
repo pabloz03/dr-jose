@@ -36,7 +36,9 @@ export function ClinicStep({
         {clinics.map((c) => (
           <li key={c.id}>
             <Card onPress={() => onSelect(c.id)} className="flex items-center gap-3">
-              <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-pill)] bg-accent-2 text-on-accent-2">
+                <Stethoscope className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+              </span>
               <span>
                 <span className="block font-medium text-ink">{c.name}</span>
                 {c.address ? <span className="block text-sm text-muted">{c.address}</span> : null}

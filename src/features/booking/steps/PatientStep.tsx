@@ -48,7 +48,9 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
           {patients.map((p) => (
             <li key={p.id}>
               <Card onPress={() => onSelect(p.id)} className="flex items-center gap-3">
-                <User className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-pill)] bg-accent-2 text-on-accent-2">
+                  <User className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+                </span>
                 <span>
                   <span className="font-medium text-ink">{p.full_name}</span>
                   {p.is_self ? <span className="ml-2 text-sm text-muted">({es.familia.esUsted})</span> : null}

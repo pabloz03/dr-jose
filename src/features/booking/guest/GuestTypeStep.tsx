@@ -47,7 +47,9 @@ export function GuestTypeStep({
             <li key={t.id}>
               <Card onPress={() => onSelect(t.id)} className="flex items-center justify-between">
                 <span className="flex items-center gap-3">
-                  <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-pill)] bg-accent-2 text-on-accent-2">
+                    <Stethoscope className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+                  </span>
                   <span className="font-medium text-ink">{t.name}</span>
                 </span>
                 <span className="text-sm text-muted">{es.reserva.tipoDuracion(t.duration_min)}</span>

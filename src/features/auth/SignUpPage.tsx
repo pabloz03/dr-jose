@@ -81,7 +81,7 @@ export function SignUpPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
         <UserPlus className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloRegistro}
       </h1>
@@ -143,7 +143,7 @@ export function SignUpPage() {
             {formError}
           </p>
         ) : null}
-        <Button type="submit" variant="primary" isPending={formState.isSubmitting}>
+        <Button type="submit" variant="primary" size="lg" className="w-full" isPending={formState.isSubmitting}>
           {formState.isSubmitting ? es.auth.registrando : es.auth.crearCuenta}
         </Button>
       </form>

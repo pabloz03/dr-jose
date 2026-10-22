@@ -86,16 +86,22 @@ export function GuestBookingSuccess({
       <Card className="mt-6">
         <h2 className="font-display text-base text-ink">{es.reservaInvitado.crearCuentaTitulo}</h2>
         <p className="mt-1 text-sm text-muted">{es.reservaInvitado.crearCuentaDescripcion}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex flex-col gap-2">
           <Button
             variant="primary"
+            size="lg"
+            className="w-full"
             onPress={() =>
               navigate("/crear-cuenta", { state: { prefillEmail: contactEmail, prefillFullName: fullName } })
             }
           >
             {es.reservaInvitado.crearCuentaBoton}
           </Button>
-          <Button variant="quiet" onPress={() => navigate("/ingresar", { state: { prefillEmail: contactEmail } })}>
+          <Button
+            variant="quiet"
+            className="self-center"
+            onPress={() => navigate("/ingresar", { state: { prefillEmail: contactEmail } })}
+          >
             {es.reservaInvitado.volverAIngresar}
           </Button>
         </div>

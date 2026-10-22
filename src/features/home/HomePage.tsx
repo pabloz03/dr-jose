@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
+import { useProfile } from "@/features/family/queries";
 import { useAppointments, type AppointmentWithDetails } from "@/features/appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
 import { Button } from "@/components/ui/Button";
@@ -88,8 +89,10 @@ function AdminAccessCard() {
 
 export function HomePage() {
   const staffQuery = useMyStaff();
+  const profileQuery = useProfile();
   const appointmentsQuery = useAppointments();
   const isStaff = !!staffQuery.data;
+  const firstName = profileQuery.data?.full_name?.trim().split(/\s+/)[0];
 
   const nextAppointment = useMemo(
     () => findNextAppointment(appointmentsQuery.data ?? []),
@@ -100,7 +103,7 @@ export function HomePage() {
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-8 px-4 py-8">
       <header>
         <Eyebrow>{es.home.navInicio}</Eyebrow>
-        <h1 className="font-display mt-1 text-3xl text-ink">{es.app.name}</h1>
+        <h1 className="font-display mt-1 text-3xl text-ink">{firstName ? es.home.saludo(firstName) : es.home.saludoGenerico}</h1>
         <p className="mt-1 text-muted">{es.home.subtitulo}</p>
       </header>
 

@@ -1,8 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { motion } from "motion/react";
 import { CalendarCheck, HelpCircle, Home, User } from "lucide-react";
 import { es } from "@/i18n/es";
-import { GlassSurface } from "@/components/ui/GlassSurface";
 
 const links = [
   { to: "/", label: es.home.navInicio, icon: Home, end: true },
@@ -14,42 +12,39 @@ const links = [
 /**
  * Nav inferior persistente para que las opciones principales del
  * paciente siempre estén visibles, sin depender de un enlace dentro de
- * cada pantalla (heurística "reconocer en vez de recordar"). Glass es
- * uno de los usos explícitamente permitidos por la regla dura #12 ("nav
- * inferior") — hoy la tarjeta de "próxima cita" de Home ya no es glass
- * (usa el bloque --hero-* sólido), así que en la práctica este nav es
- * la única capa glass visible en Home; el límite de 2 capas sigue
- * aplicando si algún sheet/modal se abre encima.
+ * cada pantalla (heurística "reconocer en vez de recordar"). Plano
+ * (rediseño "Savia"): superficie sólida + borde superior 1px, sin
+ * glass — el punto focal de transparencia de la app queda reservado al
+ * sheet/modal que se abra encima, nunca aquí.
  */
 export function PatientBottomNav() {
   return (
-    <GlassSurface
-      as="section"
-      className="fixed inset-x-4 bottom-0 z-20 rounded-t-[var(--r-lg)] rounded-b-none border-b-0 pb-[env(safe-area-inset-bottom)]"
-    >
+    <section className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]">
       <nav aria-label={es.home.navPrincipal} className="mx-auto flex max-w-2xl justify-around px-2 py-1.5">
         {links.map((link) => (
-          <NavLink key={link.to} to={link.to} end={link.end} className="relative">
+          <NavLink key={link.to} to={link.to} end={link.end}>
             {({ isActive }) => (
               <span
-                className={`relative z-10 flex min-h-tap min-w-tap flex-col items-center justify-center gap-0.5 rounded-[var(--r-pill)] px-3 py-1 text-xs font-medium transition-colors duration-150 ${
-                  isActive ? "text-on-accent" : "text-muted hover:text-ink"
+                className={`flex min-h-tap min-w-tap flex-col items-center justify-center gap-0.5 rounded-[var(--r-sm)] px-3 py-1 text-xs transition-colors duration-150 ${
+                  isActive ? "font-semibold text-accent" : "font-medium text-muted hover:text-ink"
                 }`}
               >
-                {isActive ? (
-                  <motion.span
-                    layoutId="patient-nav-pill"
-                    className="absolute inset-0 -z-10 rounded-[var(--r-pill)] bg-accent"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  />
-                ) : null}
-                <link.icon aria-hidden="true" className="h-5 w-5 shrink-0" strokeWidth={2.25} />
+                <link.icon aria-hidden="true" className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
                 {link.label}
+                {/* Marca no cromática del tab activo (regla dura #10: estado
+                    nunca solo por color) — un punto que aparece/desaparece,
+                    no solo cambia de tono, para quien no distingue el verde
+                    de acento del gris de --muted (contraste de luminancia
+                    casi idéntico entre ambos). */}
+                <span
+                  aria-hidden="true"
+                  className={`h-1 w-1 rounded-[var(--r-pill)] ${isActive ? "bg-accent" : "bg-transparent"}`}
+                />
               </span>
             )}
           </NavLink>
         ))}
       </nav>
-    </GlassSurface>
+    </section>
   );
 }

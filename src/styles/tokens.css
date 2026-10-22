@@ -1,55 +1,58 @@
 :root {
   color-scheme: light dark;
-  /* Neutrales cálidos (Notion) + accent naranja-rojo energético (Nike).
-     #FF4D1C puro no pasa AA como texto/botón sobre blanco (3.1–3.3:1).
-     D1360C sí pasa contra --surface (4.67:1) pero NO contra --bg, más
-     oscuro (4.32:1 — encontrado por axe en e2e, no por la verificación
-     manual inicial que solo probó accent/surface). C7330B es la versión
-     más oscura de ese mismo tono que cumple 4.5:1 contra AMBOS fondos y
-     sigue dando ≥4.5:1 con texto blanco encima — es el punto más claro
-     de este tono que es seguro usar como texto en cualquier fondo de la
-     app, no solo sobre superficie elevada. */
-  --bg: #F3EFE8;  --surface: #FBF8F3; --surface-elevated: #FFFFFF;
-  --ink: #1A1510; --muted: #6B6358;
-  --accent: #C7330B; --accent-hover: #B32D09; --on-accent: #FFFFFF;
-  /* Acento secundario volt/lima — sparingly, solo highlights y estados
-     de logro (nunca como color de UI por defecto). */
-  --accent-2: #C3F53D; --on-accent-2: #17140E;
-  --border-ui: #847A6B; --line: #E4DED2;
+  /* Paleta "Savia": verde bosque + crema cálido, inspirada en el Figma
+     de referencia (rediseño rama UI2). Verificado contra AA en
+     contrast.test.ts — ver notas de contraste por par abajo, calculadas
+     con la fórmula de WCAG 2.2 (no estimadas).
+     ink/bg 11.0:1 · ink/surface 11.5:1 · muted/bg 5.2:1 · muted/surface
+     5.4:1 · accent/bg 5.7:1 · accent/surface 5.9:1 · on-accent/accent
+     5.9:1 — todos ≥4.5:1 para texto normal. */
+  --bg: #FAFAF7; --surface: #FFFFFF; --surface-elevated: #FFFFFF;
+  --ink: #243E38; --muted: #5F6D67;
+  --accent: #246F63; --accent-hover: #1B5349; --on-accent: #FFFFFF;
+  /* Tintes de superficie (no texto): menta para badges/banners de
+     confianza, arena para banners secundarios — valores exactos del
+     Figma, uso siempre como fondo detrás de --ink/--accent, nunca como
+     color de texto. */
+  --accent-2: #EAF4EF; --on-accent-2: #1B5349;
+  --accent-3: #F2EDE3; --on-accent-3: #243E38;
+  --border-ui: #5C6A64; --line: #E0E7E1;
   --danger: #B4231B; --success: #15803D; --warning: #8A4B08;
   /* Igual que --accent: el foco de teclado debe combinar con la
-     paleta, no ser un azul genérico que desentona (ver pasada de
-     login/registro). Contraste ya verificado en contrast.test.ts. */
-  --focus: #C7330B;
-  --glass-bg: rgb(251 248 243 / 0.86);
-  --glass-border: rgb(255 255 255 / 0.55);
+     paleta, no ser un azul genérico que desentona. Contraste ya
+     verificado en contrast.test.ts. */
+  --focus: #246F63;
+  --glass-bg: rgb(255 255 255 / 0.87);
+  --glass-border: rgb(255 255 255 / 0.6);
   --glass-blur: 20px;
-  --shadow-1: 0 1px 2px rgb(26 21 16 / .06), 0 8px 24px rgb(26 21 16 / .06);
-  --shadow-2: 0 2px 4px rgb(26 21 16 / .08), 0 16px 40px rgb(26 21 16 / .10);
-  --r-sm: 12px; --r-md: 16px; --r-lg: 24px; --r-pill: 999px;
+  --shadow-1: 0 1px 2px rgb(36 62 56 / .05), 0 8px 24px rgb(36 62 56 / .05);
+  --shadow-2: 0 2px 4px rgb(36 62 56 / .07), 0 16px 40px rgb(36 62 56 / .09);
+  /* Radios "Savia": 20px tarjetas primarias, 16px tarjetas/botones
+     secundarios, 10px inputs/chips, pill para avatares/badges/progreso.
+     El lado paciente deja de usar --shadow-1/2 (diseño plano, borde 1px
+     en vez de elevación) — esos tokens quedan para el panel de admin,
+     que comparte los mismos primitivos mecánicos pero no se rediseñó. */
+  --r-sm: 10px; --r-md: 16px; --r-lg: 20px; --r-pill: 999px;
   --space: 4px;
   --tap: 44px;
   --dur-fast: 150ms; --dur-base: 240ms; --dur-slow: 320ms;
-  /* Archivo (variable, eje wdth — headings/números hero) + Inter
-     (cuerpo/UI) — autohospedadas vía @fontsource (ver base.css), cumplen
-     el CSP font-src 'self' sin depender de Google Fonts. Geist Mono para
-     datos numéricos (tabular-nums). --font-sans queda como alias de
-     --font-body: nada que ya use font-sans/la cascada global se rompe. */
-  --font-display: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Lato autohospedada vía @fontsource (ver base.css), cumple el CSP
+     font-src 'self' sin depender de Google Fonts. Bold para
+     headings/labels/botones, regular para cuerpo — un solo family,
+     dos pesos, como pide el Figma de referencia. Geist Mono se
+     mantiene para datos numéricos tabulares (admin, fuera de alcance
+     de este rediseño). --font-sans queda como alias de --font-body. */
+  --font-display: "Lato", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Lato", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-sans: var(--font-body);
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   /* Bloque "hero": un punto de color sólido y memorable (tarjeta de
-     próxima cita, etc.) que se queda igual sin importar claro/oscuro
-     — a propósito, no hereda --ink/--bg/--accent porque esos SÍ
-     cambian con el tema y romperían el contraste fijo que este bloque
-     necesita. El acento volt/lima es el momento de "logro" que pide el
-     spec, reservado a este único punto focal de la app.
-     OJO: tiene que ser más oscuro que el --bg de modo oscuro (#171310)
-     o la tarjeta se vuelve invisible ahí (mismo color exacto que la
-     página) — por eso no es el mismo tono "near-black" que --bg. */
-  --hero-bg: #0D0A07; --hero-ink: #F5F0E8;
-  --hero-accent: #D4FF5C; --hero-accent-ink: #17140E;
+     próxima cita en Inicio) que se queda igual sin importar claro/
+     oscuro — no hereda --ink/--bg/--accent porque esos sí cambian con
+     el tema y romperían el contraste fijo que este bloque necesita.
+     hero-ink/hero-bg 12.7:1 · hero-accent-ink/hero-accent 10.6:1. */
+  --hero-bg: #16302A; --hero-ink: #F5F3EC;
+  --hero-accent: #8DE0C9; --hero-accent-ink: #0D241F;
   /* Mismos valores que --danger/--success/--warning en modo oscuro
      abajo — reusados acá, no inventados, para que Badge onDark lea
      bien sobre --hero-bg sin importar el tema general de la página. */
@@ -57,25 +60,32 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #171310; --surface: #211C17; --surface-elevated: #2A241E;
-    --ink: #F5F0E8; --muted: #B5AC9C;
-    --accent: #FF6B40; --accent-hover: #FF8560; --on-accent: #1A0D06;
-    --accent-2: #D4FF5C; --on-accent-2: #17140E;
-    --border-ui: #897E6D; --line: #3A332A;
+    /* Variante oscura propia (el Figma solo muestra tema claro) en el
+       mismo espíritu verde/crema — contraste recalculado, no heredado
+       del esquema naranja anterior.
+       ink/bg 15.2:1 · muted/bg 7.4:1 · accent/bg 8.5:1 ·
+       on-accent/accent 8.6:1. */
+    --bg: #12201C; --surface: #192B25; --surface-elevated: #1F362F;
+    --ink: #EEF5F1; --muted: #9FB0A9;
+    --accent: #5FCAB3; --accent-hover: #7AD9C4; --on-accent: #0B1F1A;
+    --accent-2: #1C332C; --on-accent-2: #9FE3D1;
+    --accent-3: #332C22; --on-accent-3: #EEF5F1;
+    --border-ui: #6B7D74; --line: #2A3B35;
     --danger: #FF8A74; --success: #6FE08C; --warning: #F5B454;
-    --focus: #FF6B40;
-    --glass-bg: rgb(33 28 23 / 0.92);
+    --focus: #5FCAB3;
+    --glass-bg: rgb(25 43 37 / 0.92);
     --glass-border: rgb(255 255 255 / 0.12);
   }
 }
 :root[data-theme="dark"] {
-  --bg: #171310; --surface: #211C17; --surface-elevated: #2A241E;
-  --ink: #F5F0E8; --muted: #B5AC9C;
-  --accent: #FF6B40; --accent-hover: #FF8560; --on-accent: #1A0D06;
-  --accent-2: #D4FF5C; --on-accent-2: #17140E;
-  --border-ui: #897E6D; --line: #3A332A;
+  --bg: #12201C; --surface: #192B25; --surface-elevated: #1F362F;
+  --ink: #EEF5F1; --muted: #9FB0A9;
+  --accent: #5FCAB3; --accent-hover: #7AD9C4; --on-accent: #0B1F1A;
+  --accent-2: #1C332C; --on-accent-2: #9FE3D1;
+  --accent-3: #332C22; --on-accent-3: #EEF5F1;
+  --border-ui: #6B7D74; --line: #2A3B35;
   --danger: #FF8A74; --success: #6FE08C; --warning: #F5B454;
-  --focus: #FF6B40;
-  --glass-bg: rgb(33 28 23 / 0.92);
+  --focus: #5FCAB3;
+  --glass-bg: rgb(25 43 37 / 0.92);
   --glass-border: rgb(255 255 255 / 0.12);
 }

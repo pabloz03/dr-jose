@@ -90,7 +90,7 @@ export function ConfirmStep({
           {es.reserva.errorGenerico}
         </p>
       ) : null}
-      <Button variant="primary" className="mt-6" onPress={onConfirm} isPending={isPending}>
+      <Button variant="primary" size="lg" className="mt-6 w-full" onPress={onConfirm} isPending={isPending}>
         {isPending ? es.reserva.confirmando : es.reserva.confirmarBoton}
       </Button>
     </motion.div>

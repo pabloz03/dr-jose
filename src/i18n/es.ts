@@ -18,6 +18,8 @@ export const es = {
   home: {
     navPrincipal: "Navegación principal",
     navInicio: "Inicio",
+    saludo: (nombre: string) => `Hola, ${nombre}`,
+    saludoGenerico: "Hola",
     subtitulo: "Gestione sus citas y las de su familia.",
     proximaCitaTitulo: "Su próxima cita",
     sinProximaCitaTitulo: "No tiene citas próximas",
@@ -27,6 +29,7 @@ export const es = {
     cerrarSesion: "Cerrar sesión",
   },
   auth: {
+    fotoAlt: "Un doctor conversando con una paciente en la clínica.",
     tituloIngreso: "Ingresar",
     emailLabel: "Correo electrónico",
     emailPlaceholder: "correo@ejemplo.com",

@@ -76,10 +76,10 @@ export function BookingSuccess({
             {es.reserva.comoLlegar}
           </Button>
         ) : null}
-        <Button variant="primary" onPress={() => navigate("/citas")}>
-          {es.reserva.verMisCitas}
-        </Button>
       </div>
+      <Button variant="primary" size="lg" className="mt-3 w-full" onPress={() => navigate("/citas")}>
+        {es.reserva.verMisCitas}
+      </Button>
       <LiveRegion message={announce} assertive />
     </div>
   );

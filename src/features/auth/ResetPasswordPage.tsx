@@ -50,7 +50,7 @@ export function ResetPasswordPage() {
   if (!session) {
     return (
       <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-        <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
+        <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
           <ShieldAlert className="h-6 w-6 text-danger" strokeWidth={2.25} aria-hidden="true" />
           {es.auth.enlaceInvalidoTitulo}
         </h1>
@@ -64,7 +64,7 @@ export function ResetPasswordPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
         <KeyRound className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloResetear}
       </h1>
@@ -91,7 +91,7 @@ export function ResetPasswordPage() {
             {formError}
           </p>
         ) : null}
-        <Button type="submit" variant="primary" isPending={form.formState.isSubmitting}>
+        <Button type="submit" variant="primary" size="lg" className="w-full" isPending={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? es.auth.guardandoPassword : es.auth.botonResetear}
         </Button>
       </form>

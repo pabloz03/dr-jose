@@ -5,67 +5,42 @@
    los *.css completos de @fontsource también traen cyrillic/vietnamese/
    greek que nunca se usan).
 
-   Inter (cuerpo/UI) usa font-display: optional, no "swap": es el mismo
-   mitigante ya medido en producción contra /ingresar (pantalla con
-   presupuesto de LCP ≤2.5s, E8-S2) cuando el cuerpo era Open Sans —
-   "swap" ahí hacía reflow del primer pintado; Inter hereda esa misma
-   protección porque sigue siendo el cuerpo de esa pantalla. Archivo
-   (headings) y Geist Mono (datos numéricos) sí usan "swap" como pide
-   el spec: ninguno de los dos se usa en el elemento LCP de /ingresar,
-   así que no hay regresión que proteger ahí — a re-verificar con
-   Lighthouse en la fase de QA. */
+   Lato (rama UI2, rediseño "Savia"): un solo family para cuerpo y
+   headings, regular (400) y bold (700). Regular usa font-display:
+   optional — mismo mitigante ya medido en producción contra /ingresar
+   (presupuesto de LCP ≤2.5s, E8-S2); bold usa "swap" porque no es el
+   elemento LCP de esa pantalla, sin regresión que proteger ahí — a
+   re-verificar con Lighthouse en la fase de QA. */
 @font-face {
-  font-family: "Inter";
+  font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-display: optional;
-  src: url("@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2");
+  src: url("@fontsource/lato/files/lato-latin-400-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Inter";
+  font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-display: optional;
-  src: url("@fontsource/inter/files/inter-latin-ext-400-normal.woff2") format("woff2");
+  src: url("@fontsource/lato/files/lato-latin-ext-400-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: "Inter";
+  font-family: "Lato";
   font-style: normal;
-  font-weight: 600;
-  font-display: optional;
-  src: url("@fontsource/inter/files/inter-latin-600-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  src: url("@fontsource/lato/files/lato-latin-700-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Inter";
+  font-family: "Lato";
   font-style: normal;
-  font-weight: 600;
-  font-display: optional;
-  src: url("@fontsource/inter/files/inter-latin-ext-600-normal.woff2") format("woff2");
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
-/* Archivo variable (eje wght+wdth, archivo "standard" de @fontsource-variable):
-   un solo archivo por subset cubre 700–800 sin descargas extra — el eje
-   wdth queda disponible vía `font-stretch` para quien lo necesite (ej.
-   números hero más expandidos), sin forzarlo por defecto. */
-@font-face {
-  font-family: "Archivo";
-  font-style: normal;
-  font-weight: 700 800;
-  font-stretch: 75% 125%;
+  font-weight: 700;
   font-display: swap;
-  src: url("@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Archivo";
-  font-style: normal;
-  font-weight: 700 800;
-  font-stretch: 75% 125%;
-  font-display: swap;
-  src: url("@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2") format("woff2-variations");
+  src: url("@fontsource/lato/files/lato-latin-ext-700-normal.woff2") format("woff2");
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
@@ -125,15 +100,14 @@ html {
   font-family: var(--font-sans);
 }
 
-/* h1/h2 de página usan Archivo (marca/jerarquía, tracking negativo para
-   el look "bold/expandida" del spec); todo lo demás hereda Inter de la
-   cascada global de arriba. Clase explícita, no selector de etiqueta:
-   varios h1/h2 de diálogos/secciones internas no deben heredar el peso
-   "display". */
+/* h1/h2 de página usan Lato bold (marca/jerarquía); todo lo demás
+   hereda Lato regular de la cascada global de arriba. Clase explícita,
+   no selector de etiqueta: varios h1/h2 de diálogos/secciones internas
+   no deben heredar el peso "display". */
 .font-display {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 /* Números/métricas (ej. duración de cita, conteos en admin): mono +

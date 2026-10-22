@@ -71,9 +71,20 @@ export function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col px-4 py-8">
       <div className={fadeClass}>
-        <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl font-semibold text-ink outline-none">
+        <img
+          src="/images/clinica-atencion.jpg"
+          alt={es.auth.fotoAlt}
+          width={390}
+          height={220}
+          className="h-[180px] w-full rounded-[var(--r-lg)] border border-line object-cover"
+        />
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-display mt-6 flex items-center gap-2 text-2xl text-ink outline-none"
+        >
           <LogIn className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
           {es.auth.tituloIngreso}
         </h1>
@@ -104,7 +115,7 @@ export function LoginPage() {
               {formError}
             </p>
           ) : null}
-          <Button type="submit" variant="primary" isPending={form.formState.isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" isPending={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? es.auth.ingresando : es.auth.ingresar}
           </Button>
         </form>

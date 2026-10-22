@@ -27,7 +27,7 @@ export function AyudaPage() {
       </h1>
 
       <section className="mt-8">
-        <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
+        <h2 className="font-display flex items-center gap-2 text-lg text-ink">
           <Phone className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.contactoTitulo}
         </h2>
@@ -81,7 +81,7 @@ export function AyudaPage() {
       </section>
 
       <section className="mt-10 border-t border-line pt-8">
-        <h2 className="flex items-center gap-2 text-lg font-semibold text-ink">
+        <h2 className="font-display flex items-center gap-2 text-lg text-ink">
           <ShieldCheck className="h-5 w-5 text-muted" strokeWidth={2.25} aria-hidden="true" />
           {es.ayuda.privacidadTitulo}
         </h2>

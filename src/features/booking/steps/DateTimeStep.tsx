@@ -94,7 +94,7 @@ export function DateTimeStep({
                     <button
                       type="button"
                       onClick={() => onSelect(slot)}
-                      className="min-h-tap w-full rounded-sm border border-line bg-surface px-2 py-2 text-sm text-ink shadow-[var(--shadow-1)] transition-shadow duration-150 hover:bg-line hover:shadow-[var(--shadow-2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                      className="min-h-tap w-full rounded-sm border border-line bg-surface px-2 py-2 text-sm text-ink transition-colors duration-150 hover:border-accent hover:bg-accent-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                     >
                       {formatClinicDateTime(slot.slot_start, "h:mm a")}
                     </button>
