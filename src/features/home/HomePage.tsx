@@ -36,7 +36,7 @@ function HeroCard({ appointment }: { appointment: AppointmentWithDetails | null 
   return (
     <section className="overflow-hidden rounded-[var(--r-lg)] border border-line bg-surface">
       <div className="relative">
-        <img src="/images/clinica-atencion.jpg" alt={es.auth.fotoAlt} className="h-40 w-full object-cover" />
+        <img src="/images/clinica-interior.jpg" alt={es.auth.fotoAlt} className="h-40 w-full object-cover" />
         <span className="absolute bottom-3 left-3 rounded-[var(--r-pill)] bg-accent-2 px-3 py-1 text-xs font-semibold tracking-wide text-on-accent-2 uppercase">
           {es.home.insignia}
         </span>

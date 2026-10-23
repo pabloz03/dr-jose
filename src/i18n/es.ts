@@ -32,7 +32,7 @@ export const es = {
     cerrarSesion: "Cerrar sesión",
   },
   auth: {
-    fotoAlt: "Un doctor conversando con una paciente en la clínica.",
+    fotoAlt: "Interior del consultorio de la clínica.",
     cerrarAria: "Cerrar y volver a Ingresar",
     invitadoCardTitulo: "¿Solo quiere reservar una cita?",
     invitadoCardDescripcion: "Primero elegirá clínica, tipo de cita y horario. Después le pediremos sus datos, sin crear una cuenta.",

@@ -75,7 +75,7 @@ export function LoginPage() {
       <div className={`flex flex-1 flex-col ${fadeClass}`}>
         <p className="text-sm font-semibold text-accent">{es.app.name}</p>
         <img
-          src="/images/clinica-atencion.jpg"
+          src="/images/clinica-interior.jpg"
           alt={es.auth.fotoAlt}
           width={390}
           height={220}
