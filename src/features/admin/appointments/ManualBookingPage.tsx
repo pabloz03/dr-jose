@@ -19,6 +19,7 @@ import { WizardHeader } from "@/features/booking/WizardHeader";
 import { StepFooter } from "@/features/booking/StepFooter";
 import { formatClinicDateLong } from "@/lib/tz";
 import { usePatientSearch, useCreateGuestPatient, useBookAppointmentStaff } from "./queries";
+import { SlotUnavailableError } from "@/features/appointments/queries";
 import type { Tables } from "@/lib/database.types";
 
 type Step = 0 | 1 | 2 | 3;
@@ -78,8 +79,8 @@ export function ManualBookingPage() {
       });
       setCreated(appointment);
       setAnnounce(es.admin.citaManual.creadaOk);
-    } catch {
-      setAnnounce(es.citas.errorGenerico);
+    } catch (error) {
+      setAnnounce(error instanceof SlotUnavailableError ? es.reserva.errorSlotTomado : es.citas.errorGenerico);
     }
   }
 

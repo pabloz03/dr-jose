@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
 import { notifyAppointment } from "@/lib/email";
 import type { Tables } from "@/lib/database.types";
-import type { AppointmentWithDetails } from "@/features/appointments/queries";
+import { SlotUnavailableError, type AppointmentWithDetails } from "@/features/appointments/queries";
 
 const APPOINTMENT_SELECT =
   "*, patient:patient_id(id,full_name,is_self), type:type_id(id,name,duration_min), clinic:clinic_id(id,name,address,maps_url,phone,whatsapp,timezone)";
@@ -102,7 +102,10 @@ export function useBookAppointmentStaff() {
         p_doctor: params.doctorId,
         p_start: params.start,
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (error.message.includes("slot_unavailable")) throw new SlotUnavailableError(error.message);
+        throw error;
+      }
       return data as Tables<"appointments">;
     },
     onSuccess: (data) => {

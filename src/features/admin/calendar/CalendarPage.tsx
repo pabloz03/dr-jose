@@ -53,7 +53,7 @@ function WeekStrip({
           <ChevronRight aria-hidden="true" className="h-5 w-5" strokeWidth={2.25} />
         </button>
       </div>
-      <div role="group" aria-label={es.admin.calendario.vistaSemana} className="mt-3 flex justify-between gap-1">
+      <div role="group" aria-label={es.admin.calendario.elegirDia} className="mt-3 flex justify-between gap-1">
         {days.map((d) => {
           const isSelected = d.toString() === selected.toString();
           return (

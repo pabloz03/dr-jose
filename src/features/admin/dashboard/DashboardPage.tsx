@@ -136,7 +136,7 @@ export function DashboardPage() {
       />
 
       <SegmentedControl
-        aria-label={es.admin.dashboard.titulo}
+        aria-label={es.admin.dashboard.secciones}
         value={section}
         onChange={setSection}
         className="lg:hidden"
