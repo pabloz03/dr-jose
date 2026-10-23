@@ -12,11 +12,24 @@ import { notifyByKind } from "../_shared/notify.ts";
 
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const APP_URL = Deno.env.get("APP_URL") ?? "null";
-const cors = {
-  "Access-Control-Allow-Origin": APP_URL,
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST,OPTIONS",
-};
+
+// Además del dominio real (APP_URL), se refleja el origen cuando es un
+// deploy de Vercel de este mismo proyecto (preview o el alias de
+// producción) — para poder probar la rama UI2 ahí mientras no se
+// publica a APP_URL. Nunca se refleja ningún otro origen.
+function isAllowedVercelPreview(origin: string): boolean {
+  return origin.endsWith(".vercel.app") && origin.includes("dr-jose");
+}
+
+function corsFor(origin: string | null) {
+  const allowOrigin = origin && (origin === APP_URL || isAllowedVercelPreview(origin)) ? origin : APP_URL;
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST,OPTIONS",
+    Vary: "Origin",
+  };
+}
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -73,6 +86,7 @@ async function getSlots(clinicId: string, doctorId: string, typeId: string, from
 }
 
 Deno.serve(async (req) => {
+  const cors = corsFor(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
   if (req.method !== "POST") return new Response("method_not_allowed", { status: 405, headers: cors });
 
