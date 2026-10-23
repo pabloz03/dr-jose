@@ -1,44 +1,31 @@
-import { useEffect, useRef } from "react";
 import { CalendarCog, Clock } from "lucide-react";
 import { es } from "@/i18n/es";
 import { useMyStaff } from "@/features/auth/useMyStaff";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
 import { useResolvedAdminClinic } from "../AdminClinicContext";
 import { WeeklySchedule } from "./WeeklySchedule";
 import { ExceptionsManager } from "./ExceptionsManager";
 
 export function HorariosPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const staffQuery = useMyStaff();
   const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useResolvedAdminClinic();
 
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
-
   return (
     <AdminLayout>
-      <Eyebrow>{es.admin.nav.horarios}</Eyebrow>
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-      >
-        <Clock aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-        {es.admin.horarios.titulo}
-      </h1>
+      <AdminScreenHeader icon={Clock} title={es.admin.horarios.titulo} />
 
       {isLoading || staffQuery.isLoading ? (
-        <Skeleton className="mt-6 h-10 w-64" />
+        <Skeleton className="h-10 w-64" />
       ) : clinics.length > 1 ? (
-        <div className="mt-6 flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {clinics.map((c) => (
             <button
               key={c.id}
               type="button"
+              aria-pressed={c.id === selectedId}
               onClick={() => setSelectedId(c.id)}
               className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${c.id === selectedId ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
             >
@@ -49,18 +36,16 @@ export function HorariosPage() {
       ) : null}
 
       {!isLoading && !staffQuery.isLoading && staffQuery.isError ? (
-        <div className="mt-6">
-          <ErrorState onRetry={() => staffQuery.refetch()} />
-        </div>
+        <ErrorState onRetry={() => staffQuery.refetch()} />
       ) : null}
 
       {selectedClinic && staffQuery.data ? (
         <>
-          <section className="mt-8">
+          <section>
             <WeeklySchedule clinicId={selectedClinic.id} doctorId={staffQuery.data.id} />
           </section>
 
-          <section className="mt-10 border-t border-line pt-8">
+          <section className="border-t border-line pt-8">
             <h2 className="font-display flex items-center gap-2 text-xl text-ink">
               <CalendarCog aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
               {es.admin.horarios.excepcionesTitulo}

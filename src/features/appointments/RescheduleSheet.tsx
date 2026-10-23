@@ -33,7 +33,15 @@ export function RescheduleSheet({
         onOpenChange(open);
       }}
     >
-      <DateTimeStep key={openCount} dir={1} clinicId={clinicId} doctorId={doctorId} typeId={typeId} onSelect={onSelect} />
+      <DateTimeStep
+        key={openCount}
+        dir={1}
+        clinicId={clinicId}
+        doctorId={doctorId}
+        typeId={typeId}
+        confirmLabel={es.citas.reprogramarGuardarBoton}
+        onSelect={onSelect}
+      />
     </Sheet>
   );
 }

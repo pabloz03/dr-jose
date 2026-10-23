@@ -1,41 +1,28 @@
-import { useEffect, useRef } from "react";
 import { ListChecks, Settings, SlidersHorizontal } from "lucide-react";
 import { es } from "@/i18n/es";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
 import { useResolvedAdminClinic } from "../AdminClinicContext";
 import { RulesForm } from "./RulesForm";
 import { AppointmentTypeList } from "./AppointmentTypeList";
 
 export function AjustesPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const { clinics, isLoading, selectedId, setSelectedId, selectedClinic } = useResolvedAdminClinic();
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
 
   return (
     <AdminLayout>
-      <Eyebrow>{es.admin.nav.ajustes}</Eyebrow>
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-      >
-        <Settings aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-        {es.admin.ajustes.titulo}
-      </h1>
+      <AdminScreenHeader icon={Settings} title={es.admin.ajustes.titulo} />
 
       {isLoading ? (
-        <Skeleton className="mt-6 h-10 w-64" />
+        <Skeleton className="h-10 w-64" />
       ) : clinics.length > 1 ? (
-        <div className="mt-6 flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {clinics.map((c) => (
             <button
               key={c.id}
               type="button"
+              aria-pressed={c.id === selectedId}
               onClick={() => setSelectedId(c.id)}
               className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${c.id === selectedId ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
             >
@@ -46,8 +33,8 @@ export function AjustesPage() {
       ) : null}
 
       {selectedClinic ? (
-        <>
-          <section className="mt-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10">
+          <section>
             <h2 className="font-display flex items-center gap-2 text-xl text-ink">
               <SlidersHorizontal aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
               {es.admin.ajustes.reglasTitulo}
@@ -57,7 +44,7 @@ export function AjustesPage() {
             </div>
           </section>
 
-          <section className="mt-10 border-t border-line pt-8">
+          <section className="border-t border-line pt-8 lg:border-t-0 lg:pt-0">
             <h2 className="font-display flex items-center gap-2 text-xl text-ink">
               <ListChecks aria-hidden="true" className="h-5 w-5 text-accent" strokeWidth={2.25} />
               {es.admin.ajustes.tiposTitulo}
@@ -66,7 +53,7 @@ export function AjustesPage() {
               <AppointmentTypeList />
             </div>
           </section>
-        </>
+        </div>
       ) : null}
     </AdminLayout>
   );

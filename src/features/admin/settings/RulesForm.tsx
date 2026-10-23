@@ -62,36 +62,38 @@ export function RulesForm({ clinicId }: { clinicId: string }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <ControlledField
-        control={control}
-        name="min_cancel_hours"
-        label={es.admin.ajustes.anticipacionLabel}
-        inputProps={{ type: "number", min: 0 }}
-      />
-      <ControlledField
-        control={control}
-        name="min_lead_hours"
-        label="Antelación mínima de reserva (horas)"
-        inputProps={{ type: "number", min: 0 }}
-      />
-      <ControlledField
-        control={control}
-        name="max_booking_days"
-        label={es.admin.ajustes.ventanaLabel}
-        inputProps={{ type: "number", min: 1 }}
-      />
-      <ControlledField
-        control={control}
-        name="slot_step_min"
-        label={es.admin.ajustes.pasoLabel}
-        inputProps={{ type: "number", min: 5, step: 5 }}
-      />
-      <ControlledField
-        control={control}
-        name="reminder_local_time"
-        label={es.admin.ajustes.recordatorioLabel}
-        inputProps={{ type: "time" }}
-      />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <ControlledField
+          control={control}
+          name="min_cancel_hours"
+          label={es.admin.ajustes.anticipacionLabel}
+          inputProps={{ type: "number", min: 0 }}
+        />
+        <ControlledField
+          control={control}
+          name="min_lead_hours"
+          label="Antelación mínima de reserva (horas)"
+          inputProps={{ type: "number", min: 0 }}
+        />
+        <ControlledField
+          control={control}
+          name="max_booking_days"
+          label={es.admin.ajustes.ventanaLabel}
+          inputProps={{ type: "number", min: 1 }}
+        />
+        <ControlledField
+          control={control}
+          name="slot_step_min"
+          label={es.admin.ajustes.pasoLabel}
+          inputProps={{ type: "number", min: 5, step: 5 }}
+        />
+        <ControlledField
+          control={control}
+          name="reminder_local_time"
+          label={es.admin.ajustes.recordatorioLabel}
+          inputProps={{ type: "time" }}
+        />
+      </div>
       <Button type="submit" variant="primary" isPending={updateSettings.isPending} className="self-start">
         <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
         {es.common.guardar}

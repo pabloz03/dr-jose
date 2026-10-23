@@ -5,7 +5,7 @@ import { CalendarOff, Plus, Trash2 } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { Field } from "@/components/ui/Field";
-import { Checkbox } from "@/components/ui/Checkbox";
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/ui/Button";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -96,9 +96,9 @@ export function ExceptionsManager({ clinicId, doctorId }: { clinicId: string; do
           control={control}
           name="is_closed"
           render={({ field }) => (
-            <Checkbox isSelected={field.value} onChange={field.onChange}>
+            <Switch isSelected={field.value} onChange={field.onChange}>
               {es.admin.horarios.cerradoLabel}
-            </Checkbox>
+            </Switch>
           )}
         />
         {!isClosed ? (

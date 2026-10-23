@@ -1,83 +1,45 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { SearchX, Users, UserRound } from "lucide-react";
+import { Search, SearchX, Users, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Field } from "@/components/ui/Field";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
+import { AdminClinicSelector } from "../AdminClinicSelector";
 import { useAdminClinic } from "../AdminClinicContext";
 import { usePatientSearch } from "../appointments/queries";
 
 export function PatientsPage() {
   const navigate = useNavigate();
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const [query, setQuery] = useState("");
-  const { clinics, selectedId, setSelectedId } = useAdminClinic();
+  const { selectedId } = useAdminClinic();
   const searchQuery = usePatientSearch(query, selectedId);
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
 
   return (
     <AdminLayout>
-      <Eyebrow>{es.admin.nav.pacientes}</Eyebrow>
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-      >
-        <Users aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-        {es.admin.pacientes.titulo}
-      </h1>
-      <div className="mt-6 max-w-sm">
+      <AdminScreenHeader icon={Users} title={es.admin.pacientes.titulo} />
+      <AdminClinicSelector />
+
+      <div className="max-w-sm">
         <Field
           label={es.admin.pacientes.buscarPlaceholder}
-          inputProps={{ value: query, onChange: (e) => setQuery(e.target.value) }}
+          inputProps={{ icon: <Search className="h-4 w-4" strokeWidth={2.25} />, value: query, onChange: (e) => setQuery(e.target.value) }}
         />
       </div>
 
-      {clinics.length > 1 ? (
-        <div role="group" aria-label={es.admin.pacientes.filtrarPorClinica} className="mt-4 flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={selectedId === "all"}
-            onClick={() => setSelectedId("all")}
-            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-          >
-            {es.admin.pacientes.todasLasClinicas}
-          </button>
-          {clinics.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={selectedId === c.id}
-              onClick={() => setSelectedId(c.id)}
-              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
-      ) : null}
-
       {searchQuery.isLoading ? (
-        <div className="mt-6">
-          <SkeletonList count={4} />
-        </div>
+        <SkeletonList count={4} />
       ) : searchQuery.isError ? (
-        <div className="mt-6">
-          <ErrorState onRetry={() => searchQuery.refetch()} />
-        </div>
+        <ErrorState onRetry={() => searchQuery.refetch()} />
       ) : searchQuery.data && searchQuery.data.length > 0 ? (
-        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="mt-6 flex flex-col gap-2.5">
+        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="grid grid-cols-1 gap-2.5 lg:grid-cols-2 xl:grid-cols-3">
           {searchQuery.data.map((p) => (
             <motion.li key={p.id} variants={cardEnter}>
               <Card onPress={() => navigate(`/admin/pacientes/${p.id}`)}>
@@ -95,12 +57,7 @@ export function PatientsPage() {
           ))}
         </motion.ul>
       ) : (
-        <div className="mt-6">
-          <EmptyState
-            icon={<SearchX aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
-            title={es.admin.pacientes.sinResultados}
-          />
-        </div>
+        <EmptyState icon={<SearchX aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />} title={es.admin.pacientes.sinResultados} />
       )}
     </AdminLayout>
   );

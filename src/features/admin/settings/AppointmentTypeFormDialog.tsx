@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
 import { ControlledField } from "@/components/ui/ControlledField";
-import { Checkbox } from "@/components/ui/Checkbox";
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/components/ui/Toast";
 import { useSaveAppointmentType } from "./queries";
@@ -65,26 +65,28 @@ export function AppointmentTypeFormDialog({
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <ControlledField control={control} name="name" label={es.admin.ajustes.tipoNombreLabel} isRequired />
-        <ControlledField
-          control={control}
-          name="duration_min"
-          label={es.admin.ajustes.tipoDuracionLabel}
-          isRequired
-          inputProps={{ type: "number", min: 5, step: 5 }}
-        />
-        <ControlledField
-          control={control}
-          name="buffer_after_min"
-          label={es.admin.ajustes.tipoBufferLabel}
-          inputProps={{ type: "number", min: 0, step: 5 }}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ControlledField
+            control={control}
+            name="duration_min"
+            label={es.admin.ajustes.tipoDuracionLabel}
+            isRequired
+            inputProps={{ type: "number", min: 5, step: 5 }}
+          />
+          <ControlledField
+            control={control}
+            name="buffer_after_min"
+            label={es.admin.ajustes.tipoBufferLabel}
+            inputProps={{ type: "number", min: 0, step: 5 }}
+          />
+        </div>
         <Controller
           control={control}
           name="is_active"
           render={({ field }) => (
-            <Checkbox isSelected={field.value} onChange={field.onChange}>
+            <Switch isSelected={field.value} onChange={field.onChange}>
               {es.admin.ajustes.tipoActivoLabel}
-            </Checkbox>
+            </Switch>
           )}
         />
         {formError ? (

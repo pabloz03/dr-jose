@@ -12,7 +12,7 @@ export function TypeBreakdown({ rows }: { rows: TypeBreakdownRow[] }) {
     <ul className="flex flex-col gap-2.5">
       {sorted.map((row) => (
         <li key={row.type_id} className="flex items-center gap-3">
-          <span className="w-40 shrink-0 truncate text-sm text-ink sm:w-48" title={row.type_name}>
+          <span className="w-28 shrink-0 truncate text-sm text-ink lg:w-32" title={row.type_name}>
             {row.type_name}
           </span>
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-line" aria-hidden="true">

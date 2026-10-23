@@ -14,7 +14,7 @@ export function StatusBreakdown({ counts }: { counts: Record<Status, number> }) 
         const n = counts[status];
         return (
           <li key={status} className="flex items-center gap-3">
-            <div className="w-40 shrink-0 sm:w-48">
+            <div className="w-28 shrink-0 lg:w-32">
               <AppointmentStatusBadge status={status} />
             </div>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-line" aria-hidden="true">

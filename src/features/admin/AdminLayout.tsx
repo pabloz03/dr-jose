@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "motion/react";
 import {
@@ -8,15 +8,13 @@ import {
   CalendarPlus,
   Clock,
   LogOut,
-  Menu,
   Settings,
   Stethoscope,
   Users,
 } from "lucide-react";
 import { es } from "@/i18n/es";
 import { supabase } from "@/lib/supabase";
-import { GlassSurface } from "@/components/ui/GlassSurface";
-import { Sheet } from "@/components/ui/Sheet";
+import { AdminBottomNav } from "./AdminBottomNav";
 
 const links = [
   { to: "/admin", label: es.admin.nav.hoy, end: true, icon: CalendarPlus },
@@ -29,33 +27,19 @@ const links = [
   { to: "/admin/ajustes", label: es.admin.nav.ajustes, icon: Settings },
 ];
 
-function NavItem({
-  to,
-  end,
-  label,
-  Icon,
-  vertical,
-  onNavigate,
-}: {
-  to: string;
-  end?: boolean;
-  label: string;
-  Icon: typeof Calendar;
-  vertical: boolean;
-  onNavigate?: () => void;
-}) {
+function NavItem({ to, end, label, Icon }: { to: string; end?: boolean; label: string; Icon: typeof Calendar }) {
   return (
-    <NavLink to={to} end={end} onClick={onNavigate} className="relative">
+    <NavLink to={to} end={end} className="relative">
       {({ isActive }) => (
         <span
-          className={`relative z-10 flex min-h-tap items-center gap-2.5 rounded-full text-sm font-medium transition-colors duration-150 ${
-            vertical ? "w-full px-3.5" : "px-3"
-          } ${isActive ? "text-on-accent" : "text-muted hover:text-ink"}`}
+          className={`relative z-10 flex min-h-tap w-full items-center gap-2.5 rounded-[var(--r-md)] px-3.5 text-sm font-medium transition-colors duration-150 ${
+            isActive ? "text-on-accent" : "text-muted hover:text-ink"
+          }`}
         >
           {isActive ? (
             <motion.span
-              layoutId={vertical ? "admin-nav-pill-desktop" : "admin-nav-pill-mobile"}
-              className="absolute inset-0 -z-10 rounded-full bg-accent"
+              layoutId="admin-nav-pill-desktop"
+              className="absolute inset-0 -z-10 rounded-[var(--r-md)] bg-accent"
               transition={{ type: "spring", stiffness: 400, damping: 32 }}
             />
           ) : null}
@@ -67,90 +51,43 @@ function NavItem({
   );
 }
 
-function LogoutButton({ onNavigate }: { onNavigate?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        onNavigate?.();
-        await supabase.auth.signOut();
-      }}
-      className="flex min-h-tap w-full items-center gap-2.5 rounded-full px-3.5 text-sm font-medium text-muted transition-colors duration-150 hover:text-ink"
-    >
-      <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" strokeWidth={2.25} />
-      {es.home.cerrarSesion}
-    </button>
-  );
-}
-
 export function AdminLayout({ children, wide }: { children: ReactNode; wide?: boolean }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <div className="min-h-dvh md:flex">
-      {/* Sidebar fijo en escritorio — estilo Notion. Es el mismo primitive
-          GlassSurface que ya se usaba en la barra superior (regla dura
-          #12 ya lo permite para "nav"), solo en columna; el pill animado
-          con layoutId es el mismo de siempre, ahora vertical. */}
-      <GlassSurface
-        as="aside"
-        className="hidden md:sticky md:top-0 md:flex md:h-dvh md:w-64 md:shrink-0 md:flex-col md:rounded-none md:border-y-0 md:border-l-0 md:p-4"
-      >
+      {/* Sidebar fijo en escritorio — plano, lenguaje "Savia": borde
+          1px en vez de glass, mismos 8 ítems completos (en escritorio
+          hay espacio de sobra, no hace falta el "Más" que sí necesita
+          el nav inferior móvil). */}
+      <aside className="hidden md:sticky md:top-0 md:flex md:h-dvh md:w-64 md:shrink-0 md:flex-col md:border-r md:border-line md:bg-surface md:p-4">
         <div className="flex items-center gap-2 px-2 py-2">
           <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
           <span className="font-display text-base text-ink">{es.app.name}</span>
         </div>
-        <nav aria-label="Administración" className="mt-4 flex flex-col gap-1">
+        <nav aria-label={es.admin.nav.navPrincipal} className="mt-4 flex flex-col gap-1">
           {links.map((link) => (
-            <NavItem key={link.to} to={link.to} end={link.end} label={link.label} Icon={link.icon} vertical />
+            <NavItem key={link.to} to={link.to} end={link.end} label={link.label} Icon={link.icon} />
           ))}
         </nav>
         <div className="mt-auto border-t border-line pt-2">
-          <LogoutButton />
+          <button
+            type="button"
+            onClick={async () => {
+              await supabase.auth.signOut();
+            }}
+            className="flex min-h-tap w-full items-center gap-2.5 rounded-[var(--r-md)] px-3.5 text-sm font-medium text-muted transition-colors duration-150 hover:text-ink"
+          >
+            <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+            {es.home.cerrarSesion}
+          </button>
         </div>
-      </GlassSurface>
+      </aside>
 
-      {/* Barra superior compacta en mobile: nombre de la app + botón de
-          menú que abre una hoja con los mismos enlaces del sidebar,
-          en vez de amontonar los 7 enlaces en una fila que se envuelve. */}
-      <GlassSurface
-        as="section"
-        className="sticky top-0 z-10 mx-4 flex items-center justify-between rounded-t-none rounded-b-[var(--r-lg)] border-t-0 px-4 py-3 md:hidden"
-      >
-        <div className="flex items-center gap-2">
-          <Stethoscope className="h-5 w-5 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
-          <span className="font-display text-base text-ink">{es.app.name}</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen(true)}
-          aria-label={es.admin.nav.abrirMenu}
-          className="flex min-h-tap min-w-tap items-center justify-center rounded-full text-ink"
-        >
-          <Menu aria-hidden="true" className="h-5 w-5" strokeWidth={2.25} />
-        </button>
-      </GlassSurface>
+      {/* En móvil, cada pantalla monta su propio `AdminScreenHeader`
+          (eyebrow + título + salir, igual que ya hace cada pantalla
+          paciente) — el nav inferior es lo único que vive en el shell. */}
+      <AdminBottomNav />
 
-      <Sheet title={es.admin.nav.abrirMenu} isOpen={isMenuOpen} isDismissable onOpenChange={setIsMenuOpen}>
-        <nav aria-label="Administración" className="flex flex-col gap-1">
-          {links.map((link) => (
-            <NavItem
-              key={link.to}
-              to={link.to}
-              end={link.end}
-              label={link.label}
-              Icon={link.icon}
-              vertical
-              onNavigate={() => setIsMenuOpen(false)}
-            />
-          ))}
-        </nav>
-        <div className="mt-2 border-t border-line pt-2">
-          <LogoutButton onNavigate={() => setIsMenuOpen(false)} />
-        </div>
-      </Sheet>
-
-      <main className="min-h-dvh flex-1">
+      <main className="min-h-dvh flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
         <div className={`mx-auto flex flex-col gap-6 px-4 py-8 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>{children}</div>
       </main>
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
@@ -9,17 +9,17 @@ import { notifyAppointment } from "@/lib/email";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { useCancelAppointment, useRescheduleAppointment, SlotUnavailableError } from "@/features/appointments/queries";
 import { Field } from "@/components/ui/Field";
-import { Checkbox } from "@/components/ui/Checkbox";
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { showToast } from "@/components/ui/Toast";
 import { cardEnter, staggerList } from "@/lib/motion";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
 import { useAdminClinics } from "../clinics/queries";
 import { useAffectedAppointments, useCreateTimeOff, useRemoveTimeOff, useTimeOffList } from "./queries";
 import { timeOffFormSchema, type TimeOffFormValues } from "./schemas";
@@ -30,7 +30,6 @@ import type { SlotRow } from "@/features/booking/queries";
 import type { z } from "zod";
 
 export function TimeOffPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const [announce, setAnnounce] = useState("");
   const [range, setRange] = useState<{ starts_at: string; ends_at: string; clinic_id: string | null } | null>(null);
   const [reschedulingAppt, setReschedulingAppt] = useState<AppointmentWithDetails | null>(null);
@@ -46,10 +45,6 @@ export function TimeOffPage() {
   const removeTimeOff = useRemoveTimeOff();
   const cancelAppointment = useCancelAppointment();
   const rescheduleAppointment = useRescheduleAppointment();
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
 
   const { control, register, handleSubmit, watch, formState } = useForm<
     z.input<typeof timeOffFormSchema>,
@@ -134,17 +129,9 @@ export function TimeOffPage() {
 
   return (
     <AdminLayout>
-      <Eyebrow>{es.admin.nav.bloqueos}</Eyebrow>
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-      >
-        <CalendarOff aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-        {es.admin.bloqueos.titulo}
-      </h1>
+      <AdminScreenHeader icon={CalendarOff} title={es.admin.bloqueos.titulo} />
 
-      <section className="mt-6">
+      <section>
         {timeOffQuery.isLoading ? (
           <SkeletonList count={3} />
         ) : staffQuery.isError || timeOffQuery.isError ? (
@@ -160,7 +147,7 @@ export function TimeOffPage() {
             title={es.admin.bloqueos.vacio}
           />
         ) : (
-          <motion.ul initial="hidden" animate="visible" variants={staggerList} className="flex flex-col gap-2">
+          <motion.ul initial="hidden" animate="visible" variants={staggerList} className="grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3">
             {timeOffList.map((t) => (
               <motion.li key={t.id} variants={cardEnter}>
                 <Card>
@@ -210,9 +197,9 @@ export function TimeOffPage() {
             control={control}
             name="all_day"
             render={({ field }) => (
-              <Checkbox isSelected={field.value} onChange={field.onChange}>
+              <Switch isSelected={field.value} onChange={field.onChange}>
                 {es.admin.bloqueos.todoElDia}
-              </Checkbox>
+              </Switch>
             )}
           />
           {!allDay ? (

@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { CalendarClock, Clock3, Plus, Sparkles, User } from "lucide-react";
@@ -6,7 +5,7 @@ import { es } from "@/i18n/es";
 import { CLINIC_TZ, clinicDayBounds, formatClinicDateTime } from "@/lib/tz";
 import { useMyStaff } from "@/features/auth/useMyStaff";
 import { Card } from "@/components/ui/Card";
-import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Button } from "@/components/ui/Button";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -14,6 +13,8 @@ import { cardEnter, staggerList } from "@/lib/motion";
 import { useAdminAppointmentsRange } from "../appointments/queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
+import { AdminClinicSelector } from "../AdminClinicSelector";
 import { useAdminClinic } from "../AdminClinicContext";
 
 function todayLocalDate(): string {
@@ -21,16 +22,11 @@ function todayLocalDate(): string {
 }
 
 export function TodayPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const navigate = useNavigate();
   const staffQuery = useMyStaff();
-  const { clinics, selectedId, setSelectedId } = useAdminClinic();
+  const { selectedId } = useAdminClinic();
   const { from, to } = clinicDayBounds(todayLocalDate());
   const appointmentsQuery = useAdminAppointmentsRange(staffQuery.data?.id, from, to, selectedId);
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
 
   const appointments = appointmentsQuery.data ?? [];
   const now = new Date();
@@ -40,79 +36,29 @@ export function TodayPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <Eyebrow>{es.admin.nav.hoy}</Eyebrow>
-          <h1
-            ref={headingRef}
-            tabIndex={-1}
-            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-          >
-            <CalendarClock aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-            {es.admin.hoy.titulo}
-          </h1>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate("/admin/citas/nueva")}
-          className="inline-flex min-h-tap items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-semibold text-on-accent hover:bg-accent-hover"
-        >
-          <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
-          {es.admin.citaDetalle.crearManual}
-        </button>
-      </div>
+      <AdminScreenHeader icon={CalendarClock} title={es.admin.hoy.titulo} />
+      <AdminClinicSelector />
 
-      {clinics.length > 1 ? (
-        <div role="group" aria-label={es.admin.hoy.filtrarPorClinica} className="mt-6 flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={selectedId === "all"}
-            onClick={() => setSelectedId("all")}
-            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-          >
-            {es.admin.hoy.todasLasClinicas}
-          </button>
-          {clinics.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={selectedId === c.id}
-              onClick={() => setSelectedId(c.id)}
-              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${selectedId === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      <p className="font-display text-lg text-ink">{formatClinicDateTime(`${todayLocalDate()}T12:00:00`, "EEEE d 'de' MMMM")}</p>
+
+      <Button variant="primary" size="lg" className="w-full lg:w-auto" onPress={() => navigate("/admin/citas/nueva")}>
+        <Plus aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
+        {es.admin.citaDetalle.crearManual}
+      </Button>
 
       {staffQuery.isLoading || appointmentsQuery.isLoading ? (
-        <div className="mt-6">
-          <SkeletonList count={3} />
-        </div>
+        <SkeletonList count={3} />
       ) : staffQuery.isError || appointmentsQuery.isError ? (
-        <div className="mt-6">
-          <ErrorState
-            onRetry={() => {
-              if (staffQuery.isError) void staffQuery.refetch();
-              if (appointmentsQuery.isError) void appointmentsQuery.refetch();
-            }}
-          />
-        </div>
+        <ErrorState
+          onRetry={() => {
+            if (staffQuery.isError) void staffQuery.refetch();
+            if (appointmentsQuery.isError) void appointmentsQuery.refetch();
+          }}
+        />
       ) : appointments.length === 0 ? (
-        <div className="mt-6">
-          <EmptyState
-            icon={<CalendarClock aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
-            title={es.admin.hoy.vacio}
-          />
-        </div>
+        <EmptyState icon={<CalendarClock aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />} title={es.admin.hoy.vacio} />
       ) : (
-        <motion.ul
-          initial="hidden"
-          animate="visible"
-          variants={staggerList}
-          className="mt-6 flex flex-col gap-2.5"
-        >
+        <motion.ul initial="hidden" animate="visible" variants={staggerList} className="grid grid-cols-1 gap-2.5 lg:grid-cols-2 xl:grid-cols-3">
           {appointments.map((a) => (
             <motion.li key={a.id} variants={cardEnter}>
               <Card

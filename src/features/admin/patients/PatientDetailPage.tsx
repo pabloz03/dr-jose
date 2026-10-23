@@ -1,33 +1,24 @@
-import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Cake, Calendar, Mail, UserRound } from "lucide-react";
+import { Cake, Calendar, Mail, UserRound } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
 import { usePatient, usePatientAppointments } from "./queries";
 import { AppointmentStatusBadge } from "@/features/appointments/AppointmentStatusBadge";
 
 export function PatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const headingRef = useRef<HTMLHeadingElement>(null);
 
   const patientQuery = usePatient(id);
   const appointmentsQuery = usePatientAppointments(id);
   const patient = patientQuery.data;
-
-  // El <h1> real solo existe una vez que `patient` llega (antes se
-  // muestra SkeletonCard, sin heading) — depender de `patient`, no de
-  // `[]`, para que el foco sí llegue ahí tras la carga asíncrona.
-  useEffect(() => {
-    if (patient) headingRef.current?.focus();
-  }, [patient]);
 
   const appointments = appointmentsQuery.data ?? [];
   const isLoading = patientQuery.isLoading || appointmentsQuery.isLoading;
@@ -56,22 +47,19 @@ export function PatientDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <Eyebrow>{es.admin.pacienteDetalle.eyebrow}</Eyebrow>
-          <h1
-            ref={headingRef}
-            tabIndex={-1}
-            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-          >
-            <UserRound aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-            {patient.full_name}
-          </h1>
-        </div>
-        {!patient.guardian_user_id ? <Badge tone="neutral" icon="●">{es.admin.pacientes.invitado}</Badge> : null}
-      </div>
+      <AdminScreenHeader
+        icon={UserRound}
+        title={patient.full_name}
+        backTo="/admin/pacientes"
+        backLabel={es.admin.pacienteDetalle.volver}
+      />
+      {!patient.guardian_user_id ? (
+        <Badge tone="neutral" icon="●">
+          {es.admin.pacientes.invitado}
+        </Badge>
+      ) : null}
 
-      <Card className="mt-6">
+      <Card>
         <dl className="flex flex-col gap-2">
           <div className="flex justify-between gap-3">
             <dt className="flex items-center gap-1.5 text-muted">
@@ -110,7 +98,7 @@ export function PatientDetailPage() {
             />
           </div>
         ) : (
-          <ul className="mt-4 flex flex-col gap-2">
+          <ul className="mt-4 grid grid-cols-1 gap-2 lg:grid-cols-2">
             {appointments.map((a) => (
               <li key={a.id}>
                 <Card onPress={() => navigate(`/admin/citas/${a.id}`)}>
@@ -129,15 +117,6 @@ export function PatientDetailPage() {
           </ul>
         )}
       </section>
-
-      <button
-        type="button"
-        onClick={() => navigate("/admin/pacientes")}
-        className="mt-6 inline-flex min-h-tap items-center gap-1 self-start text-sm text-accent underline"
-      >
-        <ArrowLeft aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
-        {es.admin.pacienteDetalle.volver}
-      </button>
     </AdminLayout>
   );
 }

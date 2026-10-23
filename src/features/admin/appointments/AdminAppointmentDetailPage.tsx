@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, Check, CheckCircle2, ClipboardList, Repeat, User, XCircle } from "lucide-react";
+import { Calendar, Check, CheckCircle2, ClipboardList, Repeat, User, XCircle } from "lucide-react";
 import { es } from "@/i18n/es";
 import { formatClinicDateLong } from "@/lib/tz";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { LiveRegion } from "@/components/ui/LiveRegion";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
 import { useMarkAttendance } from "./queries";
 import {
   useAppointment,
@@ -27,7 +27,6 @@ import type { SlotRow } from "@/features/booking/queries";
 export function AdminAppointmentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const [announce, setAnnounce] = useState("");
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -38,13 +37,6 @@ export function AdminAppointmentDetailPage() {
   const rescheduleAppointment = useRescheduleAppointment();
   const markAttendance = useMarkAttendance();
   const appointment = appointmentQuery.data;
-
-  // El <h1> real solo existe una vez que `appointment` llega (antes se
-  // muestra SkeletonCard, sin heading) — depender de `appointment`, no
-  // de `[]`, para que el foco sí llegue ahí tras la carga asíncrona.
-  useEffect(() => {
-    if (appointment) headingRef.current?.focus();
-  }, [appointment]);
 
   async function onConfirm() {
     if (!appointment) return;
@@ -121,22 +113,15 @@ export function AdminAppointmentDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <Eyebrow>{es.admin.citaDetalle.eyebrow}</Eyebrow>
-          <h1
-            ref={headingRef}
-            tabIndex={-1}
-            className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-          >
-            <ClipboardList aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-            {es.admin.citaDetalle.titulo}
-          </h1>
-        </div>
-        <AppointmentStatusBadge status={appointment.status} />
-      </div>
+      <AdminScreenHeader
+        icon={ClipboardList}
+        title={es.admin.citaDetalle.titulo}
+        onBack={() => navigate(-1)}
+        backLabel={es.citas.volver}
+      />
+      <AppointmentStatusBadge status={appointment.status} />
 
-      <Card className="mt-6">
+      <Card>
         <dl className="flex flex-col gap-2">
           <div className="flex justify-between">
             <dt className="flex items-center gap-1.5 text-muted">
@@ -162,20 +147,20 @@ export function AdminAppointmentDetailPage() {
         </dl>
       </Card>
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 lg:w-80">
         {appointment.status === "scheduled" ? (
-          <Button variant="primary" onPress={onConfirm} isPending={confirmAppointment.isPending}>
+          <Button variant="primary" size="lg" className="w-full" onPress={onConfirm} isPending={confirmAppointment.isPending}>
             <Check aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
             {es.citas.confirmarCita}
           </Button>
         ) : null}
         {isActive ? (
           <>
-            <Button variant="secondary" onPress={() => setIsRescheduling(true)}>
+            <Button variant="secondary" size="lg" className="w-full" onPress={() => setIsRescheduling(true)}>
               <Repeat aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.citas.reprogramarCita}
             </Button>
-            <Button variant="danger" onPress={() => setIsCancelling(true)}>
+            <Button variant="danger" size="lg" className="w-full" onPress={() => setIsCancelling(true)}>
               <XCircle aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.citas.cancelarCita}
             </Button>
@@ -183,26 +168,17 @@ export function AdminAppointmentDetailPage() {
         ) : null}
         {isActive && isPast ? (
           <>
-            <Button variant="secondary" onPress={() => onMarkAttendance("completed")} isPending={markAttendance.isPending}>
+            <Button variant="secondary" size="lg" className="w-full" onPress={() => onMarkAttendance("completed")} isPending={markAttendance.isPending}>
               <CheckCircle2 aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.admin.citaDetalle.marcarCompletada}
             </Button>
-            <Button variant="danger" onPress={() => onMarkAttendance("no_show")} isPending={markAttendance.isPending}>
+            <Button variant="danger" size="lg" className="w-full" onPress={() => onMarkAttendance("no_show")} isPending={markAttendance.isPending}>
               <XCircle aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
               {es.admin.citaDetalle.marcarNoShow}
             </Button>
           </>
         ) : null}
       </div>
-
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        className="mt-6 inline-flex items-center gap-1 self-start text-sm text-accent underline"
-      >
-        <ArrowLeft aria-hidden="true" className="h-4 w-4" strokeWidth={2.25} />
-        {es.citas.volver}
-      </button>
 
       {isActive ? (
         <RescheduleSheet

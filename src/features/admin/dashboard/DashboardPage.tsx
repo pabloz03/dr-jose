@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { today } from "@internationalized/date";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { es } from "@/i18n/es";
 import { CLINIC_TZ } from "@/lib/tz";
 import type { Database } from "@/lib/database.types";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Card } from "@/components/ui/Card";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminLayout } from "../AdminLayout";
+import { AdminScreenHeader } from "../AdminScreenHeader";
+import { AdminClinicSelector } from "../AdminClinicSelector";
 import { monthRangeUtc } from "../calendar/dateRanges";
 import { useDashboardAppointmentMetrics, useDashboardNewPatients } from "./queries";
 import { useAdminClinic } from "../AdminClinicContext";
@@ -17,6 +19,8 @@ import { bucketKey, bucketLabel, trailingBucketKeys, type Granularity } from "./
 import { TrendChart } from "./TrendChart";
 import { StatusBreakdown } from "./StatusBreakdown";
 import { TypeBreakdown } from "./TypeBreakdown";
+
+type Section = "resumen" | "tendencia" | "porEstado" | "porTipo";
 
 type Status = Database["public"]["Enums"]["appointment_status"];
 
@@ -39,13 +43,9 @@ function KpiCard({ label, value, sub }: { label: string; value: string | number;
 }
 
 export function DashboardPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const [granularity, setGranularity] = useState<Granularity>("semana");
-  const { clinics, selectedId: filter, setSelectedId: setFilter } = useAdminClinic();
-
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
+  const [section, setSection] = useState<Section>("resumen");
+  const { selectedId: filter } = useAdminClinic();
 
   // Rango fijo de 6 meses (el mes actual + 5 anteriores) — un solo fetch
   // sirve tanto para la vista semana como mes y para cualquier clínica,
@@ -121,136 +121,117 @@ export function DashboardPage() {
 
   return (
     <AdminLayout wide>
-      <Eyebrow>{es.admin.nav.metricas}</Eyebrow>
-      <h1
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-display mt-1 flex items-center gap-2.5 text-3xl text-ink outline-none"
-      >
-        <BarChart3 aria-hidden="true" className="h-7 w-7 text-accent" strokeWidth={2.25} />
-        {es.admin.dashboard.titulo}
-      </h1>
+      <AdminScreenHeader icon={BarChart3} title={es.admin.dashboard.titulo} />
+      <AdminClinicSelector />
 
-      {clinics.length > 1 ? (
-        <div role="group" aria-label={es.admin.dashboard.filtrarPorClinica} className="mt-6 flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={filter === "all"}
-            onClick={() => setFilter("all")}
-            className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${filter === "all" ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-          >
-            {es.admin.dashboard.todasLasClinicas}
-          </button>
-          {clinics.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={filter === c.id}
-              onClick={() => setFilter(c.id)}
-              className={`min-h-tap rounded-sm border px-3 py-1.5 text-sm ${filter === c.id ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      <SegmentedControl
+        aria-label={es.admin.dashboard.agruparPor}
+        value={granularity}
+        onChange={setGranularity}
+        className="max-w-xs"
+        options={[
+          { value: "semana", label: es.admin.dashboard.vistaSemana },
+          { value: "mes", label: es.admin.dashboard.vistaMes },
+        ]}
+      />
 
-      <div role="group" aria-label={es.admin.dashboard.agruparPor} className="mt-4 flex gap-2">
-        {(["semana", "mes"] as const).map((g) => (
-          <button
-            key={g}
-            type="button"
-            aria-pressed={granularity === g}
-            onClick={() => setGranularity(g)}
-            className={`inline-flex min-h-tap items-center gap-1.5 rounded-sm border px-3 py-1.5 text-sm ${granularity === g ? "border-accent bg-accent text-on-accent" : "border-line bg-surface text-ink"}`}
-          >
-            {g === "semana" ? es.admin.dashboard.vistaSemana : es.admin.dashboard.vistaMes}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        aria-label={es.admin.dashboard.titulo}
+        value={section}
+        onChange={setSection}
+        className="lg:hidden"
+        options={[
+          { value: "resumen", label: es.admin.dashboard.tabResumen },
+          { value: "tendencia", label: es.admin.dashboard.tabTendencia },
+          { value: "porEstado", label: es.admin.dashboard.tabPorEstado },
+          { value: "porTipo", label: es.admin.dashboard.tabPorTipo },
+        ]}
+      />
 
       {isLoading ? (
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
           {Array.from({ length: 6 }, (_, i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
       ) : isError ? (
-        <div className="mt-6">
-          <ErrorState onRetry={retry} />
-        </div>
+        <ErrorState onRetry={retry} />
       ) : (
         <>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <KpiCard label={es.admin.dashboard.totalCitas} value={totals.total} />
-            <KpiCard
-              label={es.admin.dashboard.completadas}
-              value={totals.counts.completed}
-              sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.completed, totals.total))}
-            />
-            <KpiCard
-              label={es.admin.dashboard.canceladas}
-              value={totals.counts.cancelled}
-              sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.cancelled, totals.total))}
-            />
-            <KpiCard
-              label={es.admin.dashboard.noShow}
-              value={totals.counts.no_show}
-              sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.no_show, totals.total))}
-            />
-            <KpiCard
-              label={es.admin.dashboard.tasaConfirmacion}
-              value={`${pctValue(totals.confirmedCount, totals.total)}%`}
-            />
-            {filter === "all" ? (
-              <KpiCard label={es.admin.dashboard.pacientesNuevos} value={newPatientsTotal} />
-            ) : (
-              <Card className="flex items-center">
-                <p className="text-sm text-muted">{es.admin.dashboard.pacientesNuevosNoDisponiblePorClinica}</p>
-              </Card>
-            )}
-          </div>
-
-          {totals.total < MIN_FOR_TREND ? (
-            <p className="mt-4 text-sm text-muted" role="status">
-              {es.admin.dashboard.pocosDatosAviso(totals.total)}
-            </p>
-          ) : null}
-
-          <section className="mt-8">
-            <h2 className="font-display text-lg text-ink">{es.admin.dashboard.tendenciaTitulo}</h2>
-            {totals.total < MIN_FOR_TREND ? (
-              <div className="mt-4">
-                <EmptyState
-                  icon={<TrendingUp aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
-                  title={es.admin.dashboard.tendenciaVacio}
-                  description={es.admin.dashboard.tendenciaVacioDescripcion}
-                />
-              </div>
-            ) : (
-              <div className="mt-4">
-                <TrendChart buckets={trendBuckets} />
-              </div>
-            )}
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-lg text-ink">{es.admin.dashboard.porEstadoTitulo}</h2>
-            <div className="mt-4">
-              <StatusBreakdown counts={totals.counts} />
-            </div>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-lg text-ink">{es.admin.dashboard.porTipoTitulo}</h2>
-            <div className="mt-4">
-              {typeTotals.length === 0 ? (
-                <p className="text-sm text-muted">{es.admin.dashboard.sinTipos}</p>
+          <div className={section === "resumen" ? "block" : "hidden lg:block"}>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+              <KpiCard label={es.admin.dashboard.totalCitas} value={totals.total} />
+              <KpiCard
+                label={es.admin.dashboard.completadas}
+                value={totals.counts.completed}
+                sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.completed, totals.total))}
+              />
+              <KpiCard
+                label={es.admin.dashboard.canceladas}
+                value={totals.counts.cancelled}
+                sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.cancelled, totals.total))}
+              />
+              <KpiCard
+                label={es.admin.dashboard.noShow}
+                value={totals.counts.no_show}
+                sub={es.admin.dashboard.porcentajeDelTotal(pctValue(totals.counts.no_show, totals.total))}
+              />
+              <KpiCard
+                label={es.admin.dashboard.tasaConfirmacion}
+                value={`${pctValue(totals.confirmedCount, totals.total)}%`}
+              />
+              {filter === "all" ? (
+                <KpiCard label={es.admin.dashboard.pacientesNuevos} value={newPatientsTotal} />
               ) : (
-                <TypeBreakdown rows={typeTotals} />
+                <Card className="flex items-center">
+                  <p className="text-sm text-muted">{es.admin.dashboard.pacientesNuevosNoDisponiblePorClinica}</p>
+                </Card>
               )}
             </div>
-          </section>
+
+            {totals.total < MIN_FOR_TREND ? (
+              <p className="mt-4 text-sm text-muted" role="status">
+                {es.admin.dashboard.pocosDatosAviso(totals.total)}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="lg:grid lg:grid-cols-3 lg:gap-6">
+            <section className={section === "tendencia" ? "block" : "hidden lg:block"}>
+              <h2 className="font-display text-lg text-ink">{es.admin.dashboard.tendenciaTitulo}</h2>
+              {totals.total < MIN_FOR_TREND ? (
+                <div className="mt-4">
+                  <EmptyState
+                    icon={<TrendingUp aria-hidden="true" className="h-8 w-8" strokeWidth={2.25} />}
+                    title={es.admin.dashboard.tendenciaVacio}
+                    description={es.admin.dashboard.tendenciaVacioDescripcion}
+                  />
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <TrendChart buckets={trendBuckets} />
+                </div>
+              )}
+            </section>
+
+            <section className={section === "porEstado" ? "block" : "hidden lg:block"}>
+              <h2 className="font-display text-lg text-ink">{es.admin.dashboard.porEstadoTitulo}</h2>
+              <div className="mt-4">
+                <StatusBreakdown counts={totals.counts} />
+              </div>
+            </section>
+
+            <section className={section === "porTipo" ? "block" : "hidden lg:block"}>
+              <h2 className="font-display text-lg text-ink">{es.admin.dashboard.porTipoTitulo}</h2>
+              <div className="mt-4">
+                {typeTotals.length === 0 ? (
+                  <p className="text-sm text-muted">{es.admin.dashboard.sinTipos}</p>
+                ) : (
+                  <TypeBreakdown rows={typeTotals} />
+                )}
+              </div>
+            </section>
+          </div>
         </>
       )}
     </AdminLayout>

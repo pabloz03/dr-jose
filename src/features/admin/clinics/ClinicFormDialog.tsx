@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Dialog } from "@/components/ui/Dialog";
 import { ControlledField } from "@/components/ui/ControlledField";
-import { Checkbox } from "@/components/ui/Checkbox";
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/ui/Button";
 import { showToast } from "@/components/ui/Toast";
 import { useSaveClinic } from "./queries";
@@ -76,25 +76,27 @@ export function ClinicFormDialog({
           label={es.admin.clinicas.mapsLabel}
           inputProps={{ type: "url" }}
         />
-        <ControlledField
-          control={control}
-          name="phone"
-          label={es.admin.clinicas.telefonoLabel}
-          inputProps={{ type: "tel" }}
-        />
-        <ControlledField
-          control={control}
-          name="whatsapp"
-          label={es.admin.clinicas.whatsappLabel}
-          inputProps={{ type: "tel" }}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ControlledField
+            control={control}
+            name="phone"
+            label={es.admin.clinicas.telefonoLabel}
+            inputProps={{ type: "tel" }}
+          />
+          <ControlledField
+            control={control}
+            name="whatsapp"
+            label={es.admin.clinicas.whatsappLabel}
+            inputProps={{ type: "tel" }}
+          />
+        </div>
         <Controller
           control={control}
           name="is_active"
           render={({ field }) => (
-            <Checkbox isSelected={field.value} onChange={field.onChange}>
+            <Switch isSelected={field.value} onChange={field.onChange}>
               {es.admin.clinicas.activaLabel}
-            </Checkbox>
+            </Switch>
           )}
         />
         {formError ? (
