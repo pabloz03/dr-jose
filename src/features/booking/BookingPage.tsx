@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "motion/react";
-import { ArrowLeft } from "lucide-react";
 import { es } from "@/i18n/es";
 import { usePatients } from "@/features/family/queries";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StepProgress } from "./StepProgress";
+import { WizardHeader } from "./WizardHeader";
 import { ClinicStep } from "./steps/ClinicStep";
 import { PatientStep } from "./steps/PatientStep";
 import { TypeStep } from "./steps/TypeStep";
@@ -53,16 +53,24 @@ export function BookingPage() {
   const typesQuery = useAppointmentTypes();
   const bookAppointment = useBookAppointment();
 
+  // Orden "Savia": clínica (si aplica) → tipo → fecha/hora → paciente →
+  // confirmar — igual al Figma de referencia (ahí "datos de contacto"
+  // también va justo antes de revisar, no al principio).
   const STEP_CLINIC = 0;
-  const STEP_PATIENT = (needsClinicChoice ? 1 : 0) as StepIndex;
-  const STEP_TYPE = (needsClinicChoice ? 2 : 1) as StepIndex;
-  const STEP_DATETIME = (needsClinicChoice ? 3 : 2) as StepIndex;
+  const STEP_TYPE = (needsClinicChoice ? 1 : 0) as StepIndex;
+  const STEP_DATETIME = (needsClinicChoice ? 2 : 1) as StepIndex;
+  const STEP_PATIENT = (needsClinicChoice ? 3 : 2) as StepIndex;
   const STEP_CONFIRM = (needsClinicChoice ? 4 : 3) as StepIndex;
   const pasos = needsClinicChoice ? [es.reserva.pasoClinica, ...es.reserva.pasos] : es.reserva.pasos;
 
   function goTo(next: StepIndex) {
     setDir(next > step ? 1 : -1);
     setStep(next);
+  }
+
+  function goBack() {
+    if (step === 0) navigate("/");
+    else goTo((step - 1) as StepIndex);
   }
 
   async function onConfirm() {
@@ -112,8 +120,14 @@ export function BookingPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
-      <h1 className="font-display text-3xl text-ink">{es.reserva.titulo}</h1>
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 pb-0 pt-6">
+      <WizardHeader
+        title={es.reserva.nuevaCita}
+        onBack={goBack}
+        onClose={() => navigate("/")}
+        backLabel={es.reserva.atras}
+        closeLabel={es.reserva.cerrarAria}
+      />
       <StepProgress current={step} steps={pasos} />
 
       <AnimatePresence mode="wait" initial={false} custom={dir}>
@@ -124,16 +138,6 @@ export function BookingPage() {
             clinics={clinics}
             onSelect={(id) => {
               setChosenClinicId(id);
-              goTo(STEP_PATIENT);
-            }}
-          />
-        )}
-        {step === STEP_PATIENT && (
-          <PatientStep
-            key="patient"
-            dir={dir}
-            onSelect={(id) => {
-              setPatientId(id);
               goTo(STEP_TYPE);
             }}
           />
@@ -158,8 +162,19 @@ export function BookingPage() {
             clinicId={clinicId}
             doctorId={doctorQuery.data.id}
             typeId={typeId}
+            confirmLabel={es.reserva.fechaBoton}
             onSelect={(s) => {
               setSlot(s);
+              goTo(STEP_PATIENT);
+            }}
+          />
+        )}
+        {step === STEP_PATIENT && (
+          <PatientStep
+            key="patient"
+            dir={dir}
+            onSelect={(id) => {
+              setPatientId(id);
               goTo(STEP_CONFIRM);
             }}
           />
@@ -170,6 +185,7 @@ export function BookingPage() {
             dir={dir}
             patient={patient}
             type={type}
+            doctor={doctorQuery.data ?? undefined}
             clinic={selectedClinic}
             slot={slot}
             minCancelHours={settingsQuery.data?.min_cancel_hours ?? 24}
@@ -177,18 +193,11 @@ export function BookingPage() {
             isPending={bookAppointment.isPending}
             isError={bookAppointment.isError && !(bookAppointment.error instanceof SlotUnavailableError)}
             onConfirm={onConfirm}
+            onEditDateTime={() => goTo(STEP_DATETIME)}
+            onEditPatient={() => goTo(STEP_PATIENT)}
           />
         )}
       </AnimatePresence>
-
-      <button
-        type="button"
-        onClick={() => (step === 0 ? navigate("/") : goTo((step - 1) as StepIndex))}
-        className="inline-flex min-h-tap items-center gap-1.5 self-start text-sm text-accent underline"
-      >
-        <ArrowLeft className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-        {es.reserva.atras}
-      </button>
 
       <LiveRegion message={announce} assertive />
     </main>

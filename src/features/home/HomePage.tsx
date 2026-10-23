@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarCheck, Clock, LogOut, MapPin, ShieldCheck } from "lucide-react";
+import { Clock, LogOut, MapPin, MessageCircle, Plus, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { es } from "@/i18n/es";
 import { formatClinicDateTime } from "@/lib/tz";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SkeletonCard } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 
 const UPCOMING_STATUSES = new Set(["scheduled", "confirmed"]);
@@ -26,51 +25,72 @@ function findNextAppointment(appointments: AppointmentWithDetails[]): Appointmen
 }
 
 /**
- * Punto focal "hero" (influencia Nike): bloque sólido oscuro fijo —
- * --hero-* no cambia con el tema claro/oscuro (tokens.css), a
- * propósito, para que siga siendo el mismo momento de marca sin
- * importar la preferencia del dispositivo. Único lugar de la app
- * paciente con este tratamiento.
+ * Punto focal de Inicio: foto + insignia superpuesta, con el contenido
+ * debajo en la misma tarjeta — mismo tratamiento tenga o no una
+ * próxima cita (solo cambia el titular/CTA). Reemplaza el bloque
+ * sólido "--hero-*" de la fase 1 del rediseño, que no tenía
+ * equivalente en el Figma de referencia.
  */
-function NextAppointmentCard({ appointment }: { appointment: AppointmentWithDetails }) {
+function HeroCard({ appointment }: { appointment: AppointmentWithDetails | null }) {
   const navigate = useNavigate();
   return (
-    <section className="flex flex-col gap-4 rounded-[var(--r-lg)] bg-[var(--hero-bg)] p-6 text-[var(--hero-ink)] shadow-[var(--shadow-2)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <Eyebrow onDark>{es.home.proximaCitaTitulo}</Eyebrow>
-          <p className="font-display mt-1 text-xl">
-            {appointment.type.name} — {appointment.patient.full_name}
-          </p>
-        </div>
-        <AppointmentStatusBadge status={appointment.status} onDark />
+    <section className="overflow-hidden rounded-[var(--r-lg)] border border-line bg-surface">
+      <div className="relative">
+        <img src="/images/clinica-atencion.jpg" alt={es.auth.fotoAlt} className="h-40 w-full object-cover" />
+        <span className="absolute bottom-3 left-3 rounded-[var(--r-pill)] bg-accent-2 px-3 py-1 text-xs font-semibold tracking-wide text-on-accent-2 uppercase">
+          {es.home.insignia}
+        </span>
       </div>
-      <div className="flex flex-col gap-1.5 text-[var(--hero-ink)]/80">
-        <p className="flex items-center gap-1.5 text-sm">
-          <Clock className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-          {formatClinicDateTime(appointment.starts_at, "EEEE d 'de' MMMM, h:mm a")}
-        </p>
-        <p className="flex items-center gap-1.5 text-sm">
-          <MapPin className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-          {appointment.clinic.name}
-        </p>
+      <div className="flex flex-col gap-3 p-5">
+        {appointment ? (
+          <>
+            <div className="flex items-start justify-between gap-3">
+              <p className="font-display text-xl text-ink">{appointment.type.name}</p>
+              <AppointmentStatusBadge status={appointment.status} />
+            </div>
+            <div className="flex flex-col gap-1.5 text-sm text-muted">
+              <p className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+                {formatClinicDateTime(appointment.starts_at, "EEEE d 'de' MMMM, h:mm a")}
+              </p>
+              <p className="flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+                {appointment.clinic.name}
+              </p>
+            </div>
+            <Button variant="primary" size="lg" className="w-full" onPress={() => navigate(`/citas/${appointment.id}`)}>
+              {es.citas.verDetalle}
+            </Button>
+          </>
+        ) : (
+          <>
+            <p className="font-display text-xl text-ink">{es.home.heroTitulo}</p>
+            <p className="text-sm text-muted">{es.home.heroDescripcion}</p>
+            <Button variant="primary" size="lg" className="w-full" onPress={() => navigate("/citas/nueva")}>
+              <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+              {es.citas.reservarCta}
+            </Button>
+          </>
+        )}
       </div>
-      <Button variant="hero" className="self-start" onPress={() => navigate(`/citas/${appointment.id}`)}>
-        {es.citas.verDetalle}
-      </Button>
     </section>
   );
 }
 
-function EmptyNextAppointment() {
+function AyudaCard() {
   const navigate = useNavigate();
   return (
-    <EmptyState
-      icon={<CalendarCheck className="h-8 w-8" strokeWidth={2.25} />}
-      title={es.home.sinProximaCitaTitulo}
-      description={es.home.sinProximaCitaDescripcion}
-      action={{ label: es.citas.reservarCta, onPress: () => navigate("/citas/nueva") }}
-    />
+    <button
+      type="button"
+      onClick={() => navigate("/ayuda")}
+      className="flex w-full items-center gap-3 rounded-[var(--r-lg)] bg-accent-3 p-4 text-left text-on-accent-3 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+    >
+      <MessageCircle className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+      <span className="flex flex-col">
+        <span className="font-medium">{es.home.ayudaCardTitulo}</span>
+        <span className="text-sm opacity-80">{es.home.ayudaCardDescripcion}</span>
+      </span>
+    </button>
   );
 }
 
@@ -102,7 +122,7 @@ export function HomePage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-8 px-4 py-8">
       <header>
-        <Eyebrow>{es.home.navInicio}</Eyebrow>
+        <Eyebrow>{es.app.name}</Eyebrow>
         <h1 className="font-display mt-1 text-3xl text-ink">{firstName ? es.home.saludo(firstName) : es.home.saludoGenerico}</h1>
         <p className="mt-1 text-muted">{es.home.subtitulo}</p>
       </header>
@@ -111,11 +131,11 @@ export function HomePage() {
         <SkeletonCard />
       ) : appointmentsQuery.isError ? (
         <ErrorState onRetry={() => appointmentsQuery.refetch()} />
-      ) : nextAppointment ? (
-        <NextAppointmentCard appointment={nextAppointment} />
       ) : (
-        <EmptyNextAppointment />
+        <HeroCard appointment={nextAppointment} />
       )}
+
+      <AyudaCard />
 
       {isStaff ? <AdminAccessCard /> : null}
 

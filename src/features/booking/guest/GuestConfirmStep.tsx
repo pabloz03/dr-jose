@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { Building2, Calendar, Info, Mail, Stethoscope, User } from "lucide-react";
+import { Building2, Info, Mail, Pencil, Stethoscope } from "lucide-react";
 import { es } from "@/i18n/es";
 import { stepVariants } from "@/lib/motion";
-import { formatClinicDateLong } from "@/lib/tz";
-import { Button } from "@/components/ui/Button";
+import { formatClinicDateLong, formatClinicDateTime } from "@/lib/tz";
 import { Card } from "@/components/ui/Card";
+import { StepFooter } from "@/features/booking/StepFooter";
 import type { SlotRow } from "@/features/booking/queries";
 import type { GuestClinic, GuestType } from "./queries";
 
@@ -14,6 +14,7 @@ export function GuestConfirmStep({
   fullName,
   contactEmail,
   type,
+  doctor,
   clinic,
   slot,
   minCancelHours,
@@ -21,11 +22,14 @@ export function GuestConfirmStep({
   isPending,
   errorCode,
   onConfirm,
+  onEditDateTime,
+  onEditDatos,
 }: {
   dir: 1 | -1;
   fullName: string;
   contactEmail: string;
   type: GuestType;
+  doctor?: { full_name: string };
   clinic: GuestClinic;
   slot: SlotRow;
   minCancelHours: number;
@@ -33,6 +37,8 @@ export function GuestConfirmStep({
   isPending: boolean;
   errorCode: string | null;
   onConfirm: () => void;
+  onEditDateTime?: () => void;
+  onEditDatos?: () => void;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -51,51 +57,75 @@ export function GuestConfirmStep({
             ? es.reservaInvitado.errorGenerico
             : null;
 
+  const month = formatClinicDateTime(slot.slot_start, "MMM").replace(".", "").toUpperCase();
+  const day = formatClinicDateTime(slot.slot_start, "d");
+
   return (
-    <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
+    <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
       <h2 ref={headingRef} tabIndex={-1} className="font-display text-xl text-ink outline-none">
         {es.reservaInvitado.confirmarTitulo}
       </h2>
+
       <Card className="mt-4">
-        <dl className="flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-3">
-            <dt className="flex items-center gap-1.5 text-muted">
-              <User className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              {es.reserva.resumen.paciente}
-            </dt>
-            <dd className="font-medium text-ink">{fullName}</dd>
+        <div className="flex items-start gap-3">
+          <span className="flex w-12 shrink-0 flex-col items-center justify-center rounded-[var(--r-sm)] bg-accent-2 py-1.5 text-on-accent-2">
+            <span className="text-[10px] font-semibold leading-none">{month}</span>
+            <span className="font-display text-lg leading-tight">{day}</span>
+          </span>
+          <span className="flex-1">
+            <span className="block font-medium text-ink">{formatClinicDateLong(slot.slot_start)}</span>
+          </span>
+          {onEditDateTime ? (
+            <button
+              type="button"
+              onClick={onEditDateTime}
+              aria-label={es.common.editar}
+              className="flex min-h-tap min-w-tap shrink-0 items-center justify-center text-muted transition-colors duration-150 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            >
+              <Pencil className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
+        <div className="mt-3 flex flex-col gap-3 border-t border-line pt-3">
+          <div className="flex items-start gap-2">
+            <Stethoscope className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+            <span>
+              <span className="block font-medium text-ink">{type.name}</span>
+              <span className="block text-sm text-muted">
+                {doctor ? `${doctor.full_name} · ` : ""}
+                {es.reserva.tipoDuracion(type.duration_min)}
+              </span>
+            </span>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <dt className="flex items-center gap-1.5 text-muted">
-              <Mail className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              {es.reserva.resumen.correo}
-            </dt>
-            <dd className="font-medium text-ink">{contactEmail}</dd>
+          <div className="flex items-start gap-2">
+            <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.25} aria-hidden="true" />
+            <span>
+              <span className="block font-medium text-ink">{clinic.name}</span>
+              {clinic.address ? <span className="block text-sm text-muted">{clinic.address}</span> : null}
+            </span>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <dt className="flex items-center gap-1.5 text-muted">
-              <Stethoscope className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              {es.reserva.resumen.tipo}
-            </dt>
-            <dd className="font-medium text-ink">{type.name}</dd>
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <dt className="flex items-center gap-1.5 text-muted">
-              <Building2 className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              {es.reserva.resumen.clinica}
-            </dt>
-            <dd className="font-medium text-ink">{clinic.name}</dd>
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <dt className="flex items-center gap-1.5 text-muted">
-              <Calendar className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
-              {es.reserva.resumen.fecha}
-            </dt>
-            <dd className="font-medium text-ink">{formatClinicDateLong(slot.slot_start)}</dd>
-          </div>
-        </dl>
+        </div>
       </Card>
-      <ul className="mt-3 flex flex-col gap-1.5 text-sm text-muted">
+
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-xs font-semibold tracking-wide text-muted uppercase">{es.reserva.resumen.paciente}</p>
+        {onEditDatos ? (
+          <button
+            type="button"
+            onClick={onEditDatos}
+            className="min-h-tap text-sm text-accent underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          >
+            {es.common.editar}
+          </button>
+        ) : null}
+      </div>
+      <p className="mt-1 font-medium text-ink">{fullName}</p>
+      <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted">
+        <Mail className="h-3.5 w-3.5 shrink-0" strokeWidth={2.25} aria-hidden="true" />
+        {contactEmail}
+      </p>
+
+      <ul className="mt-4 flex flex-col gap-1.5 text-sm text-muted">
         <li className="flex items-start gap-1.5">
           <Info className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden="true" />
           {es.reservaInvitado.confirmarDescripcion}
@@ -114,9 +144,12 @@ export function GuestConfirmStep({
           {errorMessage}
         </p>
       ) : null}
-      <Button variant="primary" size="lg" className="mt-4 w-full" onPress={onConfirm} isPending={isPending}>
-        {isPending ? es.reservaInvitado.confirmando : es.reservaInvitado.confirmarBoton}
-      </Button>
+
+      <StepFooter
+        label={isPending ? es.reservaInvitado.confirmando : es.reservaInvitado.confirmarBoton}
+        onPress={onConfirm}
+        isPending={isPending}
+      />
     </motion.div>
   );
 }

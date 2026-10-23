@@ -44,34 +44,45 @@ function mockGuestBooking(page: import("@playwright/test").Page, bookResponse: R
   });
 }
 
-async function fillDatosAndPickTypeAndSlot(page: import("@playwright/test").Page) {
+// Orden "Savia": tipo → fecha/hora → datos de contacto → confirmar
+// (antes empezaba por datos) — ver plan de fidelidad Figma, rama UI2.
+// Cada paso de selección usa el patrón "elegir → Continuar": tocar una
+// tarjeta/horario solo lo selecciona, hay que presionar el botón del
+// pie fijo para avanzar.
+async function pickTypeAndSlot(page: import("@playwright/test").Page) {
   await page.goto("/reservar-invitado");
-  await page.getByLabel(/Nombre completo/).fill("Juan Pérez");
-  await page.getByLabel(/Correo electrónico/).fill("tutor@example.com");
-  await page.getByRole("button", { name: "Continuar" }).click();
   await page.getByText("Consulta").click();
+  await page.getByRole("button", { name: "Elegir fecha y hora" }).click();
   const availableDay = page.locator('[role="button"][data-rac]:not([data-unavailable])').first();
   await availableDay.click();
   await page.getByRole("button", { name: "12:00 PM" }).click();
+  await page.getByRole("button", { name: "Continuar", exact: true }).click();
 }
 
-test("/ingresar tiene un enlace discreto a reservar sin cuenta", async ({ page }) => {
+async function fillDatosAndContinue(page: import("@playwright/test").Page) {
+  await pickTypeAndSlot(page);
+  await page.getByLabel(/Nombre completo/).fill("Juan Pérez");
+  await page.getByLabel(/Correo electrónico/).fill("tutor@example.com");
+  await page.getByRole("button", { name: "Revisar mi cita" }).click();
+}
+
+test("/ingresar tiene una tarjeta destacada para reservar sin cuenta", async ({ page }) => {
   await mockGuestBooking(page, { ok: true, appointment_id: "a1" });
   await page.goto("/ingresar");
-  const link = page.getByRole("link", { name: "¿Prefiere reservar sin crear una cuenta?" });
+  const link = page.getByRole("link", { name: "Continuar como invitado" });
   await expect(link).toBeVisible();
   await link.click();
   await expect(page).toHaveURL(/\/reservar-invitado$/);
-  await expect(page.getByRole("heading", { name: "¿Para quién es la cita?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "¿Qué tipo de cita necesita?" })).toBeVisible();
 });
 
 test("reservar como invitado de punta a punta", async ({ page }) => {
   await mockGuestBooking(page, { ok: true, appointment_id: "a1" });
-  await fillDatosAndPickTypeAndSlot(page);
+  await fillDatosAndContinue(page);
   await expect(page.getByRole("heading", { name: "Confirme su cita" })).toBeVisible();
   await expect(page.getByText("tutor@example.com")).toBeVisible();
   await page.getByRole("button", { name: "Confirmar cita" }).click();
-  await expect(page.getByRole("heading", { name: "Cita reservada" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "¡Cita confirmada!" })).toBeVisible();
   await expect(page.getByText(/Le enviamos un comprobante a tutor@example.com/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Crear cuenta" })).toBeVisible();
 
@@ -99,23 +110,35 @@ test("si falla por un error inesperado, muestra un mensaje genérico (no se qued
     // Simula una falla de transporte real (no un {ok:false} de negocio).
     return route.fulfill({ status: 500, contentType: "application/json", headers: CORS_HEADERS, body: "{}" });
   });
-  await fillDatosAndPickTypeAndSlot(page);
+  await fillDatosAndContinue(page);
   await page.getByRole("button", { name: "Confirmar cita" }).click();
   await expect(page.getByRole("alert")).toHaveText("No pudimos completar la reserva. Intente de nuevo.");
 });
 
 test("si el horario ya se ocupó, anuncia el error y regresa a elegir fecha/hora", async ({ page }) => {
   await mockGuestBooking(page, { ok: false, error: "slot_unavailable" });
-  await fillDatosAndPickTypeAndSlot(page);
+  await fillDatosAndContinue(page);
   await page.getByRole("button", { name: "Confirmar cita" }).click();
   await expect(page.getByRole("heading", { name: "Elija fecha y hora", exact: true })).toBeVisible();
   await expect(page.getByRole("status")).toHaveText("Ese horario acaba de ocuparse. Elija otro.");
 });
 
 test("reservar-invitado @a11y sin violaciones críticas/serias en el paso de datos", async ({ page }) => {
+  // Reduced motion evita medir contraste a mitad de la transición de
+  // entrada del paso (motion/react respeta prefers-reduced-motion vía
+  // MotionConfig reducedMotion="user") — sin esto, axe puede correr
+  // mientras el panel todavía está en fade-in y reportar colores
+  // diluidos por la opacidad parcial, no un problema real de contraste.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await mockGuestBooking(page, { ok: true, appointment_id: "a1" });
-  await page.goto("/reservar-invitado");
+  await pickTypeAndSlot(page);
   await expect(page.getByRole("heading", { name: "¿Para quién es la cita?" })).toBeVisible();
+  // motion/react sigue animando opacidad bajo reduced motion (solo
+  // suprime transform) — sin esperar a que el fade-in de 240ms
+  // termine, axe mide contraste a mitad de transición y reporta
+  // colores diluidos que no existen una vez el panel termina de
+  // aparecer.
+  await page.waitForTimeout(350);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).analyze();
   const criticalOrSerious = results.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
   expect(criticalOrSerious, JSON.stringify(criticalOrSerious, null, 2)).toEqual([]);

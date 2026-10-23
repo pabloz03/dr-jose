@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { Monitor, ShieldCheck, User, Users } from "lucide-react";
+import { Monitor, Phone, ShieldCheck, User, Users } from "lucide-react";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -68,13 +68,19 @@ export function ProfilePage() {
           <ErrorState onRetry={() => profileQuery.refetch()} />
         ) : (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <ControlledField control={control} name="full_name" label={es.perfil.nombreLabel} isRequired />
+          <ControlledField
+            control={control}
+            name="full_name"
+            label={es.perfil.nombreLabel}
+            isRequired
+            inputProps={{ icon: <User className="h-4 w-4" strokeWidth={2.25} /> }}
+          />
           <ControlledField
             control={control}
             name="phone"
             label={es.perfil.telefonoLabel}
             description={es.perfil.telefonoAyuda}
-            inputProps={{ type: "tel", autoComplete: "tel" }}
+            inputProps={{ icon: <Phone className="h-4 w-4" strokeWidth={2.25} />, type: "tel", autoComplete: "tel" }}
           />
 
           <Card>

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "motion/react";
-import { ArrowLeft } from "lucide-react";
 import { es } from "@/i18n/es";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StepProgress } from "@/features/booking/StepProgress";
+import { WizardHeader } from "@/features/booking/WizardHeader";
 import type { SlotRow } from "@/features/booking/queries";
 import type { GuestDatosValues } from "./schemas";
 import { DatosStep } from "./DatosStep";
@@ -58,10 +58,12 @@ export function GuestBookingPage() {
   }
   const needsClinicChoice = hasClinicStep === true;
 
+  // Mismo orden "Savia" que BookingPage.tsx (con sesión): clínica (si
+  // aplica) → tipo → fecha/hora → datos de contacto → confirmar.
   const STEP_CLINIC = 0;
-  const STEP_DATOS = (needsClinicChoice ? 1 : 0) as StepIndex;
-  const STEP_TYPE = (needsClinicChoice ? 2 : 1) as StepIndex;
-  const STEP_DATETIME = (needsClinicChoice ? 3 : 2) as StepIndex;
+  const STEP_TYPE = (needsClinicChoice ? 1 : 0) as StepIndex;
+  const STEP_DATETIME = (needsClinicChoice ? 2 : 1) as StepIndex;
+  const STEP_DATOS = (needsClinicChoice ? 3 : 2) as StepIndex;
   const STEP_CONFIRM = (needsClinicChoice ? 4 : 3) as StepIndex;
   const pasos = needsClinicChoice
     ? [es.reservaInvitado.pasoClinica, ...es.reservaInvitado.pasos]
@@ -70,6 +72,11 @@ export function GuestBookingPage() {
   function goTo(next: StepIndex) {
     setDir(next > step ? 1 : -1);
     setStep(next);
+  }
+
+  function goBack() {
+    if (step === 0) navigate("/ingresar");
+    else goTo((step - 1) as StepIndex);
   }
 
   async function onConfirm() {
@@ -137,8 +144,14 @@ export function GuestBookingPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8">
-      <h1 className="font-display text-2xl text-ink">{es.reservaInvitado.titulo}</h1>
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 pb-0 pt-6">
+      <WizardHeader
+        title={es.reservaInvitado.nuevaCita}
+        onBack={goBack}
+        onClose={() => navigate("/ingresar")}
+        backLabel={es.reserva.atras}
+        closeLabel={es.reservaInvitado.cerrarAria}
+      />
       <StepProgress current={step} steps={pasos} label={es.reservaInvitado.titulo} />
 
       <AnimatePresence mode="wait" initial={false} custom={dir}>
@@ -149,17 +162,6 @@ export function GuestBookingPage() {
             clinics={cachedClinics}
             onSelect={(id) => {
               setChosenClinicId(id);
-              goTo(STEP_DATOS);
-            }}
-          />
-        )}
-        {step === STEP_DATOS && (
-          <DatosStep
-            key="datos"
-            dir={dir}
-            defaultValues={datos ?? { full_name: "", contact_email: "", website: "" }}
-            onContinue={(values) => {
-              setDatos(values);
               goTo(STEP_TYPE);
             }}
           />
@@ -186,6 +188,17 @@ export function GuestBookingPage() {
             settings={settings}
             onSelect={(s) => {
               setSlot(s);
+              goTo(STEP_DATOS);
+            }}
+          />
+        )}
+        {step === STEP_DATOS && (
+          <DatosStep
+            key="datos"
+            dir={dir}
+            defaultValues={datos ?? { full_name: "", contact_email: "", website: "" }}
+            onContinue={(values) => {
+              setDatos(values);
               goTo(STEP_CONFIRM);
             }}
           />
@@ -197,6 +210,7 @@ export function GuestBookingPage() {
             fullName={datos.full_name}
             contactEmail={datos.contact_email}
             type={type}
+            doctor={doctor ?? undefined}
             clinic={clinic}
             slot={slot}
             minCancelHours={settings.min_cancel_hours}
@@ -210,18 +224,12 @@ export function GuestBookingPage() {
                   : null
             }
             onConfirm={onConfirm}
+            onEditDateTime={() => goTo(STEP_DATETIME)}
+            onEditDatos={() => goTo(STEP_DATOS)}
           />
         )}
       </AnimatePresence>
 
-      <button
-        type="button"
-        onClick={() => (step === 0 ? navigate("/ingresar") : goTo((step - 1) as StepIndex))}
-        className="inline-flex min-h-tap items-center gap-1.5 self-start text-sm text-accent underline"
-      >
-        <ArrowLeft className="h-4 w-4" strokeWidth={2.25} aria-hidden="true" />
-        {es.reserva.atras}
-      </button>
       <LiveRegion message={announce} assertive />
     </main>
   );

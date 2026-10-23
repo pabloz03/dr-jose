@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { UserPlus } from "lucide-react";
+import { KeyRound, Mail, User, UserPlus, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
 import { es } from "@/i18n/es";
@@ -80,18 +80,29 @@ export function SignUpPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
-      <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col px-4 pt-6">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-accent">{es.app.name}</p>
+        <Link
+          to="/ingresar"
+          state={{ prefillEmail: prefill.prefillEmail }}
+          aria-label={es.auth.cerrarAria}
+          className="flex min-h-tap min-w-tap shrink-0 items-center justify-center rounded-[var(--r-pill)] text-muted transition-colors duration-150 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          <X className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+        </Link>
+      </div>
+      <h1 ref={headingRef} tabIndex={-1} className="font-display mt-4 flex items-center gap-2 text-2xl text-ink outline-none">
         <UserPlus className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloRegistro}
       </h1>
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form className="mt-6 flex flex-1 flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <Field
           label={es.perfil.nombreLabel}
           isRequired
           isInvalid={!!formState.errors.full_name}
           errorMessage={formState.errors.full_name?.message}
-          inputProps={{ autoComplete: "name", ...register("full_name") }}
+          inputProps={{ icon: <User className="h-4 w-4" strokeWidth={2.25} />, autoComplete: "name", ...register("full_name") }}
         />
         <Field
           label={es.auth.emailLabel}
@@ -99,6 +110,7 @@ export function SignUpPage() {
           isInvalid={!!formState.errors.email}
           errorMessage={formState.errors.email?.message}
           inputProps={{
+            icon: <Mail className="h-4 w-4" strokeWidth={2.25} />,
             type: "email",
             autoComplete: "email",
             placeholder: es.auth.emailPlaceholder,
@@ -107,6 +119,7 @@ export function SignUpPage() {
         />
         <PasswordField
           label={es.auth.passwordLabel}
+          icon={<KeyRound className="h-4 w-4" strokeWidth={2.25} />}
           description={es.auth.passwordAyuda}
           isRequired
           autoComplete="new-password"
@@ -116,6 +129,7 @@ export function SignUpPage() {
         />
         <PasswordField
           label={es.auth.passwordConfirmarLabel}
+          icon={<KeyRound className="h-4 w-4" strokeWidth={2.25} />}
           isRequired
           autoComplete="new-password"
           isInvalid={!!formState.errors.confirmPassword}
@@ -143,13 +157,20 @@ export function SignUpPage() {
             {formError}
           </p>
         ) : null}
-        <Button type="submit" variant="primary" size="lg" className="w-full" isPending={formState.isSubmitting}>
-          {formState.isSubmitting ? es.auth.registrando : es.auth.crearCuenta}
-        </Button>
+
+        <div className="sticky bottom-0 mt-auto flex flex-col items-center gap-2 border-t border-line bg-bg pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
+          <Button type="submit" variant="primary" size="lg" className="w-full" isPending={formState.isSubmitting}>
+            {formState.isSubmitting ? es.auth.registrando : es.auth.crearCuenta}
+          </Button>
+          <Link
+            to="/ingresar"
+            state={{ prefillEmail: prefill.prefillEmail }}
+            className="min-h-tap text-sm text-accent underline-offset-2 hover:underline"
+          >
+            {es.auth.enlaceYaTengoCuenta}
+          </Link>
+        </div>
       </form>
-      <Link to="/ingresar" state={{ prefillEmail: prefill.prefillEmail }} className="mt-4 inline-flex min-h-tap items-center text-sm text-accent underline">
-        {es.auth.enlaceYaTengoCuenta}
-      </Link>
       <LiveRegion message={announce} />
     </main>
   );

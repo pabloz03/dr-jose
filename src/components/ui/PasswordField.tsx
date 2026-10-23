@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { TextField as RACTextField, Label, Input, Text, FieldError, type InputProps } from "react-aria-components/TextField";
 import { Eye, EyeOff } from "lucide-react";
 import { es } from "@/i18n/es";
@@ -16,6 +16,7 @@ export function PasswordField({
   isInvalid,
   isRequired,
   autoComplete,
+  icon,
   inputProps,
 }: {
   label: string;
@@ -24,6 +25,8 @@ export function PasswordField({
   isInvalid?: boolean;
   isRequired?: boolean;
   autoComplete: "current-password" | "new-password";
+  /** Icono decorativo a la izquierda (candado) — lenguaje visual "Savia". */
+  icon?: ReactNode;
   inputProps?: InputProps;
 }) {
   const [visible, setVisible] = useState(false);
@@ -32,11 +35,16 @@ export function PasswordField({
     <RACTextField isInvalid={isInvalid} isRequired={isRequired} className="flex flex-col gap-1.5">
       <Label className="text-sm font-medium text-ink">{label}</Label>
       <div className="relative flex items-center">
+        {icon ? (
+          <span aria-hidden="true" className="pointer-events-none absolute left-3 text-muted">
+            {icon}
+          </span>
+        ) : null}
         <Input
           {...inputProps}
           type={visible ? "text" : "password"}
           autoComplete={autoComplete}
-          className="min-h-tap w-full rounded-sm border border-border-ui bg-surface px-3 pr-12 text-[16px] text-ink outline-none transition-colors duration-150 placeholder:text-muted hover:border-accent data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-focus data-[invalid]:border-danger"
+          className={`min-h-tap w-full rounded-sm border border-border-ui bg-surface ${icon ? "pl-10" : "px-3"} pr-12 text-[16px] text-ink outline-none transition-colors duration-150 placeholder:text-muted hover:border-accent data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-focus data-[invalid]:border-danger`}
         />
         <Button
           type="button"

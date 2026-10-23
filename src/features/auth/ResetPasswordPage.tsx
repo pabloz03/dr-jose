@@ -63,14 +63,15 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4 py-8">
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col px-4 pt-6">
       <h1 ref={headingRef} tabIndex={-1} className="font-display flex items-center gap-2 text-2xl text-ink outline-none">
         <KeyRound className="h-6 w-6 text-accent" strokeWidth={2.25} aria-hidden="true" />
         {es.auth.tituloResetear}
       </h1>
-      <form className="mt-6 flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+      <form className="mt-6 flex flex-1 flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
         <PasswordField
           label={es.auth.passwordNuevaLabel}
+          icon={<KeyRound className="h-4 w-4" strokeWidth={2.25} />}
           description={es.auth.passwordAyuda}
           isRequired
           autoComplete="new-password"
@@ -80,6 +81,7 @@ export function ResetPasswordPage() {
         />
         <PasswordField
           label={es.auth.passwordConfirmarLabel}
+          icon={<KeyRound className="h-4 w-4" strokeWidth={2.25} />}
           isRequired
           autoComplete="new-password"
           isInvalid={!!form.formState.errors.confirmPassword}
@@ -91,9 +93,11 @@ export function ResetPasswordPage() {
             {formError}
           </p>
         ) : null}
-        <Button type="submit" variant="primary" size="lg" className="w-full" isPending={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? es.auth.guardandoPassword : es.auth.botonResetear}
-        </Button>
+        <div className="sticky bottom-0 mt-auto border-t border-line bg-bg pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
+          <Button type="submit" variant="primary" size="lg" className="w-full" isPending={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? es.auth.guardandoPassword : es.auth.botonResetear}
+          </Button>
+        </div>
       </form>
       <LiveRegion message={announce} assertive />
     </main>

@@ -12,9 +12,8 @@ export function StepProgress({
 }) {
   const total = steps.length;
   return (
-    <nav aria-label={label}>
-      <p className="text-sm font-medium text-muted">{es.reserva.pasoProgreso(current + 1, total)}</p>
-      <ol className="mt-2 flex gap-2">
+    <nav aria-label={label} className="flex items-center gap-3">
+      <ol className="flex flex-1 gap-2">
         {steps.map((step, i) => (
           <li
             key={step}
@@ -28,6 +27,7 @@ export function StepProgress({
           </li>
         ))}
       </ol>
+      <span className="shrink-0 text-xs text-muted">{es.reserva.pasoProgreso(current + 1, total)}</span>
     </nav>
   );
 }

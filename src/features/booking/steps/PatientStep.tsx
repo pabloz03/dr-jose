@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { User } from "lucide-react";
@@ -8,21 +8,24 @@ import { Card } from "@/components/ui/Card";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { StepFooter } from "../StepFooter";
 import { usePatients } from "@/features/family/queries";
 
 export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patientId: string) => void }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const navigate = useNavigate();
   const patientsQuery = usePatients();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
   const patients = patientsQuery.data ?? [];
+  const selectedPatient = patients.find((p) => p.id === selectedId) ?? null;
 
   return (
-    <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit">
+    <motion.div custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
       <h2 ref={headingRef} tabIndex={-1} className="font-display text-2xl text-ink outline-none">
         {es.reserva.pacienteTitulo}
       </h2>
@@ -44,21 +47,29 @@ export function PatientStep({ dir, onSelect }: { dir: 1 | -1; onSelect: (patient
           />
         </div>
       ) : (
-        <ul className="mt-6 flex flex-col gap-2.5">
-          {patients.map((p) => (
-            <li key={p.id}>
-              <Card onPress={() => onSelect(p.id)} className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-pill)] bg-accent-2 text-on-accent-2">
-                  <User className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
-                </span>
-                <span>
-                  <span className="font-medium text-ink">{p.full_name}</span>
-                  {p.is_self ? <span className="ml-2 text-sm text-muted">({es.familia.esUsted})</span> : null}
-                </span>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="mt-6 flex flex-col gap-2.5">
+            {patients.map((p) => (
+              <li key={p.id}>
+                <Card selected={selectedId === p.id} onPress={() => setSelectedId(p.id)} className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-pill)] bg-accent-2 text-on-accent-2">
+                    <User className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="font-medium text-ink">{p.full_name}</span>
+                    {p.is_self ? <span className="ml-2 text-sm text-muted">({es.familia.esUsted})</span> : null}
+                  </span>
+                </Card>
+              </li>
+            ))}
+          </ul>
+          <StepFooter
+            label={es.reserva.pacienteBoton}
+            caption={selectedPatient?.full_name}
+            isDisabled={!selectedId}
+            onPress={() => selectedId && onSelect(selectedId)}
+          />
+        </>
       )}
     </motion.div>
   );
